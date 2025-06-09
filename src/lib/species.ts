@@ -39,6 +39,7 @@ export type Species = {
   threats: string[];
   keyStats: SpeciesStat[];
   historicalData: HistoricalDataPoint[];
+  islands: string[]; // Added field for island locations
 };
 
 export const speciesList: Species[] = [
@@ -51,7 +52,7 @@ export const speciesList: Species[] = [
     imageUrl: 'https://placehold.co/600x400.png',
     dataAiHint: 'giant tortoise Galapagos',
     icon: Turtle,
-    populationTrend: 'stable', // Some subspecies increasing, others vulnerable
+    populationTrend: 'stable',
     conservationStatus: 'Vulnerable',
     habitat: 'Highlands with lush vegetation and coastal lowlands with arid scrub.',
     threats: ['Introduced species (rats, pigs, goats)', 'Habitat loss from agriculture', 'Past exploitation for food and oil', 'Climate change impacting vegetation'],
@@ -67,6 +68,7 @@ export const speciesList: Species[] = [
       { year: 2010, value: 15000, unit: 'individuals (estimated total)' },
       { year: 2023, value: 19000, unit: 'individuals (estimated total)' },
     ],
+    islands: ['Isabela', 'Santa Cruz', 'San Cristobal', 'Española', 'Santiago', 'Fernandina'],
   },
   {
     id: 'marine-iguana',
@@ -76,7 +78,7 @@ export const speciesList: Species[] = [
     longDescription: 'Marine Iguanas are unique among modern lizards for their ability to forage in the sea. They have specialized glands to excrete excess salt and flattened tails for swimming. They bask on volcanic rocks to warm up after cold ocean dives. Coloration varies between islands, from black to reddish or greenish.',
     imageUrl: 'https://placehold.co/600x400.png',
     dataAiHint: 'marine iguana Galapagos',
-    icon: ShieldQuestion, // Kept as specific reptile icons are limited in Lucide.
+    icon: ShieldQuestion,
     populationTrend: 'stable',
     conservationStatus: 'Vulnerable',
     habitat: 'Rocky coastlines, lava shores, and intertidal zones.',
@@ -93,6 +95,7 @@ export const speciesList: Species[] = [
       { year: 2010, value: 200000, unit: 'individuals' },
       { year: 2023, value: 220000, unit: 'individuals' },
     ],
+    islands: ['Isabela', 'Fernandina', 'Santa Cruz', 'San Cristobal', 'Española', 'Floreana', 'Genovesa'],
   },
   {
     id: 'darwins-finches',
@@ -103,8 +106,8 @@ export const speciesList: Species[] = [
     imageUrl: 'https://placehold.co/600x400.png',
     dataAiHint: 'finch bird Galapagos',
     icon: Bird,
-    populationTrend: 'stable', // Varies by species
-    conservationStatus: 'Least Concern', // Varies by species, some are vulnerable
+    populationTrend: 'stable',
+    conservationStatus: 'Least Concern',
     habitat: 'Diverse habitats across all islands, from arid lowlands to humid highlands.',
     threats: ['Introduced parasitic fly (Philornis downsi)', 'Habitat degradation', 'Competition with introduced bird species', 'Avian diseases'],
     keyStats: [
@@ -113,12 +116,13 @@ export const speciesList: Species[] = [
       { label: 'Studied By', value: 'Charles Darwin' },
       { label: 'Common Ancestor', value: 'Single species from mainland'}
     ],
-    historicalData: [ // Example data for a common finch species population index
+    historicalData: [ 
       { year: 1977, value: 100, unit: 'population index' },
       { year: 1987, value: 120, unit: 'population index' },
       { year: 2000, value: 90, unit: 'population index' },
       { year: 2020, value: 110, unit: 'population index' },
     ],
+    islands: ['Isabela', 'Santa Cruz', 'San Cristobal', 'Española', 'Fernandina', 'Santiago', 'Floreana', 'Genovesa', 'Pinta', 'Marchena'],
   },
   {
     id: 'blue-footed-booby',
@@ -130,7 +134,7 @@ export const speciesList: Species[] = [
     dataAiHint: 'blue footed booby Galapagos',
     icon: Footprints, 
     populationTrend: 'decreasing',
-    conservationStatus: 'Least Concern', // Globally, but Galapagos population has declined
+    conservationStatus: 'Least Concern',
     habitat: 'Tropical and subtropical Pacific coasts; nests on rocky shores and cliffs.',
     threats: ['Decline in sardine populations (key food source)', 'Disturbance at nesting sites', 'Climate change affecting fish stocks'],
     keyStats: [
@@ -145,6 +149,7 @@ export const speciesList: Species[] = [
       { year: 2012, value: 6500, unit: 'breeding pairs (Galapagos)' },
       { year: 2023, value: 6000, unit: 'breeding pairs (Galapagos)' },
     ],
+    islands: ['Isabela', 'Santa Cruz', 'North Seymour', 'Española', 'Fernandina', 'Genovesa'],
   },
   {
     id: 'galapagos-penguin',
@@ -154,8 +159,8 @@ export const speciesList: Species[] = [
     longDescription: 'Galapagos Penguins are one of the smallest penguin species. They survive in the equatorial heat thanks to the cool waters of the Humboldt and Cromwell currents. They nest in volcanic crevices and caves to escape the sun. Their small population is highly susceptible to climate fluctuations.',
     imageUrl: 'https://placehold.co/600x400.png',
     dataAiHint: 'Galapagos penguin',
-    icon: Bird, // Changed from VenetianMask to Bird
-    populationTrend: 'stable', // Fluctuates, recovering from lows
+    icon: Bird,
+    populationTrend: 'stable',
     conservationStatus: 'Endangered',
     habitat: 'Coastal areas, particularly on Fernandina and Isabela islands.',
     threats: ['El Niño events (reducing food supply)', 'Predation by introduced species', 'Fisheries bycatch', 'Climate change warming sea temperatures'],
@@ -171,6 +176,7 @@ export const speciesList: Species[] = [
       { year: 2004, value: 1000, unit: 'individuals' },
       { year: 2023, value: 2000, unit: 'individuals' },
     ],
+    islands: ['Isabela', 'Fernandina', 'Santiago', 'Floreana'],
   },
   {
     id: 'flightless-cormorant',
@@ -197,6 +203,7 @@ export const speciesList: Species[] = [
       { year: 2013, value: 1200, unit: 'breeding pairs' },
       { year: 2023, value: 1000, unit: 'breeding pairs' },
     ],
+    islands: ['Isabela', 'Fernandina'],
   },
   {
     id: 'waved-albatross',
@@ -223,6 +230,7 @@ export const speciesList: Species[] = [
       { year: 2007, value: 12000, unit: 'breeding pairs' },
       { year: 2023, value: 10000, unit: 'breeding pairs (estimate)' },
     ],
+    islands: ['Española'],
   },
   {
     id: 'galapagos-sea-lion',
@@ -232,7 +240,7 @@ export const speciesList: Species[] = [
     longDescription: 'Galapagos Sea Lions are playful and curious marine mammals. They are smaller than their Californian relatives. Males establish and defend territories during the breeding season. They feed on fish and squid, and are preyed upon by sharks and orcas.',
     imageUrl: 'https://placehold.co/600x400.png',
     dataAiHint: 'Galapagos sea lion',
-    icon: Waves, // Changed from Footprints to Waves
+    icon: Waves,
     populationTrend: 'decreasing',
     conservationStatus: 'Endangered',
     habitat: 'Sandy beaches and rocky coastlines throughout the archipelago.',
@@ -249,6 +257,7 @@ export const speciesList: Species[] = [
       { year: 2015, value: 16000, unit: 'individuals' },
       { year: 2023, value: 14000, unit: 'individuals (estimate)' },
     ],
+    islands: ['Isabela', 'Santa Cruz', 'San Cristobal', 'Española', 'Fernandina', 'Santiago', 'Floreana', 'Genovesa'],
   },
   {
     id: 'galapagos-fur-seal',
@@ -258,8 +267,8 @@ export const speciesList: Species[] = [
     longDescription: 'Galapagos Fur Seals have a dense underfur, providing insulation. They prefer rocky, shaded coastlines and spend more time on land than sea lions. They are nocturnal hunters, feeding on fish and cephalopods further offshore.',
     imageUrl: 'https://placehold.co/600x400.png',
     dataAiHint: 'Galapagos fur seal',
-    icon: Waves, // Changed from Footprints to Waves
-    populationTrend: 'stable', // Recovered from near extinction
+    icon: Waves,
+    populationTrend: 'stable',
     conservationStatus: 'Endangered',
     habitat: 'Shady, rocky coastlines with boulders and caves.',
     threats: ['Past hunting for fur', 'El Niño events', 'Sensitivity to sea temperature changes', 'Entanglement'],
@@ -269,12 +278,13 @@ export const speciesList: Species[] = [
       { label: 'Hunting Time', value: 'Primarily nocturnal' },
       { label: 'Weight', value: '~65', unit: 'kg (male)'}
     ],
-    historicalData: [ // Population fluctuates significantly
+    historicalData: [ 
       { year: 1970, value: 5000, unit: 'individuals' },
       { year: 1990, value: 30000, unit: 'individuals' },
       { year: 2000, value: 15000, unit: 'individuals' },
       { year: 2023, value: 25000, unit: 'individuals (estimate)' },
     ],
+    islands: ['Isabela', 'Fernandina', 'Santiago', 'Genovesa', 'Pinta', 'Marchena', 'Santa Cruz'],
   },
   {
     id: 'lava-lizard',
@@ -284,9 +294,9 @@ export const speciesList: Species[] = [
     longDescription: 'Lava Lizards are common reptiles in the Galapagos. There are several species, each often endemic to specific islands or groups of islands. Males are typically larger and more brightly colored than females. They feed on insects, spiders, and other small invertebrates.',
     imageUrl: 'https://placehold.co/600x400.png',
     dataAiHint: 'lava lizard Galapagos',
-    icon: Bug, // Changed from Shell to Bug
+    icon: Bug,
     populationTrend: 'stable',
-    conservationStatus: 'Least Concern', // Most species
+    conservationStatus: 'Least Concern',
     habitat: 'Arid and coastal zones, lava fields, and dry scrubland.',
     threats: ['Introduced predators (cats, rats)', 'Habitat alteration in some areas'],
     keyStats: [
@@ -295,14 +305,24 @@ export const speciesList: Species[] = [
       { label: 'Diet', value: 'Insects, spiders, scorpions' },
       { label: 'Size', value: '15-30', unit: 'cm (total length)'}
     ],
-    historicalData: [ // Data not typically tracked this way for lava lizards; illustrative
+    historicalData: [ 
       { year: 2000, value: 500000, unit: 'total individuals (estimate)' },
       { year: 2010, value: 520000, unit: 'total individuals (estimate)' },
       { year: 2020, value: 510000, unit: 'total individuals (estimate)' },
       { year: 2023, value: 515000, unit: 'total individuals (estimate)' },
     ],
+    islands: ['Isabela', 'Santa Cruz', 'San Cristobal', 'Española', 'Fernandina', 'Santiago', 'Floreana', 'Genovesa'],
   },
 ];
+
+// List of major islands for potential use in map or filtering logic.
+// These names should match the strings used in species.islands array.
+export const GALAPAGOS_ISLANDS_NAMES: string[] = [
+    'Isabela', 'Santa Cruz', 'San Cristobal', 'Fernandina', 
+    'Española', 'Floreana', 'Santiago', 'Genovesa', 
+    'Pinta', 'Marchena', 'North Seymour'
+];
+
 
 export const getSpeciesById = (id: string): Species | undefined => {
   return speciesList.find(s => s.id === id);
@@ -312,7 +332,7 @@ export const updateSpeciesData = (id: string, updatedData: Partial<Species>): bo
   const speciesIndex = speciesList.findIndex(s => s.id === id);
   if (speciesIndex === -1) return false;
   
-  // In a real app, this would be an API call. Here we mutate the mock data.
   speciesList[speciesIndex] = { ...speciesList[speciesIndex], ...updatedData };
   return true;
 };
+
