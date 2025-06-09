@@ -3,17 +3,27 @@
 
 import React from 'react';
 
-// Simplified representation of some major Galapagos Islands for the map
-// Positions (x, y) and dimensions (width, height) are for a viewBox="0 0 350 300"
-// Shapes can be 'rect', 'ellipse', or 'circle'
+// Representación de las Islas Galápagos con formas SVG más orgánicas.
+// Coordenadas y dimensiones para un viewBox="0 0 350 300"
+// cx, cy son los centroides aproximados para el texto.
 const mapIslandsData = [
-  { id: 'Isabela', name: 'Isabela', x: 50, y: 80, width: 60, height: 150, shape: 'rect' },
-  { id: 'Santa Cruz', name: 'Santa Cruz', x: 150, y: 150, width: 80, height: 70, shape: 'ellipse' },
-  { id: 'San Cristobal', name: 'San Cristobal', x: 250, y: 180, width: 70, height: 60, shape: 'rect' },
-  { id: 'Fernandina', name: 'Fernandina', x: 20, y: 130, width: 50, height: 50, shape: 'circle' },
-  { id: 'Española', name: 'Española', x: 200, y: 250, width: 70, height: 35, shape: 'ellipse' },
-  { id: 'Genovesa', name: 'Genovesa', x: 220, y: 50, width: 50, height: 40, shape: 'rect' },
-  // Add more islands here if needed, adjusting viewBox accordingly
+  { id: 'Isabela', name: 'Isabela', shape: 'path', 
+    d: 'M60,80 C35,110 30,180 55,230 L75,235 C90,190 100,120 80,80 Q70,75 60,80 Z', 
+    cx: 68, cy: 155 },
+  { id: 'Santa Cruz', name: 'Santa Cruz', shape: 'ellipse', 
+    cx: 165, cy: 165, rx: 42, ry: 38 },
+  { id: 'San Cristobal', name: 'San Cristobal', shape: 'path', 
+    d: 'M250,180 L315,185 L305,230 Q280,245 255,235 L250,200 Z', 
+    cx: 285, cy: 210 },
+  { id: 'Fernandina', name: 'Fernandina', shape: 'circle', 
+    cx: 35, cy: 145, r: 26 },
+  { id: 'Española', name: 'Española', shape: 'ellipse', 
+    cx: 230, cy: 260, rx: 38, ry: 20 },
+  { id: 'Genovesa', name: 'Genovesa', shape: 'path', 
+    d: 'M220,50 Q245,40 270,55 C275,75 255,95 235,90 Q210,80 220,50 Z', 
+    cx: 245, cy: 70 },
+  // Ejemplo de una isla adicional más pequeña si se quisiera agregar
+  // { id: 'Floreana', name: 'Floreana', shape: 'ellipse', cx: 140, cy: 230, rx: 25, ry: 20},
 ];
 
 type GalapagosMapProps = {
@@ -31,7 +41,6 @@ const GalapagosMap: React.FC<GalapagosMapProps> = ({ onIslandClick, selectedIsla
     >
       <title id="mapTitle">Mapa interactivo de las Islas Galápagos</title>
       
-      {/* Optional: Background styling for the "ocean" */}
       <rect width="100%" height="100%" fill="hsl(var(--secondary))" />
 
       {mapIslandsData.map((island) => {
@@ -40,7 +49,7 @@ const GalapagosMap: React.FC<GalapagosMapProps> = ({ onIslandClick, selectedIsla
         const islandStyle = {
           fill: isSelected ? 'hsl(var(--primary))' : 'hsl(var(--muted))',
           stroke: isSelected ? 'hsl(var(--primary-foreground))' : 'hsl(var(--foreground))',
-          strokeWidth: isSelected ? 1.5 : 0.5,
+          strokeWidth: isSelected ? 1.5 : 0.7,
           filter: isSelected ? 'drop-shadow(0 0 5px hsl(var(--primary)))' : 'none',
         };
         
@@ -56,23 +65,20 @@ const GalapagosMap: React.FC<GalapagosMapProps> = ({ onIslandClick, selectedIsla
         let textX, textY;
 
         switch (island.shape) {
-          case 'rect':
-            islandElement = <rect x={island.x} y={island.y} width={island.width} height={island.height} rx="3" ry="3" style={islandStyle} className={islandBaseClasses} />;
-            textX = island.x + island.width / 2;
-            textY = island.y + island.height / 2 + 4; // Center text, +4 for baseline
+          case 'path':
+            islandElement = <path d={island.d} style={islandStyle} className={islandBaseClasses} />;
+            textX = island.cx;
+            textY = island.cy + 3; // Ajustar línea base del texto
             break;
           case 'ellipse':
-            const rx = island.width / 2;
-            const ry = island.height / 2;
-            islandElement = <ellipse cx={island.x + rx} cy={island.y + ry} rx={rx} ry={ry} style={islandStyle} className={islandBaseClasses} />;
-            textX = island.x + rx;
-            textY = island.y + ry + 4; // Center text, +4 for baseline
+            islandElement = <ellipse cx={island.cx} cy={island.cy} rx={island.rx} ry={island.ry} style={islandStyle} className={islandBaseClasses} />;
+            textX = island.cx;
+            textY = island.cy + 3; // Ajustar línea base del texto
             break;
           case 'circle':
-            const r = island.width / 2; // Assuming width is diameter for circle
-            islandElement = <circle cx={island.x + r} cy={island.y + r} r={r} style={islandStyle} className={islandBaseClasses} />;
-            textX = island.x + r;
-            textY = island.y + r + 4; // Center text, +4 for baseline
+            islandElement = <circle cx={island.cx} cy={island.cy} r={island.r} style={islandStyle} className={islandBaseClasses} />;
+            textX = island.cx;
+            textY = island.cy + 3; // Ajustar línea base del texto
             break;
           default:
             return null;
@@ -96,4 +102,3 @@ const GalapagosMap: React.FC<GalapagosMapProps> = ({ onIslandClick, selectedIsla
 };
 
 export default GalapagosMap;
-
