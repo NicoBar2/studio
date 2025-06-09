@@ -13,7 +13,7 @@ type SpeciesDetailPageProps = {
 export async function generateMetadata({ params }: SpeciesDetailPageProps) {
   const species = getSpeciesById(params.id);
   if (!species) {
-    return { title: 'Species Not Found' };
+    return { title: 'Especie No Encontrada' };
   }
   return {
     title: `${species.name} | Galapagos DataLens`,
@@ -32,7 +32,7 @@ export default function SpeciesDetailPage({ params }: SpeciesDetailPageProps) {
     <div className="container mx-auto px-4 py-8">
       <Button variant="outline" asChild className="mb-6">
         <Link href="/">
-          <ArrowLeft className="mr-2 h-4 w-4" /> Back to Species List
+          <ArrowLeft className="mr-2 h-4 w-4" /> Volver a la Lista de Especies
         </Link>
       </Button>
       <SpeciesDetailClient species={species} />

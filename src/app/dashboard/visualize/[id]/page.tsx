@@ -33,7 +33,7 @@ export default function VisualizeSpeciesPage({ params }: VisualizeSpeciesPagePro
   if (authLoading || species === undefined) {
     return (
       <div className="flex items-center justify-center min-h-[300px]">
-        <p>Loading species data...</p>
+        <p>Cargando datos de la especie...</p>
       </div>
     );
   }
@@ -47,13 +47,13 @@ export default function VisualizeSpeciesPage({ params }: VisualizeSpeciesPagePro
       <div className="space-y-6">
         <Button variant="outline" asChild>
           <Link href="/dashboard">
-            <ArrowLeft className="mr-2 h-4 w-4" /> Back to Dashboard
+            <ArrowLeft className="mr-2 h-4 w-4" /> Volver al Panel
           </Link>
         </Button>
         <Card className="shadow-lg">
           <CardHeader>
-            <CardTitle className="text-3xl font-headline text-primary">Data Visualization: {species.name}</CardTitle>
-            <CardDescription>Interactive charts displaying historical data for {species.scientificName}.</CardDescription>
+            <CardTitle className="text-3xl font-headline text-primary">Visualización de Datos: {species.name}</CardTitle>
+            <CardDescription>Gráficos interactivos que muestran datos históricos para {species.scientificName}.</CardDescription>
           </CardHeader>
           <CardContent>
             {species.historicalData && species.historicalData.length > 0 ? (
@@ -61,14 +61,14 @@ export default function VisualizeSpeciesPage({ params }: VisualizeSpeciesPagePro
                 data={species.historicalData} 
                 dataKey="value" 
                 nameKey="year"
-                unit={species.historicalData[0]?.unit || 'count'} // Use unit from first data point or default
+                unit={species.historicalData[0]?.unit || 'conteo'} // Use unit from first data point or default
                 chartType="line" 
               />
             ) : (
               <div className="flex flex-col items-center justify-center p-8 border border-dashed rounded-lg">
                 <AlertTriangle className="h-12 w-12 text-muted-foreground mb-4" />
-                <p className="text-lg font-medium text-muted-foreground">No historical data available for visualization.</p>
-                <p className="text-sm text-muted-foreground">Consider adding data through the edit page.</p>
+                <p className="text-lg font-medium text-muted-foreground">No hay datos históricos disponibles para visualización.</p>
+                <p className="text-sm text-muted-foreground">Considera agregar datos a través de la página de edición.</p>
               </div>
             )}
           </CardContent>

@@ -14,10 +14,10 @@ type EditSpeciesPageProps = {
 export async function generateMetadata({ params }: EditSpeciesPageProps) {
   const species = getSpeciesById(params.id);
   if (!species) {
-    return { title: 'Species Not Found' };
+    return { title: 'Especie No Encontrada' };
   }
   return {
-    title: `Edit ${species.name} | Galapagos DataLens`,
+    title: `Editar ${species.name} | Galapagos DataLens`,
   };
 }
 
@@ -33,7 +33,7 @@ export default function EditSpeciesPage({ params }: EditSpeciesPageProps) {
       <div className="space-y-6">
         <Button variant="outline" asChild>
           <Link href="/dashboard">
-            <ArrowLeft className="mr-2 h-4 w-4" /> Back to Dashboard
+            <ArrowLeft className="mr-2 h-4 w-4" /> Volver al Panel
           </Link>
         </Button>
         <SpeciesEditForm species={species} />

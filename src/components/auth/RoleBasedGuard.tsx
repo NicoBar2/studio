@@ -30,7 +30,7 @@ export default function RoleBasedGuard({ allowedRoles, children, fallbackPath = 
   if (isLoading) {
     return (
         <div className="flex items-center justify-center min-h-[300px]">
-            <p>Loading user authentication...</p>
+            <p>Cargando autenticación de usuario...</p>
         </div>
     );
   }
@@ -40,9 +40,9 @@ export default function RoleBasedGuard({ allowedRoles, children, fallbackPath = 
     // If no fallbackUI and no redirect (e.g., still loading redirect), show minimal message
     return (
         <div className="flex flex-col items-center justify-center min-h-[300px] p-4 text-center">
-            <h2 className="text-2xl font-bold text-destructive mb-2">Access Denied</h2>
-            <p className="text-foreground">You do not have permission to view this page.</p>
-            {fallbackPath && <Button onClick={() => router.push(fallbackPath)} className="mt-4">Go to Home</Button>}
+            <h2 className="text-2xl font-bold text-destructive mb-2">Acceso Denegado</h2>
+            <p className="text-foreground">No tienes permiso para ver esta página.</p>
+            {fallbackPath && <Button onClick={() => router.push(fallbackPath)} className="mt-4">Ir al Inicio</Button>}
         </div>
     );
   }

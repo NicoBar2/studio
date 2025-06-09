@@ -24,16 +24,16 @@ export default function LoginSimulator() {
     <div className="flex items-center gap-2">
       <Users className="h-5 w-5 text-primary" />
       <Label htmlFor="role-simulator" className="text-sm font-medium text-foreground sr-only md:not-sr-only">
-        Simulate Role:
+        Simular Rol:
       </Label>
       <Select value={role || 'tourist'} onValueChange={handleRoleChange}>
         <SelectTrigger id="role-simulator" className="w-[150px] bg-background text-foreground border-primary focus:ring-primary">
-          <SelectValue placeholder="Select role" />
+          <SelectValue placeholder="Seleccionar rol" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="tourist">Tourist</SelectItem>
-          <SelectItem value="researcher">Researcher</SelectItem>
-          <SelectItem value="admin">Admin</SelectItem>
+          <SelectItem value="tourist">Turista</SelectItem>
+          <SelectItem value="researcher">Investigador/a</SelectItem>
+          <SelectItem value="admin">Administrador/a</SelectItem>
         </SelectContent>
       </Select>
     </div>

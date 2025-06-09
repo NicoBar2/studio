@@ -17,7 +17,7 @@ export default function DashboardLayout({
             <SidebarHeader className="p-4">
               <Link href="/dashboard" className="flex items-center gap-2 font-headline text-lg font-semibold text-primary">
                 <LayoutDashboard className="h-6 w-6" />
-                <span className="group-data-[state=collapsed]:hidden">Dashboard</span>
+                <span className="group-data-[state=collapsed]:hidden">Panel</span>
               </Link>
             </SidebarHeader>
             <SidebarMenu className="p-2">
@@ -25,7 +25,7 @@ export default function DashboardLayout({
                 <SidebarMenuButton asChild variant="ghost" className="justify-start w-full">
                   <Link href="/dashboard">
                     <LayoutDashboard />
-                    <span className="group-data-[state=collapsed]:hidden">Overview</span>
+                    <span className="group-data-[state=collapsed]:hidden">Resumen</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -35,7 +35,7 @@ export default function DashboardLayout({
                  <SidebarMenuButton asChild variant="ghost" className="justify-start w-full">
                   <Link href="/">
                     <HomeIcon />
-                    <span className="group-data-[state=collapsed]:hidden">Public Site</span>
+                    <span className="group-data-[state=collapsed]:hidden">Sitio Público</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>

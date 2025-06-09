@@ -44,7 +44,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-background">
-        <p className="text-foreground text-lg">Loading application...</p>
+        <p className="text-foreground text-lg">Cargando aplicación...</p>
       </div>
     );
   }

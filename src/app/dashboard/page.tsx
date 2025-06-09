@@ -24,46 +24,46 @@ export default function DashboardPage() {
     <div className="space-y-8">
       <section>
         <h1 className="text-3xl font-headline font-bold text-primary mb-2">
-          Welcome, {role === 'admin' ? 'Administrator' : 'Researcher'}!
+          ¡Bienvenido/a, {role === 'admin' ? 'Administrador/a' : 'Investigador/a'}!
         </h1>
         <p className="text-lg text-foreground">
-          Manage and analyze Galapagos species data.
+          Gestiona y analiza los datos de las especies de Galápagos.
         </p>
       </section>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>Data Management</CardTitle>
+            <CardTitle>Gestión de Datos</CardTitle>
             <CardDescription>
-              View and edit statistical data for each species.
-              {role === 'admin' && " As an admin, you have full control over species data."}
-              {role === 'researcher' && " As a researcher, you can update and contribute to the data."}
+              Ver y editar datos estadísticos para cada especie.
+              {role === 'admin' && " Como administrador/a, tienes control total sobre los datos de las especies."}
+              {role === 'researcher' && " Como investigador/a, puedes actualizar y contribuir a los datos."}
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="mb-4">Select a species below to edit its information.</p>
+            <p className="mb-4">Selecciona una especie abajo para editar su información.</p>
             {/* List species with edit links */}
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle>Data Visualization</CardTitle>
+            <CardTitle>Visualización de Datos</CardTitle>
             <CardDescription>
-              Access interactive charts and graphs for in-depth analysis.
-              {role === 'researcher' && " Use these tools to explore trends and patterns."}
+              Accede a gráficos interactivos para un análisis profundo.
+              {role === 'researcher' && " Usa estas herramientas para explorar tendencias y patrones."}
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="mb-4">Select a species below to visualize its data.</p>
+            <p className="mb-4">Selecciona una especie abajo para visualizar sus datos.</p>
             {/* List species with visualize links */}
           </CardContent>
         </Card>
       </div>
 
       <section>
-        <h2 className="text-2xl font-headline font-semibold text-primary mb-4">Species Overview</h2>
+        <h2 className="text-2xl font-headline font-semibold text-primary mb-4">Resumen de Especies</h2>
         <div className="space-y-4">
           {speciesList.map(species => {
             const IconComponent = iconMap[species.icon] || iconMap.Default;
@@ -79,19 +79,19 @@ export default function DashboardPage() {
                 <CardContent className="flex flex-col sm:flex-row gap-2">
                   <Button asChild variant="outline" size="sm">
                     <Link href={`/dashboard/edit/${species.id}`}>
-                      <Edit3 className="mr-2 h-4 w-4" /> Edit Data
+                      <Edit3 className="mr-2 h-4 w-4" /> Editar Datos
                     </Link>
                   </Button>
                   {role === 'researcher' && (
                     <Button asChild variant="outline" size="sm">
                       <Link href={`/dashboard/visualize/${species.id}`}>
-                        <BarChart3 className="mr-2 h-4 w-4" /> View Visualizations
+                        <BarChart3 className="mr-2 h-4 w-4" /> Ver Visualizaciones
                       </Link>
                     </Button>
                   )}
                   <Button asChild variant="ghost" size="sm" className="text-primary hover:text-primary/90">
                     <Link href={`/species/${species.id}`}>
-                      View Public Page
+                      Ver Página Pública
                     </Link>
                   </Button>
                 </CardContent>

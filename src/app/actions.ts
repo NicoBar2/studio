@@ -15,34 +15,34 @@ async function generateSpeciesInsight(speciesName: string, speciesData: string):
   // Mock implementation
   await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate AI processing time
   if (!speciesName || !speciesData) {
-    return "Could not generate insights due to missing data.";
+    return "No se pudo generar el resumen debido a datos faltantes.";
   }
-  return `Generated insight for ${speciesName}: This species plays a vital role in its ecosystem. Recent data indicates a notable trend that requires further observation. Conservation efforts are crucial for its long-term survival. Key characteristics include its unique adaptations to the Galapagos environment. (Mock AI Summary)`;
+  return `Resumen generado para ${speciesName}: Esta especie juega un papel vital en su ecosistema. Datos recientes indican una tendencia notable que requiere mayor observación. Los esfuerzos de conservación son cruciales para su supervivencia a largo plazo. Sus características clave incluyen adaptaciones únicas al entorno de Galápagos. (Resumen de IA simulado)`;
 }
 
 
 export async function getAISummary(speciesId: string): Promise<{ summary?: string; error?: string }> {
   const species = speciesList.find(s => s.id === speciesId);
   if (!species) {
-    return { error: "Species not found." };
+    return { error: "Especie no encontrada." };
   }
 
   try {
     // Prepare a simplified data string for the AI
     const dataForAI = `
-      Name: ${species.name}
-      Scientific Name: ${species.scientificName}
-      Conservation Status: ${species.conservationStatus}
-      Population Trend: ${species.populationTrend}
-      Habitat: ${species.habitat}
-      Key Threats: ${species.threats.join(', ')}
-      Description: ${species.description}
+      Nombre: ${species.name}
+      Nombre Científico: ${species.scientificName}
+      Estado de Conservación: ${species.conservationStatus}
+      Tendencia Poblacional: ${species.populationTrend}
+      Hábitat: ${species.habitat}
+      Amenazas Clave: ${species.threats.join(', ')}
+      Descripción: ${species.description}
     `;
     const summary = await generateSpeciesInsight(species.name, dataForAI);
     return { summary };
   } catch (error) {
-    console.error("Error generating AI summary:", error);
-    return { error: "Failed to generate AI summary." };
+    console.error("Error generando resumen con IA:", error);
+    return { error: "Error al generar el resumen de IA." };
   }
 }
 
@@ -50,12 +50,12 @@ export async function saveSpeciesData(formData: FormData): Promise<{ success: bo
   const speciesId = formData.get('id') as string;
   
   if (!speciesId) {
-    return { success: false, message: "Species ID is missing." };
+    return { success: false, message: "Falta el ID de la especie." };
   }
 
   const species = speciesList.find(s => s.id === speciesId);
   if (!species) {
-    return { success: false, message: "Species not found." };
+    return { success: false, message: "Especie no encontrada." };
   }
 
   try {
@@ -72,7 +72,7 @@ export async function saveSpeciesData(formData: FormData): Promise<{ success: bo
 
     // Basic validation examples
     if (updatedData.name && updatedData.name.length < 3) {
-      return { success: false, message: "Species name must be at least 3 characters long." };
+      return { success: false, message: "El nombre de la especie debe tener al menos 3 caracteres." };
     }
 
     // Update keyStats (example for one stat)
@@ -127,13 +127,12 @@ export async function saveSpeciesData(formData: FormData): Promise<{ success: bo
       revalidatePath('/'); // Revalidate home page (species list)
       revalidatePath(`/species/${speciesId}`); // Revalidate specific species page
       revalidatePath(`/dashboard/edit/${speciesId}`); // Revalidate edit page
-      return { success: true, message: `${species.name} data updated successfully.`, speciesId };
+      return { success: true, message: `Datos de ${species.name} actualizados correctamente.`, speciesId };
     } else {
-      return { success: false, message: `Failed to update ${species.name} data.` };
+      return { success: false, message: `Error al actualizar los datos de ${species.name}.` };
     }
   } catch (error) {
-    console.error("Error saving species data:", error);
-    return { success: false, message: "An unexpected error occurred while saving data." };
+    console.error("Error guardando datos de especie:", error);
+    return { success: false, message: "Ocurrió un error inesperado al guardar los datos." };
   }
 }
-

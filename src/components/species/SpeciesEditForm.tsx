@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import { Trash2, PlusCircle } from 'lucide-react'; // Assuming these icons exist
+import { Trash2, PlusCircle } from 'lucide-react'; 
 
 const initialState = {
   success: false,
@@ -24,7 +24,7 @@ function SubmitButton() {
   const { pending } = useFormStatus();
   return (
     <Button type="submit" disabled={pending} className="w-full sm:w-auto bg-primary hover:bg-primary/90">
-      {pending ? 'Saving...' : 'Save Changes'}
+      {pending ? 'Guardando...' : 'Guardar Cambios'}
     </Button>
   );
 }
@@ -33,6 +33,25 @@ type SpeciesEditFormProps = {
   species: Species;
 };
 
+const populationTrendOptions: { value: Species['populationTrend']; label: string }[] = [
+  { value: 'increasing', label: 'Creciente' },
+  { value: 'decreasing', label: 'Decreciente' },
+  { value: 'stable', label: 'Estable' },
+  { value: 'unknown', label: 'Desconocida' },
+];
+
+// Conservation status values are kept in English for data consistency,
+// but could be mapped to Spanish labels if needed, ensuring saveSpeciesData handles English values.
+const conservationStatusOptions: { value: ConservationStatus; label: string }[] = [
+    { value: 'Critically Endangered', label: 'Critically Endangered' },
+    { value: 'Endangered', label: 'Endangered' },
+    { value: 'Vulnerable', label: 'Vulnerable' },
+    { value: 'Near Threatened', label: 'Near Threatened' },
+    { value: 'Least Concern', label: 'Least Concern' },
+    { value: 'Data Deficient', label: 'Data Deficient' },
+];
+
+
 export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
   const [state, formAction] = useFormState(saveSpeciesData, initialState);
   const { toast } = useToast();
@@ -40,69 +59,67 @@ export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
   useEffect(() => {
     if (state.message) {
       toast({
-        title: state.success ? 'Success!' : 'Error',
+        title: state.success ? '¡Éxito!' : 'Error',
         description: state.message,
         variant: state.success ? 'default' : 'destructive',
       });
     }
   }, [state, toast]);
 
-  // For simplicity, this form handles only a subset of fields and simple structures.
-  // A real app would need more robust handling for arrays of objects (keyStats, historicalData).
   return (
     <Card className="shadow-xl">
       <CardHeader>
-        <CardTitle className="text-3xl font-headline text-primary">Edit: {species.name}</CardTitle>
-        <CardDescription>Modify the details for this species. Ensure all information is accurate.</CardDescription>
+        <CardTitle className="text-3xl font-headline text-primary">Editar: {species.name}</CardTitle>
+        <CardDescription>Modifica los detalles de esta especie. Asegúrate de que toda la información sea precisa.</CardDescription>
       </CardHeader>
       <CardContent>
         <form action={formAction} className="space-y-6">
           <input type="hidden" name="id" defaultValue={species.id} />
 
           <div>
-            <Label htmlFor="name" className="font-semibold">Species Name</Label>
+            <Label htmlFor="name" className="font-semibold">Nombre de la Especie</Label>
             <Input id="name" name="name" defaultValue={species.name} className="mt-1" />
           </div>
 
           <div>
-            <Label htmlFor="scientificName" className="font-semibold">Scientific Name</Label>
+            <Label htmlFor="scientificName" className="font-semibold">Nombre Científico</Label>
             <Input id="scientificName" name="scientificName" defaultValue={species.scientificName} className="mt-1" />
           </div>
 
           <div>
-            <Label htmlFor="description" className="font-semibold">Short Description</Label>
+            <Label htmlFor="description" className="font-semibold">Descripción Corta</Label>
             <Textarea id="description" name="description" defaultValue={species.description} rows={3} className="mt-1" />
           </div>
 
           <div>
-            <Label htmlFor="longDescription" className="font-semibold">Long Description</Label>
+            <Label htmlFor="longDescription" className="font-semibold">Descripción Larga</Label>
             <Textarea id="longDescription" name="longDescription" defaultValue={species.longDescription} rows={6} className="mt-1" />
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <Label htmlFor="conservationStatus" className="font-semibold">Conservation Status</Label>
+              <Label htmlFor="conservationStatus" className="font-semibold">Estado de Conservación</Label>
               <Select name="conservationStatus" defaultValue={species.conservationStatus}>
                 <SelectTrigger id="conservationStatus" className="mt-1">
-                  <SelectValue placeholder="Select status" />
+                  <SelectValue placeholder="Seleccionar estado" />
                 </SelectTrigger>
                 <SelectContent>
-                  {(['Critically Endangered', 'Endangered', 'Vulnerable', 'Near Threatened', 'Least Concern', 'Data Deficient'] as ConservationStatus[]).map(status => (
-                    <SelectItem key={status} value={status}>{status}</SelectItem>
+                  {conservationStatusOptions.map(status => (
+                    <SelectItem key={status.value} value={status.value}>{status.label}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
 
             <div>
-              <Label htmlFor="populationTrend" className="font-semibold">Population Trend</Label>
+              <Label htmlFor="populationTrend" className="font-semibold">Tendencia Poblacional</Label>
               <Select name="populationTrend" defaultValue={species.populationTrend}>
                 <SelectTrigger id="populationTrend" className="mt-1">
-                  <SelectValue placeholder="Select trend" />
+                  <SelectValue placeholder="Seleccionar tendencia" />
                 </SelectTrigger>
                 <SelectContent>
-                  {(['increasing', 'decreasing', 'stable', 'unknown'] as Species['populationTrend'][]).map(trend => (
-                    <SelectItem key={trend} value={trend} className="capitalize">{trend}</SelectItem>
+                  {populationTrendOptions.map(opt => (
+                    <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -110,42 +127,40 @@ export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
           </div>
 
           <div>
-            <Label htmlFor="habitat" className="font-semibold">Habitat</Label>
+            <Label htmlFor="habitat" className="font-semibold">Hábitat</Label>
             <Input id="habitat" name="habitat" defaultValue={species.habitat} className="mt-1" />
           </div>
 
           <div>
-            <Label htmlFor="threats" className="font-semibold">Threats (comma-separated)</Label>
+            <Label htmlFor="threats" className="font-semibold">Amenazas (separadas por coma)</Label>
             <Input id="threats" name="threats" defaultValue={species.threats.join(', ')} className="mt-1" />
           </div>
 
-          {/* Simplified Key Stats - only first one editable for demo */}
           {species.keyStats.length > 0 && (
             <Card className="bg-muted/50 p-4">
-              <h4 className="font-semibold text-lg mb-2">Key Statistics (First Item)</h4>
+              <h4 className="font-semibold text-lg mb-2">Estadísticas Clave (Primer Elemento)</h4>
               <input type="hidden" name="keyStat0_label" defaultValue={species.keyStats[0].label} />
               <Label htmlFor="keyStat0_value">{species.keyStats[0].label}</Label>
               <Input id="keyStat0_value" name="keyStat0_value" defaultValue={String(species.keyStats[0].value)} className="mt-1 mb-1" />
-              <Label htmlFor="keyStat0_unit">Unit (optional)</Label>
+              <Label htmlFor="keyStat0_unit">Unidad (opcional)</Label>
               <Input id="keyStat0_unit" name="keyStat0_unit" defaultValue={species.keyStats[0].unit || ''} className="mt-1" />
             </Card>
           )}
 
-           {/* Simplified Historical Data - only first one editable for demo */}
-          {species.historicalData.length > 0 && (
+           {species.historicalData.length > 0 && (
             <Card className="bg-muted/50 p-4">
-              <h4 className="font-semibold text-lg mb-2">Historical Data (First Point)</h4>
+              <h4 className="font-semibold text-lg mb-2">Datos Históricos (Primer Punto)</h4>
                <div className="grid grid-cols-3 gap-2">
                 <div>
-                    <Label htmlFor="historicalData0_year">Year</Label>
+                    <Label htmlFor="historicalData0_year">Año</Label>
                     <Input id="historicalData0_year" name="historicalData0_year" type="number" defaultValue={String(species.historicalData[0].year)} className="mt-1"/>
                 </div>
                 <div>
-                    <Label htmlFor="historicalData0_value">Value</Label>
+                    <Label htmlFor="historicalData0_value">Valor</Label>
                     <Input id="historicalData0_value" name="historicalData0_value" type="number" step="any" defaultValue={String(species.historicalData[0].value)} className="mt-1"/>
                 </div>
                 <div>
-                    <Label htmlFor="historicalData0_unit">Unit</Label>
+                    <Label htmlFor="historicalData0_unit">Unidad</Label>
                     <Input id="historicalData0_unit" name="historicalData0_unit" defaultValue={species.historicalData[0].unit} className="mt-1"/>
                 </div>
                </div>

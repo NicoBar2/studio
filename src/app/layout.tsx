@@ -7,7 +7,7 @@ import { ThemeProvider } from "next-themes";
 
 export const metadata: Metadata = {
   title: 'Galapagos DataLens',
-  description: 'Visualize and edit statistical data of Galapagos species.',
+  description: 'Visualiza y edita datos estadísticos de las especies de Galápagos.',
   icons: {
     icon: '/favicon.ico', // Assuming a favicon might be added later
   },
@@ -19,7 +19,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="es" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />

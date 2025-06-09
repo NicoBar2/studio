@@ -28,7 +28,14 @@ const iconMap: Record<string, LucideIcon> = {
   ShieldQuestion,
   Waves,
   Bug,
-  Default: HelpCircle, // Fallback icon
+  Default: HelpCircle,
+};
+
+const populationTrendTranslations: Record<Species['populationTrend'], string> = {
+  increasing: 'Creciente',
+  decreasing: 'Decreciente',
+  stable: 'Estable',
+  unknown: 'Desconocida',
 };
 
 export default function SpeciesDetailClient({ species }: SpeciesDetailClientProps) {
@@ -47,10 +54,12 @@ export default function SpeciesDetailClient({ species }: SpeciesDetailClientProp
       if (result.summary) {
         setSummary(result.summary);
       } else {
-        setError(result.error || "An unknown error occurred.");
+        setError(result.error || "Ocurrió un error desconocido.");
       }
     });
   };
+
+  const displayPopulationTrend = populationTrendTranslations[species.populationTrend] || species.populationTrend;
 
   return (
     <div className="space-y-8">
@@ -76,7 +85,7 @@ export default function SpeciesDetailClient({ species }: SpeciesDetailClientProp
            {(role === 'admin' || role === 'researcher') && (
             <Button asChild size="sm" className="absolute top-4 right-4 bg-accent text-accent-foreground hover:bg-accent/90">
               <Link href={`/dashboard/edit/${species.id}`}>
-                <Edit className="mr-2 h-4 w-4" /> Edit Data
+                <Edit className="mr-2 h-4 w-4" /> Editar Datos
               </Link>
             </Button>
           )}
@@ -84,7 +93,7 @@ export default function SpeciesDetailClient({ species }: SpeciesDetailClientProp
         <CardContent className="p-6 md:p-8 space-y-6">
           <section>
             <h2 className="text-2xl font-headline font-semibold text-primary mb-3 flex items-center">
-              <Tag className="mr-2 h-6 w-6" /> General Information
+              <Tag className="mr-2 h-6 w-6" /> Información General
             </h2>
             <p className="text-foreground leading-relaxed">{species.longDescription}</p>
           </section>
@@ -92,16 +101,16 @@ export default function SpeciesDetailClient({ species }: SpeciesDetailClientProp
           <div className="grid md:grid-cols-2 gap-6">
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center text-xl text-primary"><ShieldAlert className="mr-2 h-5 w-5" /> Conservation & Population</CardTitle>
+                <CardTitle className="flex items-center text-xl text-primary"><ShieldAlert className="mr-2 h-5 w-5" /> Conservación y Población</CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
-                <p><strong>Status:</strong> <Badge variant={species.conservationStatus.includes('Endangered') || species.conservationStatus.includes('Critically') ? 'destructive' : 'secondary'}>{species.conservationStatus}</Badge></p>
-                <p><strong>Population Trend:</strong> <span className={`capitalize font-medium ${species.populationTrend === 'decreasing' ? 'text-destructive' : species.populationTrend === 'increasing' ? 'text-green-600' : 'text-foreground'}`}>{species.populationTrend}</span></p>
+                <p><strong>Estado:</strong> <Badge variant={species.conservationStatus.includes('Endangered') || species.conservationStatus.includes('Critically') ? 'destructive' : 'secondary'}>{species.conservationStatus}</Badge></p>
+                <p><strong>Tendencia Poblacional:</strong> <span className={`font-medium ${species.populationTrend === 'decreasing' ? 'text-destructive' : species.populationTrend === 'increasing' ? 'text-green-600' : 'text-foreground'}`}>{displayPopulationTrend}</span></p>
               </CardContent>
             </Card>
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center text-xl text-primary"><Home className="mr-2 h-5 w-5" /> Habitat</CardTitle>
+                <CardTitle className="flex items-center text-xl text-primary"><Home className="mr-2 h-5 w-5" /> Hábitat</CardTitle>
               </CardHeader>
               <CardContent>
                 <p>{species.habitat}</p>
@@ -111,7 +120,7 @@ export default function SpeciesDetailClient({ species }: SpeciesDetailClientProp
           
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center text-xl text-primary"><ListChecks className="mr-2 h-5 w-5" /> Key Statistics</CardTitle>
+              <CardTitle className="flex items-center text-xl text-primary"><ListChecks className="mr-2 h-5 w-5" /> Estadísticas Clave</CardTitle>
             </CardHeader>
             <CardContent>
               <ul className="list-disc list-inside space-y-1">
@@ -124,7 +133,7 @@ export default function SpeciesDetailClient({ species }: SpeciesDetailClientProp
 
           <Card>
             <CardHeader>
-                <CardTitle className="flex items-center text-xl text-primary"><AlertCircle className="mr-2 h-5 w-5" /> Major Threats</CardTitle>
+                <CardTitle className="flex items-center text-xl text-primary"><AlertCircle className="mr-2 h-5 w-5" /> Amenazas Principales</CardTitle>
             </CardHeader>
             <CardContent>
               <ul className="list-disc list-inside space-y-1">
@@ -138,15 +147,15 @@ export default function SpeciesDetailClient({ species }: SpeciesDetailClientProp
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center text-xl text-primary">
-                <Brain className="mr-2 h-5 w-5" /> AI Generated Summary
+                <Brain className="mr-2 h-5 w-5" /> Resumen Generado por IA
               </CardTitle>
               <CardDescription>
-                Get a quick summary of this species' current status and importance.
+                Obtén un resumen rápido del estado actual e importancia de esta especie.
               </CardDescription>
             </CardHeader>
             <CardContent>
               <Button onClick={handleGenerateSummary} disabled={isPending} className="bg-primary hover:bg-primary/90">
-                {isPending ? 'Generating...' : 'Generate AI Summary'}
+                {isPending ? 'Generando...' : 'Generar Resumen con IA'}
               </Button>
               {isPending && (
                 <div className="mt-4 space-y-2">
@@ -163,13 +172,13 @@ export default function SpeciesDetailClient({ species }: SpeciesDetailClientProp
           {(role === 'researcher' || role === 'admin') && (
              <Card>
                 <CardHeader>
-                    <CardTitle className="flex items-center text-xl text-primary"><BarChart2 className="mr-2 h-5 w-5" /> Historical Data Visualization</CardTitle>
+                    <CardTitle className="flex items-center text-xl text-primary"><BarChart2 className="mr-2 h-5 w-5" /> Visualización de Datos Históricos</CardTitle>
                 </CardHeader>
                 <CardContent>
                     {species.historicalData && species.historicalData.length > 0 ? (
                         <SpeciesDataChart data={species.historicalData} dataKey="value" nameKey="year" unit={species.historicalData[0].unit} />
                     ) : (
-                        <p className="text-muted-foreground">No historical data available for visualization.</p>
+                        <p className="text-muted-foreground">No hay datos históricos disponibles para visualización.</p>
                     )}
                 </CardContent>
             </Card>

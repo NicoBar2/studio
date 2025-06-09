@@ -53,7 +53,7 @@ export default function SpeciesCard({ species }: SpeciesCardProps) {
         <div className="mt-auto">
           <Button asChild variant="default" className="w-full group">
             <Link href={`/species/${species.id}`} className="flex items-center justify-center">
-              Learn More
+              Saber Más
               <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
             </Link>
           </Button>

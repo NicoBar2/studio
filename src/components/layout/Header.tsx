@@ -22,7 +22,7 @@ export default function Header() {
             className="text-sm font-medium hover:text-primary transition-colors"
             prefetch={false}
           >
-            Species
+            Especies
           </Link>
           {(role === 'admin' || role === 'researcher') && (
             <Link
@@ -30,7 +30,7 @@ export default function Header() {
               className="text-sm font-medium hover:text-primary transition-colors"
               prefetch={false}
             >
-              Dashboard
+              Panel
             </Link>
           )}
           <LoginSimulator />
