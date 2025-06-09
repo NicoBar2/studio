@@ -1,4 +1,3 @@
-
 "use client"; 
 
 import { useState, useMemo } from 'react';
@@ -7,7 +6,9 @@ import SpeciesCard from '@/components/species/SpeciesCard';
 import GalapagosMap from '@/components/map/GalapagosMap';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { MapPinIcon, ListIcon, InfoIcon } from 'lucide-react'; // Using more descriptive icons
+import { MapPinIcon, ListIcon, InfoIcon } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+
 
 export default function HomePage() {
   const [selectedIsland, setSelectedIsland] = useState<string | null>(null);
@@ -23,7 +24,6 @@ export default function HomePage() {
   const displayedSpecies = useMemo(() => {
     if (!selectedIsland) {
       // If no island is selected, show all species by default.
-      // Or, you could return an empty array if you prefer to only show species *after* an island is clicked.
       return speciesList; 
     }
     return speciesList.filter(species => 
@@ -102,10 +102,3 @@ export default function HomePage() {
     </div>
   );
 }
-// Temporary Badge component placeholder if not already globally available or imported from ui/badge
-// In a real scenario, ensure Badge is correctly imported from '@/components/ui/badge'
-const Badge = ({ children, className, variant }: { children: React.ReactNode, className?: string, variant?: string }) => (
-  <span className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 ${className}`}>
-    {children}
-  </span>
-);
