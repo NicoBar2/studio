@@ -48,9 +48,11 @@ const GalapagosMap: React.FC<GalapagosMapProps> = ({ onIslandClick, selectedIsla
               title={`Isla ${island.name}`}
               onClick={() => onIslandClick(island.name)}
               className={cn(
-                "absolute border rounded-sm focus:outline-none transition-colors duration-150",
-                "focus:ring-2 focus:ring-primary focus:ring-offset-1",
-                isSelected ? "border-primary bg-primary/30" : "border-transparent hover:bg-primary/20 hover:border-primary/70",
+                "absolute rounded-md focus:outline-none transition-all duration-200 ease-in-out transform hover:scale-105",
+                "focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background",
+                isSelected 
+                  ? "bg-primary/60 border-2 border-primary shadow-lg" 
+                  : "bg-black/20 border border-gray-400/50 hover:bg-primary/40 hover:border-primary",
               )}
               style={{
                 left: `${island.hotspot.x}%`,
@@ -64,8 +66,8 @@ const GalapagosMap: React.FC<GalapagosMapProps> = ({ onIslandClick, selectedIsla
             {/* Etiqueta */}
             <span
               className={cn(
-                "absolute pointer-events-none text-xs md:text-sm font-medium p-0.5 rounded",
-                isSelected ? "text-primary-foreground bg-primary font-bold shadow" : "text-foreground bg-background/60",
+                "absolute pointer-events-none text-xs md:text-sm font-medium p-1 rounded shadow-md",
+                isSelected ? "text-primary-foreground bg-primary font-bold" : "text-foreground bg-background/80",
               )}
               style={{
                 left: `${island.labelPos.x}%`,
