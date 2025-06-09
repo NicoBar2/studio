@@ -1,14 +1,18 @@
 
+"use client"; 
 import RoleBasedGuard from '@/components/auth/RoleBasedGuard';
 import { Sidebar, SidebarProvider, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarHeader, SidebarInset } from '@/components/ui/sidebar';
-import { LayoutDashboard, Edit3, BarChart3, HomeIcon } from 'lucide-react';
+import { LayoutDashboard, Users, HomeIcon } from 'lucide-react';
 import Link from 'next/link';
+import { useAuth } from '@/contexts/AuthContext'; // Import useAuth
 
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const { role } = useAuth(); // Get current role
+
   return (
     <RoleBasedGuard allowedRoles={['admin', 'researcher']}>
       <SidebarProvider defaultOpen>
@@ -29,8 +33,18 @@ export default function DashboardLayout({
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
-              {/* Dynamic links for editing/visualizing specific species would typically go here,
-                  or be part of sub-navigation on specific pages. For now, general links. */}
+              
+              {role === 'admin' && (
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild variant="ghost" className="justify-start w-full">
+                    <Link href="/dashboard/admin/researchers">
+                      <Users />
+                      <span className="group-data-[state=collapsed]:hidden">Gestionar Investigadores</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              )}
+
               <SidebarMenuItem>
                  <SidebarMenuButton asChild variant="ghost" className="justify-start w-full">
                   <Link href="/">

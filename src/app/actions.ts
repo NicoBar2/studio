@@ -3,6 +3,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { speciesList, updateSpeciesData as mockUpdateSpeciesData, type Species, type HistoricalDataPoint, type SpeciesStat } from '@/lib/species';
+import { addResearcher as addResearcherToStore, getAllResearchers as getAllResearchersFromStore, type Researcher } from '@/lib/researchers';
 // Assuming a Genkit flow for insights exists at this path
 // import { generateSpeciesInsight } from '@/ai/flows/generateInsights'; 
 
@@ -134,5 +135,39 @@ export async function saveSpeciesData(formData: FormData): Promise<{ success: bo
   } catch (error) {
     console.error("Error guardando datos de especie:", error);
     return { success: false, message: "Ocurrió un error inesperado al guardar los datos." };
+  }
+}
+
+
+export async function createResearcherAction(
+  prevState: { success: boolean; message: string; researcher?: Researcher },
+  formData: FormData
+): Promise<{ success: boolean; message: string; researcher?: Researcher }> {
+  const researcherName = formData.get('researcherName') as string;
+
+  if (!researcherName || researcherName.trim().length < 3) {
+    return { success: false, message: "El nombre del investigador debe tener al menos 3 caracteres." };
+  }
+
+  try {
+    // For now, we assume an admin role is calling this.
+    // In a real app, you'd verify the caller's role here.
+    const newResearcher = await addResearcherToStore(researcherName);
+    revalidatePath('/dashboard/admin/researchers'); // Revalidate the page to show the new researcher
+    return { success: true, message: `Investigador "${newResearcher.name}" creado correctamente.`, researcher: newResearcher };
+  } catch (error) {
+    console.error("Error creando investigador:", error);
+    const errorMessage = error instanceof Error ? error.message : "Error desconocido al crear investigador.";
+    return { success: false, message: errorMessage };
+  }
+}
+
+export async function getResearchersAction(): Promise<Researcher[]> {
+  try {
+    const researchers = await getAllResearchersFromStore();
+    return researchers;
+  } catch (error) {
+    console.error("Error obteniendo investigadores:", error);
+    return []; // Return empty array on error
   }
 }
