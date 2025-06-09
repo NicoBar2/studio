@@ -70,7 +70,7 @@ export default function SpeciesDetailClient({ species }: SpeciesDetailClientProp
       const canvas = await html2canvas(pdfContentRef.current, {
         scale: 2, // Aumentar la escala para mejor calidad
         useCORS: true, // Para imágenes de dominios externos si las hubiera
-        backgroundColor: null, // Para capturar el fondo del elemento
+        backgroundColor: '#ffffff', // Explicitly set background to white
       });
       
       const imgData = canvas.toDataURL('image/png');
