@@ -61,7 +61,7 @@ export default function VisualizeSpeciesPage({ params }: VisualizeSpeciesPagePro
         <Card className="shadow-lg">
           <CardHeader>
             <CardTitle className="text-3xl font-headline text-primary">Visualización de Datos: {species.name}</CardTitle>
-            <CardDescription>Gráficos interactivos que muestran datos históricos para {species.scientificName}.</CardDescription>
+            <CardDescription>Gráficos de barras interactivos que muestran datos históricos para {species.scientificName}.</CardDescription>
           </CardHeader>
           <CardContent>
             {species.historicalData && species.historicalData.length > 0 ? (
@@ -70,7 +70,7 @@ export default function VisualizeSpeciesPage({ params }: VisualizeSpeciesPagePro
                 dataKey="value" 
                 nameKey="year"
                 unit={species.historicalData[0]?.unit || 'conteo'} // Use unit from first data point or default
-                chartType="line" 
+                chartType="bar" // Cambiado a 'bar'
               />
             ) : (
               <div className="flex flex-col items-center justify-center p-8 border border-dashed rounded-lg">
@@ -92,3 +92,4 @@ export default function VisualizeSpeciesPage({ params }: VisualizeSpeciesPagePro
 // If static generation is needed, consider structuring with server component fetching data
 // and passing to a client component for rendering charts.
 // For this setup, we'll rely on client-side fetching via getSpeciesById.
+

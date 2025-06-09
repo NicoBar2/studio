@@ -201,12 +201,18 @@ export default function SpeciesDetailClient({ species }: SpeciesDetailClientProp
                   <CardHeader>
                       <CardTitle className="flex items-center text-xl text-primary"><BarChart2 className="mr-2 h-5 w-5" /> Visualización de Datos Históricos</CardTitle>
                        <CardDescription>
-                         Gráficos que muestran datos históricos de la población u otras métricas relevantes.
+                         Gráficos de barras que muestran datos históricos de la población u otras métricas relevantes.
                        </CardDescription>
                   </CardHeader>
                   <CardContent>
                       {species.historicalData && species.historicalData.length > 0 ? (
-                          <SpeciesDataChart data={species.historicalData} dataKey="value" nameKey="year" unit={species.historicalData[0].unit || 'conteo'} />
+                          <SpeciesDataChart 
+                            data={species.historicalData} 
+                            dataKey="value" 
+                            nameKey="year" 
+                            unit={species.historicalData[0].unit || 'conteo'} 
+                            chartType="bar" // Cambiado a 'bar'
+                          />
                       ) : (
                           <p className="text-muted-foreground">No hay datos históricos disponibles para visualización.</p>
                       )}
@@ -226,3 +232,4 @@ export default function SpeciesDetailClient({ species }: SpeciesDetailClientProp
     </div>
   );
 }
+

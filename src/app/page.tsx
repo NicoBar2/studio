@@ -1,3 +1,4 @@
+
 "use client"; 
 
 import { useState, useMemo } from 'react';
@@ -6,12 +7,14 @@ import SpeciesCard from '@/components/species/SpeciesCard';
 import GalapagosMap from '@/components/map/GalapagosMap';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { MapPinIcon, ListIcon, InfoIcon } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { MapPinIcon, ListIcon, InfoIcon, SearchIcon } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
 
 export default function HomePage() {
   const [selectedIsland, setSelectedIsland] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState<string>('');
 
   const handleIslandClick = (islandName: string) => {
     setSelectedIsland(islandName);
@@ -22,14 +25,22 @@ export default function HomePage() {
   };
 
   const displayedSpecies = useMemo(() => {
-    if (!selectedIsland) {
-      // If no island is selected, show all species by default.
-      return speciesList; 
+    let filteredSpecies = speciesList;
+
+    if (selectedIsland) {
+      filteredSpecies = filteredSpecies.filter(species => 
+        species.islands && species.islands.includes(selectedIsland)
+      );
     }
-    return speciesList.filter(species => 
-      species.islands && species.islands.includes(selectedIsland)
-    );
-  }, [selectedIsland]);
+
+    if (searchTerm) {
+      filteredSpecies = filteredSpecies.filter(species =>
+        species.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        species.scientificName.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+    return filteredSpecies;
+  }, [selectedIsland, searchTerm]);
 
   return (
     <div className="space-y-8">
@@ -60,7 +71,7 @@ export default function HomePage() {
       </Card>
 
       <section className="mt-8">
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex flex-col sm:flex-row items-center justify-between mb-6 gap-4">
             <h2 className="text-2xl font-headline font-semibold text-primary flex items-center">
                 {selectedIsland ? (
                     <>
@@ -72,12 +83,29 @@ export default function HomePage() {
                     </>
                 )}
             </h2>
-            {selectedIsland && displayedSpecies.length > 0 && (
-                 <Badge variant="secondary" className="text-sm">
-                    {displayedSpecies.length} {displayedSpecies.length === 1 ? 'especie encontrada' : 'especies encontradas'}
+            <div className="relative w-full sm:w-auto sm:max-w-xs">
+                <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                <Input 
+                    type="search"
+                    placeholder="Buscar especie por nombre..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10 bg-input"
+                />
+            </div>
+        </div>
+         {selectedIsland && displayedSpecies.length > 0 && (
+                 <Badge variant="secondary" className="text-sm mb-4 inline-block">
+                    {displayedSpecies.length} {displayedSpecies.length === 1 ? 'especie encontrada' : 'especies encontradas'} en {selectedIsland}
+                    {searchTerm && ` para "${searchTerm}"`}
                  </Badge>
             )}
-        </div>
+        {!selectedIsland && searchTerm && displayedSpecies.length > 0 && (
+            <Badge variant="secondary" className="text-sm mb-4 inline-block">
+                {displayedSpecies.length} {displayedSpecies.length === 1 ? 'especie encontrada' : 'especies encontradas'} para "{searchTerm}"
+            </Badge>
+        )}
+
 
         {displayedSpecies.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -90,10 +118,15 @@ export default function HomePage() {
             <CardContent className="flex flex-col items-center">
               <InfoIcon className="h-12 w-12 text-muted-foreground mb-4" />
               <p className="text-lg font-medium text-foreground">
-                {selectedIsland ? `No se encontraron especies destacadas en ${selectedIsland} en nuestra base de datos actual.` : 'No hay datos de especies disponibles para mostrar.'}
+                {searchTerm 
+                    ? `No se encontraron especies que coincidan con "${searchTerm}"` 
+                    : selectedIsland 
+                        ? `No se encontraron especies destacadas en ${selectedIsland} en nuestra base de datos actual.` 
+                        : 'No hay datos de especies disponibles para mostrar.'
+                }
               </p>
               <p className="text-muted-foreground mt-1">
-                {selectedIsland ? 'Intenta seleccionar otra isla o limpia la selección para ver todas las especies.' : 'Por favor, revisa más tarde.'}
+                {selectedIsland && !searchTerm ? 'Intenta seleccionar otra isla o limpia la selección para ver todas las especies.' : 'Intenta con otro término de búsqueda o revisa más tarde.'}
               </p>
             </CardContent>
           </Card>
@@ -102,3 +135,4 @@ export default function HomePage() {
     </div>
   );
 }
+
