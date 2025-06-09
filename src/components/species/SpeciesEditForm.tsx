@@ -2,7 +2,8 @@
 "use client";
 
 import type { Species, ConservationStatus, SpeciesStat, HistoricalDataPoint } from '@/lib/species';
-import { useFormState, useFormStatus } from 'react-dom';
+import { useActionState } from 'react'; // Changed from react-dom
+import { useFormStatus } from 'react-dom'; // useFormStatus remains from react-dom
 import { saveSpeciesData } from '@/app/actions';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -51,7 +52,7 @@ const conservationStatusOptions: { value: ConservationStatus; label: string }[] 
 
 
 export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
-  const [state, formAction] = useFormState(saveSpeciesData, initialState);
+  const [state, formAction] = useActionState(saveSpeciesData, initialState); // Changed to useActionState
   const { toast } = useToast();
 
   useEffect(() => {
