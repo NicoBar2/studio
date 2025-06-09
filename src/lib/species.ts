@@ -5,12 +5,12 @@ import type { LucideIcon } from 'lucide-react';
 export type UserRole = 'admin' | 'researcher' | 'tourist';
 
 export type ConservationStatus = 
-  | 'Critically Endangered' 
-  | 'Endangered' 
+  | 'En Peligro Crítico' 
+  | 'En Peligro' 
   | 'Vulnerable' 
-  | 'Near Threatened' 
-  | 'Least Concern'
-  | 'Data Deficient';
+  | 'Casi Amenazada' 
+  | 'Preocupación Menor'
+  | 'Datos Insuficientes';
 
 export type SpeciesStat = { 
   label: string; 
@@ -42,7 +42,7 @@ export type Species = {
   islands: string[];
 };
 
-export const speciesList: Species[] = [
+export let speciesList: Species[] = [
   {
     id: 'giant-tortoise',
     name: 'Tortuga Gigante de Galápagos',
@@ -107,7 +107,7 @@ export const speciesList: Species[] = [
     dataAiHint: 'finch bird Galapagos',
     icon: 'Bird', // Storing name
     populationTrend: 'stable',
-    conservationStatus: 'Least Concern',
+    conservationStatus: 'Preocupación Menor',
     habitat: 'Diversos hábitats en todas las islas, desde tierras bajas áridas hasta tierras altas húmedas.',
     threats: ['Mosca parásita introducida (Philornis downsi)', 'Degradación del hábitat', 'Competencia con especies de aves introducidas', 'Enfermedades aviares'],
     keyStats: [
@@ -134,7 +134,7 @@ export const speciesList: Species[] = [
     dataAiHint: 'blue footed booby Galapagos',
     icon: 'Footprints', // Storing name
     populationTrend: 'decreasing',
-    conservationStatus: 'Least Concern', // Estado de conservación (Least Concern no necesita traducción común)
+    conservationStatus: 'Preocupación Menor',
     habitat: 'Costas tropicales y subtropicales del Pacífico; anida en costas rocosas y acantilados.',
     threats: ['Disminución de las poblaciones de sardinas (fuente clave de alimento)', 'Perturbaciones en los sitios de anidación', 'Cambio climático que afecta las poblaciones de peces'],
     keyStats: [
@@ -161,7 +161,7 @@ export const speciesList: Species[] = [
     dataAiHint: 'Galapagos penguin',
     icon: 'Bird', 
     populationTrend: 'stable',
-    conservationStatus: 'Endangered',
+    conservationStatus: 'En Peligro',
     habitat: 'Zonas costeras, particularmente en las islas Fernandina e Isabela.',
     threats: ['Eventos de El Niño (reduciendo el suministro de alimentos)', 'Depredación por especies introducidas', 'Captura incidental en pesquerías', 'Cambio climático que calienta las temperaturas del mar'],
     keyStats: [
@@ -215,7 +215,7 @@ export const speciesList: Species[] = [
     dataAiHint: 'waved albatross Galapagos',
     icon: 'Bird',
     populationTrend: 'decreasing',
-    conservationStatus: 'Critically Endangered',
+    conservationStatus: 'En Peligro Crítico',
     habitat: 'Se reproduce en la Isla Española; se alimenta en el Océano Pacífico oriental.',
     threats: ['Captura incidental en pesca con palangre', 'Ingestión de plástico', 'Rango de reproducción limitado', 'Depredadores introducidos en zonas de cría (históricamente)'],
     keyStats: [
@@ -242,7 +242,7 @@ export const speciesList: Species[] = [
     dataAiHint: 'Galapagos sea lion',
     icon: 'Waves', 
     populationTrend: 'decreasing',
-    conservationStatus: 'Endangered',
+    conservationStatus: 'En Peligro',
     habitat: 'Playas arenosas y costas rocosas en todo el archipiélago.',
     threats: ['Eventos de El Niño (reduciendo alimentos, aumentando mortalidad de crías)', 'Brotes de enfermedades', 'Enredo en aparejos de pesca', 'Perturbación humana'],
     keyStats: [
@@ -269,7 +269,7 @@ export const speciesList: Species[] = [
     dataAiHint: 'Galapagos fur seal',
     icon: 'Waves', 
     populationTrend: 'stable',
-    conservationStatus: 'Endangered',
+    conservationStatus: 'En Peligro',
     habitat: 'Costas rocosas sombreadas con cantos rodados y cuevas.',
     threats: ['Caza pasada por su pelaje', 'Eventos de El Niño', 'Sensibilidad a los cambios de temperatura del mar', 'Enredos'],
     keyStats: [
@@ -296,7 +296,7 @@ export const speciesList: Species[] = [
     dataAiHint: 'lava lizard Galapagos',
     icon: 'Bug', 
     populationTrend: 'stable',
-    conservationStatus: 'Least Concern',
+    conservationStatus: 'Preocupación Menor',
     habitat: 'Zonas áridas y costeras, campos de lava y matorrales secos.',
     threats: ['Depredadores introducidos (gatos, ratas)', 'Alteración del hábitat en algunas áreas'],
     keyStats: [
@@ -330,7 +330,30 @@ export const updateSpeciesData = (id: string, updatedData: Partial<Species>): bo
   const speciesIndex = speciesList.findIndex(s => s.id === id);
   if (speciesIndex === -1) return false;
   
-  speciesList[speciesIndex] = { ...speciesList[speciesIndex], ...updatedData };
+  const currentSpecies = speciesList[speciesIndex];
+  
+  // Ensure keyStats and historicalData are handled correctly if not present in updatedData
+  // or if they are meant to be completely replaced.
+  // For this specific update, we assume partial updates merge deeply for these arrays if provided.
+  // However, the current saveSpeciesData in actions.ts has a simpler logic for these.
+  // For consistency with how `actions.ts` handles them (replacing specific indices or adding),
+  // it might be better if `actions.ts` passed the complete, modified arrays.
+  // But for now, this mock update will merge at the top level.
+  
+  speciesList[speciesIndex] = { 
+    ...currentSpecies, 
+    ...updatedData,
+    // If updatedData.keyStats or updatedData.historicalData is provided, it will overwrite.
+    // If they are not, currentSpecies versions will be kept.
+    // This matches the behavior of the spread operator.
+  };
   return true;
 };
 
+// Function to modify the species list directly (e.g., for testing or global updates if necessary)
+// Use with caution as it directly mutates the exported list.
+export function setSpeciesList(newSpeciesList: Species[]) {
+  speciesList = newSpeciesList;
+}
+
+    

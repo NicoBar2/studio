@@ -40,15 +40,13 @@ const populationTrendOptions: { value: Species['populationTrend']; label: string
   { value: 'unknown', label: 'Desconocida' },
 ];
 
-// Conservation status values are kept in English for data consistency,
-// but could be mapped to Spanish labels if needed, ensuring saveSpeciesData handles English values.
 const conservationStatusOptions: { value: ConservationStatus; label: string }[] = [
-    { value: 'Critically Endangered', label: 'Critically Endangered' },
-    { value: 'Endangered', label: 'Endangered' },
+    { value: 'En Peligro Crítico', label: 'En Peligro Crítico' },
+    { value: 'En Peligro', label: 'En Peligro' },
     { value: 'Vulnerable', label: 'Vulnerable' },
-    { value: 'Near Threatened', label: 'Near Threatened' },
-    { value: 'Least Concern', label: 'Least Concern' },
-    { value: 'Data Deficient', label: 'Data Deficient' },
+    { value: 'Casi Amenazada', label: 'Casi Amenazada' },
+    { value: 'Preocupación Menor', label: 'Preocupación Menor' },
+    { value: 'Datos Insuficientes', label: 'Datos Insuficientes' },
 ];
 
 
@@ -176,3 +174,5 @@ export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
     </Card>
   );
 }
+
+    

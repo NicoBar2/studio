@@ -38,18 +38,6 @@ const populationTrendTranslations: Record<Species['populationTrend'], string> = 
   unknown: 'Desconocida',
 };
 
-// Mapeo para estados de conservación a español, si es necesario un texto diferente al valor de datos.
-// Por ahora, muchos estados de conservación son comprensibles o se usan internacionalmente (ej. Vulnerable)
-// Si se requiere traducción explícita, se puede añadir aquí. Ejemplo:
-// const conservationStatusTranslations: Record<ConservationStatus, string> = {
-//   'Critically Endangered': 'En Peligro Crítico',
-//   'Endangered': 'En Peligro',
-//   'Vulnerable': 'Vulnerable',
-//   'Near Threatened': 'Casi Amenazada',
-//   'Least Concern': 'Preocupación Menor',
-//   'Data Deficient': 'Datos Insuficientes',
-// };
-
 export default function SpeciesDetailClient({ species }: SpeciesDetailClientProps) {
   const { role } = useAuth();
   const [summary, setSummary] = useState<string | null>(null);
@@ -72,7 +60,6 @@ export default function SpeciesDetailClient({ species }: SpeciesDetailClientProp
   };
 
   const displayPopulationTrend = populationTrendTranslations[species.populationTrend] || species.populationTrend;
-  // const displayConservationStatus = conservationStatusTranslations[species.conservationStatus] || species.conservationStatus;
 
   return (
     <div className="space-y-8">
@@ -117,7 +104,7 @@ export default function SpeciesDetailClient({ species }: SpeciesDetailClientProp
                 <CardTitle className="flex items-center text-xl text-primary"><ShieldAlert className="mr-2 h-5 w-5" /> Conservación y Población</CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
-                <p><strong>Estado:</strong> <Badge variant={species.conservationStatus.includes('Endangered') || species.conservationStatus.includes('Critically') ? 'destructive' : 'secondary'}>{species.conservationStatus}</Badge></p>
+                <p><strong>Estado:</strong> <Badge variant={species.conservationStatus === 'En Peligro' || species.conservationStatus === 'En Peligro Crítico' ? 'destructive' : 'secondary'}>{species.conservationStatus}</Badge></p>
                 <p><strong>Tendencia Poblacional:</strong> <span className={`font-medium ${species.populationTrend === 'decreasing' ? 'text-destructive' : species.populationTrend === 'increasing' ? 'text-green-600' : 'text-foreground'}`}>{displayPopulationTrend}</span></p>
               </CardContent>
             </Card>
@@ -204,3 +191,5 @@ export default function SpeciesDetailClient({ species }: SpeciesDetailClientProp
     </div>
   );
 }
+
+    

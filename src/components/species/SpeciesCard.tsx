@@ -45,7 +45,7 @@ export default function SpeciesCard({ species }: SpeciesCardProps) {
         <p className="text-sm text-foreground mb-4 line-clamp-3 flex-grow">{species.description}</p>
         
         <div className="mb-4">
-          <Badge variant={species.conservationStatus === 'Endangered' || species.conservationStatus === 'Critically Endangered' ? 'destructive' : 'secondary'}>
+          <Badge variant={species.conservationStatus === 'En Peligro' || species.conservationStatus === 'En Peligro Crítico' ? 'destructive' : 'secondary'}>
             {species.conservationStatus}
           </Badge>
         </div>
@@ -62,3 +62,5 @@ export default function SpeciesCard({ species }: SpeciesCardProps) {
     </Card>
   );
 }
+
+    
