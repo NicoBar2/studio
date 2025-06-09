@@ -1,10 +1,11 @@
 
+"use client"; 
+
 import SpeciesCard from '@/components/species/SpeciesCard';
 import { speciesList } from '@/lib/species';
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
 // This page will be client-side rendered to allow for search/filter functionality
-"use client"; 
 import { useState, useEffect } from 'react';
 
 export default function HomePage() {
