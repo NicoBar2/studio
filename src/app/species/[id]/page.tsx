@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: SpeciesDetailPageProps) {
   }
   return {
     title: `${species.name} | Galapagos DataLens`,
-    description: species.description,
+    description: species.description, // La descripción de la especie ya está en español desde species.ts
   };
 }
 

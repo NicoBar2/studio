@@ -38,6 +38,18 @@ const populationTrendTranslations: Record<Species['populationTrend'], string> = 
   unknown: 'Desconocida',
 };
 
+// Mapeo para estados de conservación a español, si es necesario un texto diferente al valor de datos.
+// Por ahora, muchos estados de conservación son comprensibles o se usan internacionalmente (ej. Vulnerable)
+// Si se requiere traducción explícita, se puede añadir aquí. Ejemplo:
+// const conservationStatusTranslations: Record<ConservationStatus, string> = {
+//   'Critically Endangered': 'En Peligro Crítico',
+//   'Endangered': 'En Peligro',
+//   'Vulnerable': 'Vulnerable',
+//   'Near Threatened': 'Casi Amenazada',
+//   'Least Concern': 'Preocupación Menor',
+//   'Data Deficient': 'Datos Insuficientes',
+// };
+
 export default function SpeciesDetailClient({ species }: SpeciesDetailClientProps) {
   const { role } = useAuth();
   const [summary, setSummary] = useState<string | null>(null);
@@ -60,6 +72,7 @@ export default function SpeciesDetailClient({ species }: SpeciesDetailClientProp
   };
 
   const displayPopulationTrend = populationTrendTranslations[species.populationTrend] || species.populationTrend;
+  // const displayConservationStatus = conservationStatusTranslations[species.conservationStatus] || species.conservationStatus;
 
   return (
     <div className="space-y-8">
@@ -173,10 +186,13 @@ export default function SpeciesDetailClient({ species }: SpeciesDetailClientProp
              <Card>
                 <CardHeader>
                     <CardTitle className="flex items-center text-xl text-primary"><BarChart2 className="mr-2 h-5 w-5" /> Visualización de Datos Históricos</CardTitle>
+                     <CardDescription>
+                       Gráficos que muestran datos históricos de la población u otras métricas relevantes.
+                     </CardDescription>
                 </CardHeader>
                 <CardContent>
                     {species.historicalData && species.historicalData.length > 0 ? (
-                        <SpeciesDataChart data={species.historicalData} dataKey="value" nameKey="year" unit={species.historicalData[0].unit} />
+                        <SpeciesDataChart data={species.historicalData} dataKey="value" nameKey="year" unit={species.historicalData[0].unit || 'conteo'} />
                     ) : (
                         <p className="text-muted-foreground">No hay datos históricos disponibles para visualización.</p>
                     )}

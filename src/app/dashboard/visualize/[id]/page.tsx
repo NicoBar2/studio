@@ -29,6 +29,14 @@ export default function VisualizeSpeciesPage({ params }: VisualizeSpeciesPagePro
 
   // Metadata would typically be generated server-side if possible
   // For client component, you might set document.title in useEffect
+  useEffect(() => {
+    if (species) {
+      document.title = `Visualizar ${species.name} | Galapagos DataLens`;
+    } else if (species === null) {
+      document.title = `Especie No Encontrada | Galapagos DataLens`;
+    }
+  }, [species]);
+
 
   if (authLoading || species === undefined) {
     return (
