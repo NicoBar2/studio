@@ -1,6 +1,6 @@
 
 import type { LucideIcon } from 'lucide-react';
-import { Turtle, Bird, Fish, Footprints, ShieldQuestion, Shell, Bug, Waves } from 'lucide-react';
+// Icon components are now imported in client components where they are rendered.
 
 export type UserRole = 'admin' | 'researcher' | 'tourist';
 
@@ -32,14 +32,14 @@ export type Species = {
   longDescription: string;
   imageUrl: string;
   dataAiHint: string;
-  icon: LucideIcon;
+  icon: string; // Changed from LucideIcon to string
   populationTrend: 'increasing' | 'decreasing' | 'stable' | 'unknown';
   conservationStatus: ConservationStatus;
   habitat: string;
   threats: string[];
   keyStats: SpeciesStat[];
   historicalData: HistoricalDataPoint[];
-  islands: string[]; // Added field for island locations
+  islands: string[];
 };
 
 export const speciesList: Species[] = [
@@ -51,7 +51,7 @@ export const speciesList: Species[] = [
     longDescription: 'The Galapagos Giant Tortoise comprises 15 distinct subspecies, each adapted to its specific island environment. They are herbivores, feeding on cacti, grasses, leaves, and fruits. Their slow metabolism and ability to store water allow them to survive long periods without food or water. They are a keystone species, influencing vegetation patterns through grazing and seed dispersal.',
     imageUrl: 'https://placehold.co/600x400.png',
     dataAiHint: 'giant tortoise Galapagos',
-    icon: Turtle,
+    icon: 'Turtle', // Storing name instead of component
     populationTrend: 'stable',
     conservationStatus: 'Vulnerable',
     habitat: 'Highlands with lush vegetation and coastal lowlands with arid scrub.',
@@ -78,7 +78,7 @@ export const speciesList: Species[] = [
     longDescription: 'Marine Iguanas are unique among modern lizards for their ability to forage in the sea. They have specialized glands to excrete excess salt and flattened tails for swimming. They bask on volcanic rocks to warm up after cold ocean dives. Coloration varies between islands, from black to reddish or greenish.',
     imageUrl: 'https://placehold.co/600x400.png',
     dataAiHint: 'marine iguana Galapagos',
-    icon: ShieldQuestion,
+    icon: 'ShieldQuestion', // Storing name
     populationTrend: 'stable',
     conservationStatus: 'Vulnerable',
     habitat: 'Rocky coastlines, lava shores, and intertidal zones.',
@@ -105,7 +105,7 @@ export const speciesList: Species[] = [
     longDescription: 'Darwin\'s Finches are a classic example of evolution by natural selection. Their beak shapes and sizes have adapted to different food sources available on various islands, such as seeds, insects, and nectar. This diversity played a key role in Charles Darwin\'s formulation of his theory of evolution.',
     imageUrl: 'https://placehold.co/600x400.png',
     dataAiHint: 'finch bird Galapagos',
-    icon: Bird,
+    icon: 'Bird', // Storing name
     populationTrend: 'stable',
     conservationStatus: 'Least Concern',
     habitat: 'Diverse habitats across all islands, from arid lowlands to humid highlands.',
@@ -132,7 +132,7 @@ export const speciesList: Species[] = [
     longDescription: 'The Blue-footed Booby is a comical and charismatic seabird. Their blue feet are a result of carotenoid pigments from their diet. Males display their feet in a high-stepping courtship dance. They are plunge divers, feeding on small fish like sardines and anchovies.',
     imageUrl: 'https://placehold.co/600x400.png',
     dataAiHint: 'blue footed booby Galapagos',
-    icon: Footprints, 
+    icon: 'Footprints', // Storing name
     populationTrend: 'decreasing',
     conservationStatus: 'Least Concern',
     habitat: 'Tropical and subtropical Pacific coasts; nests on rocky shores and cliffs.',
@@ -159,7 +159,7 @@ export const speciesList: Species[] = [
     longDescription: 'Galapagos Penguins are one of the smallest penguin species. They survive in the equatorial heat thanks to the cool waters of the Humboldt and Cromwell currents. They nest in volcanic crevices and caves to escape the sun. Their small population is highly susceptible to climate fluctuations.',
     imageUrl: 'https://placehold.co/600x400.png',
     dataAiHint: 'Galapagos penguin',
-    icon: Bird,
+    icon: 'Bird', // Storing name (can reuse 'Bird' or be more specific if needed)
     populationTrend: 'stable',
     conservationStatus: 'Endangered',
     habitat: 'Coastal areas, particularly on Fernandina and Isabela islands.',
@@ -186,7 +186,7 @@ export const speciesList: Species[] = [
     longDescription: 'The Flightless Cormorant is the largest cormorant species and the only one that cannot fly. Its wings are small and stubby. It is an excellent swimmer and diver, using its powerful legs to propel itself underwater to hunt fish and octopus near the seabed.',
     imageUrl: 'https://placehold.co/600x400.png',
     dataAiHint: 'flightless cormorant Galapagos',
-    icon: Bird,
+    icon: 'Bird', // Storing name
     populationTrend: 'stable',
     conservationStatus: 'Vulnerable',
     habitat: 'Rocky shores of Fernandina and Isabela islands.',
@@ -213,7 +213,7 @@ export const speciesList: Species[] = [
     longDescription: 'The Waved Albatross is a critically endangered species. They are magnificent fliers, spending most of their lives at sea. They return to Española Island to breed, engaging in complex mating rituals that include bill-circling and sky-pointing. They lay a single egg per breeding season.',
     imageUrl: 'https://placehold.co/600x400.png',
     dataAiHint: 'waved albatross Galapagos',
-    icon: Bird,
+    icon: 'Bird', // Storing name
     populationTrend: 'decreasing',
     conservationStatus: 'Critically Endangered',
     habitat: 'Breeds on Española Island; forages in the eastern Pacific Ocean.',
@@ -240,7 +240,7 @@ export const speciesList: Species[] = [
     longDescription: 'Galapagos Sea Lions are playful and curious marine mammals. They are smaller than their Californian relatives. Males establish and defend territories during the breeding season. They feed on fish and squid, and are preyed upon by sharks and orcas.',
     imageUrl: 'https://placehold.co/600x400.png',
     dataAiHint: 'Galapagos sea lion',
-    icon: Waves,
+    icon: 'Waves', // Storing name
     populationTrend: 'decreasing',
     conservationStatus: 'Endangered',
     habitat: 'Sandy beaches and rocky coastlines throughout the archipelago.',
@@ -267,7 +267,7 @@ export const speciesList: Species[] = [
     longDescription: 'Galapagos Fur Seals have a dense underfur, providing insulation. They prefer rocky, shaded coastlines and spend more time on land than sea lions. They are nocturnal hunters, feeding on fish and cephalopods further offshore.',
     imageUrl: 'https://placehold.co/600x400.png',
     dataAiHint: 'Galapagos fur seal',
-    icon: Waves,
+    icon: 'Waves', // Storing name
     populationTrend: 'stable',
     conservationStatus: 'Endangered',
     habitat: 'Shady, rocky coastlines with boulders and caves.',
@@ -294,7 +294,7 @@ export const speciesList: Species[] = [
     longDescription: 'Lava Lizards are common reptiles in the Galapagos. There are several species, each often endemic to specific islands or groups of islands. Males are typically larger and more brightly colored than females. They feed on insects, spiders, and other small invertebrates.',
     imageUrl: 'https://placehold.co/600x400.png',
     dataAiHint: 'lava lizard Galapagos',
-    icon: Bug,
+    icon: 'Bug', // Storing name
     populationTrend: 'stable',
     conservationStatus: 'Least Concern',
     habitat: 'Arid and coastal zones, lava fields, and dry scrubland.',
@@ -315,8 +315,6 @@ export const speciesList: Species[] = [
   },
 ];
 
-// List of major islands for potential use in map or filtering logic.
-// These names should match the strings used in species.islands array.
 export const GALAPAGOS_ISLANDS_NAMES: string[] = [
     'Isabela', 'Santa Cruz', 'San Cristobal', 'Fernandina', 
     'Española', 'Floreana', 'Santiago', 'Genovesa', 

@@ -5,14 +5,24 @@ import type { Species } from '@/lib/species';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Turtle, Bird, Footprints, ShieldQuestion, Waves, Bug, type LucideIcon, HelpCircle } from 'lucide-react';
 
 type SpeciesCardProps = {
   species: Species;
 };
 
+const iconMap: Record<string, LucideIcon> = {
+  Turtle,
+  Bird,
+  Footprints,
+  ShieldQuestion,
+  Waves,
+  Bug,
+  Default: HelpCircle, // Fallback icon
+};
+
 export default function SpeciesCard({ species }: SpeciesCardProps) {
-  const IconComponent = species.icon;
+  const IconComponent = iconMap[species.icon] || iconMap.Default;
 
   return (
     <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col h-full">

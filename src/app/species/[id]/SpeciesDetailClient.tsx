@@ -8,7 +8,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { useState, useTransition } from 'react';
 import { getAISummary } from '@/app/actions';
-import { AlertCircle, Brain, Edit, BarChart2, Tag, TrendingUp, ShieldAlert, Home, ListChecks } from 'lucide-react';
+import { 
+  AlertCircle, Brain, Edit, BarChart2, Tag, TrendingUp, ShieldAlert, Home, ListChecks,
+  Turtle, Bird, Footprints, ShieldQuestion, Waves, Bug, type LucideIcon, HelpCircle
+} from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -18,12 +21,23 @@ type SpeciesDetailClientProps = {
   species: Species;
 };
 
+const iconMap: Record<string, LucideIcon> = {
+  Turtle,
+  Bird,
+  Footprints,
+  ShieldQuestion,
+  Waves,
+  Bug,
+  Default: HelpCircle, // Fallback icon
+};
+
 export default function SpeciesDetailClient({ species }: SpeciesDetailClientProps) {
   const { role } = useAuth();
   const [summary, setSummary] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
-  const IconComponent = species.icon;
+  
+  const IconComponent = iconMap[species.icon] || iconMap.Default;
 
   const handleGenerateSummary = () => {
     startTransition(async () => {

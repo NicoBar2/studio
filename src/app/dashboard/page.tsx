@@ -5,7 +5,17 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { speciesList } from '@/lib/species';
-import { Edit3, BarChart3 } from 'lucide-react';
+import { Edit3, BarChart3, Turtle, Bird, Footprints, ShieldQuestion, Waves, Bug, type LucideIcon, HelpCircle } from 'lucide-react';
+
+const iconMap: Record<string, LucideIcon> = {
+  Turtle,
+  Bird,
+  Footprints,
+  ShieldQuestion,
+  Waves,
+  Bug,
+  Default: HelpCircle, // Fallback icon
+};
 
 export default function DashboardPage() {
   const { role } = useAuth();
@@ -55,36 +65,39 @@ export default function DashboardPage() {
       <section>
         <h2 className="text-2xl font-headline font-semibold text-primary mb-4">Species Overview</h2>
         <div className="space-y-4">
-          {speciesList.map(species => (
-            <Card key={species.id} className="shadow-sm hover:shadow-md transition-shadow">
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  {species.name}
-                  <species.icon className="h-6 w-6 text-muted-foreground" />
-                </CardTitle>
-                <CardDescription>{species.scientificName}</CardDescription>
-              </CardHeader>
-              <CardContent className="flex flex-col sm:flex-row gap-2">
-                <Button asChild variant="outline" size="sm">
-                  <Link href={`/dashboard/edit/${species.id}`}>
-                    <Edit3 className="mr-2 h-4 w-4" /> Edit Data
-                  </Link>
-                </Button>
-                {role === 'researcher' && (
+          {speciesList.map(species => {
+            const IconComponent = iconMap[species.icon] || iconMap.Default;
+            return (
+              <Card key={species.id} className="shadow-sm hover:shadow-md transition-shadow">
+                <CardHeader>
+                  <CardTitle className="flex items-center justify-between">
+                    {species.name}
+                    <IconComponent className="h-6 w-6 text-muted-foreground" />
+                  </CardTitle>
+                  <CardDescription>{species.scientificName}</CardDescription>
+                </CardHeader>
+                <CardContent className="flex flex-col sm:flex-row gap-2">
                   <Button asChild variant="outline" size="sm">
-                    <Link href={`/dashboard/visualize/${species.id}`}>
-                      <BarChart3 className="mr-2 h-4 w-4" /> View Visualizations
+                    <Link href={`/dashboard/edit/${species.id}`}>
+                      <Edit3 className="mr-2 h-4 w-4" /> Edit Data
                     </Link>
                   </Button>
-                )}
-                 <Button asChild variant="ghost" size="sm" className="text-primary hover:text-primary/90">
-                  <Link href={`/species/${species.id}`}>
-                    View Public Page
-                  </Link>
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
+                  {role === 'researcher' && (
+                    <Button asChild variant="outline" size="sm">
+                      <Link href={`/dashboard/visualize/${species.id}`}>
+                        <BarChart3 className="mr-2 h-4 w-4" /> View Visualizations
+                      </Link>
+                    </Button>
+                  )}
+                  <Button asChild variant="ghost" size="sm" className="text-primary hover:text-primary/90">
+                    <Link href={`/species/${species.id}`}>
+                      View Public Page
+                    </Link>
+                  </Button>
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
       </section>
     </div>
