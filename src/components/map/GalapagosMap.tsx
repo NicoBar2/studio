@@ -5,8 +5,8 @@ import Image from 'next/image';
 import React from 'react';
 import { cn } from "@/lib/utils";
 
-// Data for island hotspots and labels. Coordinates are percentages (top, left, width, height for hotspot; top, left for label).
-// These are estimations and might need adjustment based on the final image rendering and aspect ratio.
+// Datos para los puntos de acceso y etiquetas de las islas. Las coordenadas son porcentajes (arriba, izquierda, ancho, alto para el punto de acceso; arriba, izquierda para la etiqueta).
+// Estas son estimaciones y podrían necesitar ajustes basados en el renderizado final de la imagen y su relación de aspecto.
 const mapIslandsData = [
   { id: 'Isabela', name: 'Isabela', hotspot: { x: 12, y: 18, width: 28, height: 65 }, labelPos: { x: 28, y: 50 } },
   { id: 'Fernandina', name: 'Fernandina', hotspot: { x: 4, y: 33, width: 13, height: 22 }, labelPos: { x: 10, y: 45 } },
@@ -26,7 +26,7 @@ type GalapagosMapProps = {
 };
 
 const GalapagosMap: React.FC<GalapagosMapProps> = ({ onIslandClick, selectedIsland }) => {
-  // IMPORTANT: Place your map image at public/images/galapagos_map_real.png
+  // IMPORTANTE: Coloca tu imagen del mapa en public/images/galapagos_map_real.png
   const imageSrc = '/images/galapagos_map_real.png'; 
 
   return (
@@ -37,13 +37,13 @@ const GalapagosMap: React.FC<GalapagosMapProps> = ({ onIslandClick, selectedIsla
         layout="fill"
         objectFit="contain" 
         priority
-        unoptimized={true} // Good for local images in public folder if optimization is not needed or causing issues
+        unoptimized={true} // Bueno para imágenes locales en la carpeta public si la optimización no es necesaria o causa problemas
       />
       {mapIslandsData.map((island) => {
         const isSelected = selectedIsland === island.name;
         return (
           <React.Fragment key={island.id}>
-            {/* Clickable Hotspot */}
+            {/* Punto Clicable (Hotspot) */}
             <button
               title={`Isla ${island.name}`}
               onClick={() => onIslandClick(island.name)}
@@ -61,7 +61,7 @@ const GalapagosMap: React.FC<GalapagosMapProps> = ({ onIslandClick, selectedIsla
               aria-label={`Seleccionar isla ${island.name}`}
               aria-pressed={isSelected}
             />
-            {/* Label */}
+            {/* Etiqueta */}
             <span
               className={cn(
                 "absolute pointer-events-none text-xs md:text-sm font-medium p-0.5 rounded",
@@ -70,7 +70,7 @@ const GalapagosMap: React.FC<GalapagosMapProps> = ({ onIslandClick, selectedIsla
               style={{
                 left: `${island.labelPos.x}%`,
                 top: `${island.labelPos.y}%`,
-                transform: 'translate(-50%, -50%)', // Center the label on its coordinates
+                transform: 'translate(-50%, -50%)', // Centra la etiqueta en sus coordenadas
               }}
             >
               {island.name}
