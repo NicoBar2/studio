@@ -6,7 +6,7 @@ import { speciesList, updateSpeciesData as mockUpdateSpeciesData, type Species, 
 import { 
   addResearcher as addResearcherToStore, 
   getAllResearchers as getAllResearchersFromStore, 
-  deleteResearcherById as deleteResearcherByIdFromStore, // Added import
+  deleteResearcherById as deleteResearcherByIdFromStore, 
   type Researcher 
 } from '@/lib/researchers';
 // Assuming a Genkit flow for insights exists at this path
@@ -70,6 +70,7 @@ export async function saveSpeciesData(formData: FormData): Promise<{ success: bo
       scientificName: formData.get('scientificName') as string || species.scientificName,
       description: formData.get('description') as string || species.description,
       longDescription: formData.get('longDescription') as string || species.longDescription,
+      imageUrl: formData.get('imageUrl') as string || species.imageUrl,
       conservationStatus: formData.get('conservationStatus') as Species['conservationStatus'] || species.conservationStatus,
       populationTrend: formData.get('populationTrend') as Species['populationTrend'] || species.populationTrend,
       habitat: formData.get('habitat') as string || species.habitat,
@@ -80,6 +81,11 @@ export async function saveSpeciesData(formData: FormData): Promise<{ success: bo
     if (updatedData.name && updatedData.name.length < 3) {
       return { success: false, message: "El nombre de la especie debe tener al menos 3 caracteres." };
     }
+    if (updatedData.imageUrl && !updatedData.imageUrl.startsWith('https://') && !updatedData.imageUrl.startsWith('http://')) {
+      // A very basic URL validation, consider a more robust one for production
+      //return { success: false, message: "La URL de la imagen no es válida." };
+    }
+
 
     // Update keyStats (example for one stat)
     // This part needs to be more robust in a real app, handling multiple stats

@@ -2,8 +2,8 @@
 "use client";
 
 import type { Species, ConservationStatus, SpeciesStat, HistoricalDataPoint } from '@/lib/species';
-import { useActionState } from 'react'; // Changed from react-dom
-import { useFormStatus } from 'react-dom'; // useFormStatus remains from react-dom
+import { useActionState } from 'react'; 
+import { useFormStatus } from 'react-dom'; 
 import { saveSpeciesData } from '@/app/actions';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -52,7 +52,7 @@ const conservationStatusOptions: { value: ConservationStatus; label: string }[] 
 
 
 export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
-  const [state, formAction] = useActionState(saveSpeciesData, initialState); // Changed to useActionState
+  const [state, formAction] = useActionState(saveSpeciesData, initialState); 
   const { toast } = useToast();
 
   useEffect(() => {
@@ -93,6 +93,11 @@ export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
           <div>
             <Label htmlFor="longDescription" className="font-semibold">Descripción Larga</Label>
             <Textarea id="longDescription" name="longDescription" defaultValue={species.longDescription} rows={6} className="mt-1" />
+          </div>
+
+          <div>
+            <Label htmlFor="imageUrl" className="font-semibold">URL de la Imagen</Label>
+            <Input id="imageUrl" name="imageUrl" type="url" defaultValue={species.imageUrl} className="mt-1" placeholder="https://ejemplo.com/imagen.png" />
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -175,5 +180,4 @@ export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
     </Card>
   );
 }
-
     
