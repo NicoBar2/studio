@@ -35,7 +35,16 @@ export async function getAllResearchers(): Promise<Researcher[]> {
   return [...researcherList]; // Return a copy
 }
 
+export async function deleteResearcherById(id: string): Promise<boolean> {
+  // Simulate async operation
+  await new Promise(resolve => setTimeout(resolve, 300));
+  const initialLength = researcherList.length;
+  researcherList = researcherList.filter(researcher => researcher.id !== id);
+  return researcherList.length < initialLength;
+}
+
 // Helper to clear list for testing if needed, not for production
 export function _clearResearchers() {
   researcherList = [];
 }
+

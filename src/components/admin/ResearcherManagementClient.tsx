@@ -4,12 +4,13 @@
 import { useEffect, useState, useActionState } from 'react';
 import { createResearcherAction, getResearchersAction } from '@/app/actions';
 import type { Researcher } from '@/lib/researchers';
+import ResearcherItem from './ResearcherItem'; // Import the new component
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { UserPlus, ListChecks, Users } from 'lucide-react';
+import { UserPlus, ListChecks } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const initialFormState = {
@@ -18,21 +19,14 @@ const initialFormState = {
   researcher: undefined as Researcher | undefined,
 };
 
-function SubmitButton() {
-  // useFormStatus must be used within a <form>
-  // We'll define it inside the form component below if needed,
-  // or just use a regular button and handle pending state manually if useActionState is at this level.
-  // For now, this button is part of the form directly.
-  return null; 
-}
-
-
 export default function ResearcherManagementClient() {
   const [researchers, setResearchers] = useState<Researcher[]>([]);
   const [isLoadingList, setIsLoadingList] = useState(true);
   const { toast } = useToast();
 
-  const [formState, formAction, isPending] = useActionState(createResearcherAction, initialFormState);
+  const [formState, formAction, isCreating] = useActionState(createResearcherAction, initialFormState);
+  const [newResearcherName, setNewResearcherName] = useState('');
+
 
   useEffect(() => {
     async function fetchResearchers() {
@@ -45,20 +39,23 @@ export default function ResearcherManagementClient() {
   }, []);
   
   useEffect(() => {
-    if (formState.message) {
+    // This effect handles feedback for the CREATE action
+    if (formState.message && formState.message !== initialFormState.message) { // Ensure message has changed
       toast({
         title: formState.success ? '¡Éxito!' : 'Error',
         description: formState.message,
         variant: formState.success ? 'default' : 'destructive',
       });
       if (formState.success && formState.researcher) {
-        // Add new researcher to the list without re-fetching
         setResearchers(prev => [...prev, formState.researcher!]);
-        // Reset form or input field if needed - form.reset() if using react-hook-form
-        // For a simple form, the browser might reset it or we might need to manually clear.
+        setNewResearcherName(''); // Reset the input field
       }
     }
   }, [formState, toast]);
+
+  const handleDeleteResearcher = (researcherId: string) => {
+    setResearchers(prev => prev.filter(r => r.id !== researcherId));
+  };
 
 
   return (
@@ -74,7 +71,12 @@ export default function ResearcherManagementClient() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form action={formAction} className="space-y-4">
+          <form 
+            action={(formData) => {
+              formAction(formData);
+            }} 
+            className="space-y-4"
+          >
             <div>
               <Label htmlFor="researcherName" className="font-semibold">Nombre del Investigador</Label>
               <Input 
@@ -84,10 +86,12 @@ export default function ResearcherManagementClient() {
                 className="mt-1" 
                 required 
                 minLength={3}
+                value={newResearcherName}
+                onChange={(e) => setNewResearcherName(e.target.value)}
               />
             </div>
-            <Button type="submit" disabled={isPending} className="bg-primary hover:bg-primary/90">
-              {isPending ? 'Creando...' : 'Crear Investigador'}
+            <Button type="submit" disabled={isCreating} className="bg-primary hover:bg-primary/90">
+              {isCreating ? 'Creando...' : 'Crear Investigador'}
             </Button>
           </form>
         </CardContent>
@@ -106,20 +110,18 @@ export default function ResearcherManagementClient() {
         <CardContent>
           {isLoadingList ? (
             <div className="space-y-2">
-              <Skeleton className="h-8 w-full" />
-              <Skeleton className="h-8 w-full" />
-              <Skeleton className="h-8 w-3/4" />
+              <Skeleton className="h-10 w-full rounded-md" />
+              <Skeleton className="h-10 w-full rounded-md" />
+              <Skeleton className="h-10 w-4/5 rounded-md" />
             </div>
           ) : researchers.length > 0 ? (
             <ul className="space-y-3">
               {researchers.map((researcher) => (
-                <li key={researcher.id} className="flex items-center justify-between p-3 bg-muted/50 rounded-md">
-                  <div className="flex items-center">
-                    <Users className="h-5 w-5 mr-3 text-primary" />
-                    <span className="font-medium">{researcher.name}</span>
-                  </div>
-                  <span className="text-xs text-muted-foreground">ID: {researcher.id}</span>
-                </li>
+                <ResearcherItem 
+                  key={researcher.id} 
+                  researcher={researcher} 
+                  onDelete={handleDeleteResearcher} 
+                />
               ))}
             </ul>
           ) : (
@@ -130,3 +132,4 @@ export default function ResearcherManagementClient() {
     </div>
   );
 }
+

@@ -3,7 +3,12 @@
 
 import { revalidatePath } from 'next/cache';
 import { speciesList, updateSpeciesData as mockUpdateSpeciesData, type Species, type HistoricalDataPoint, type SpeciesStat } from '@/lib/species';
-import { addResearcher as addResearcherToStore, getAllResearchers as getAllResearchersFromStore, type Researcher } from '@/lib/researchers';
+import { 
+  addResearcher as addResearcherToStore, 
+  getAllResearchers as getAllResearchersFromStore, 
+  deleteResearcherById as deleteResearcherByIdFromStore, // Added import
+  type Researcher 
+} from '@/lib/researchers';
 // Assuming a Genkit flow for insights exists at this path
 // import { generateSpeciesInsight } from '@/ai/flows/generateInsights'; 
 
@@ -169,5 +174,30 @@ export async function getResearchersAction(): Promise<Researcher[]> {
   } catch (error) {
     console.error("Error obteniendo investigadores:", error);
     return []; // Return empty array on error
+  }
+}
+
+export async function deleteResearcherAction(
+  prevState: { success: boolean; message: string; deletedResearcherId?: string },
+  formData: FormData
+): Promise<{ success: boolean; message: string; deletedResearcherId?: string }> {
+  const researcherId = formData.get('researcherId') as string;
+
+  if (!researcherId) {
+    return { success: false, message: "Falta el ID del investigador." };
+  }
+
+  try {
+    const deleted = await deleteResearcherByIdFromStore(researcherId);
+    if (deleted) {
+      revalidatePath('/dashboard/admin/researchers');
+      return { success: true, message: "Investigador eliminado correctamente.", deletedResearcherId: researcherId };
+    } else {
+      return { success: false, message: "No se pudo encontrar o eliminar al investigador." };
+    }
+  } catch (error) {
+    console.error("Error eliminando investigador:", error);
+    const errorMessage = error instanceof Error ? error.message : "Error desconocido al eliminar investigador.";
+    return { success: false, message: errorMessage };
   }
 }
