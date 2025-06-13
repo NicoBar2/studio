@@ -2,8 +2,8 @@
 "use client";
 
 import type { Species, ConservationStatus, SpeciesStat, HistoricalDataPoint } from '@/lib/species';
-import { useActionState } from 'react'; 
-import { useFormStatus } from 'react-dom'; 
+import { useActionState, useState, useEffect, type ChangeEvent } from 'react';
+import { useFormStatus } from 'react-dom';
 import { saveSpeciesData } from '@/app/actions';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,9 +11,9 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import { Trash2, PlusCircle } from 'lucide-react'; 
+import { Trash2, PlusCircle, UploadCloud } from 'lucide-react';
+import Image from 'next/image';
 
 const initialState = {
   success: false,
@@ -52,8 +52,10 @@ const conservationStatusOptions: { value: ConservationStatus; label: string }[] 
 
 
 export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
-  const [state, formAction] = useActionState(saveSpeciesData, initialState); 
+  const [state, formAction] = useActionState(saveSpeciesData, initialState);
   const { toast } = useToast();
+  const [imagePreview, setImagePreview] = useState<string | null>(species.imageUrl);
+  const [imageFileValue, setImageFileValue] = useState<string>(species.imageUrl); // To hold data URI for submission
 
   useEffect(() => {
     if (state.message) {
@@ -62,8 +64,27 @@ export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
         description: state.message,
         variant: state.success ? 'default' : 'destructive',
       });
+      if (state.success && state.speciesId) {
+        // Potentially update preview if URL changes via server response, though here we manage it client-side
+      }
     }
   }, [state, toast]);
+
+  const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const dataUri = reader.result as string;
+        setImagePreview(dataUri);
+        setImageFileValue(dataUri); // Set this for the hidden input
+      };
+      reader.readAsDataURL(file);
+    } else {
+      setImagePreview(species.imageUrl); // Revert to original if no file selected
+      setImageFileValue(species.imageUrl);
+    }
+  };
 
   return (
     <Card className="shadow-xl">
@@ -96,8 +117,35 @@ export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
           </div>
 
           <div>
-            <Label htmlFor="imageUrl" className="font-semibold">URL de la Imagen</Label>
-            <Input id="imageUrl" name="imageUrl" type="url" defaultValue={species.imageUrl} className="mt-1" placeholder="https://ejemplo.com/imagen.png" />
+            <Label htmlFor="imageUpload" className="font-semibold">Imagen de la Especie</Label>
+            <div className="mt-1 flex items-center gap-4">
+              {imagePreview && (
+                <Image 
+                  src={imagePreview} 
+                  alt="Previsualización" 
+                  width={100} 
+                  height={100} 
+                  className="rounded-md object-cover aspect-square" 
+                />
+              )}
+              <Input 
+                id="imageUpload" 
+                name="imageUpload" 
+                type="file" 
+                accept="image/*" 
+                onChange={handleImageChange}
+                className="block w-full text-sm text-slate-500
+                           file:mr-4 file:py-2 file:px-4
+                           file:rounded-full file:border-0
+                           file:text-sm file:font-semibold
+                           file:bg-primary/10 file:text-primary
+                           hover:file:bg-primary/20"
+              />
+            </div>
+            <input type="hidden" name="imageUrl" value={imageFileValue} />
+            <p className="mt-1 text-xs text-muted-foreground">
+              Sube una nueva imagen para reemplazar la actual. Si no seleccionas una nueva, se mantendrá la imagen existente.
+            </p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

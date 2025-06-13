@@ -52,7 +52,7 @@ export async function getAISummary(speciesId: string): Promise<{ summary?: strin
   }
 }
 
-export async function saveSpeciesData(formData: FormData): Promise<{ success: boolean; message: string; speciesId?: string }> {
+export async function saveSpeciesData(prevState: any, formData: FormData): Promise<{ success: boolean; message: string; speciesId?: string }> {
   const speciesId = formData.get('id') as string;
   
   if (!speciesId) {
@@ -65,12 +65,16 @@ export async function saveSpeciesData(formData: FormData): Promise<{ success: bo
   }
 
   try {
+    // The 'imageUrl' field from formData will now contain either the existing URL 
+    // or a new Data URI if a file was uploaded.
+    const newImageUrl = formData.get('imageUrl') as string;
+
     const updatedData: Partial<Species> = {
       name: formData.get('name') as string || species.name,
       scientificName: formData.get('scientificName') as string || species.scientificName,
       description: formData.get('description') as string || species.description,
       longDescription: formData.get('longDescription') as string || species.longDescription,
-      imageUrl: formData.get('imageUrl') as string || species.imageUrl,
+      imageUrl: newImageUrl || species.imageUrl, // Use new Data URI or existing URL
       conservationStatus: formData.get('conservationStatus') as Species['conservationStatus'] || species.conservationStatus,
       populationTrend: formData.get('populationTrend') as Species['populationTrend'] || species.populationTrend,
       habitat: formData.get('habitat') as string || species.habitat,
@@ -81,10 +85,13 @@ export async function saveSpeciesData(formData: FormData): Promise<{ success: bo
     if (updatedData.name && updatedData.name.length < 3) {
       return { success: false, message: "El nombre de la especie debe tener al menos 3 caracteres." };
     }
-    if (updatedData.imageUrl && !updatedData.imageUrl.startsWith('https://') && !updatedData.imageUrl.startsWith('http://')) {
+    // Commenting out URL validation as imageUrl can now be a Data URI
+    /*
+    if (updatedData.imageUrl && !updatedData.imageUrl.startsWith('https://') && !updatedData.imageUrl.startsWith('http://') && !updatedData.imageUrl.startsWith('data:image')) {
       // A very basic URL validation, consider a more robust one for production
-      //return { success: false, message: "La URL de la imagen no es válida." };
+      return { success: false, message: "La URL de la imagen no es válida." };
     }
+    */
 
 
     // Update keyStats (example for one stat)
@@ -139,9 +146,9 @@ export async function saveSpeciesData(formData: FormData): Promise<{ success: bo
       revalidatePath('/'); // Revalidate home page (species list)
       revalidatePath(`/species/${speciesId}`); // Revalidate specific species page
       revalidatePath(`/dashboard/edit/${speciesId}`); // Revalidate edit page
-      return { success: true, message: `Datos de ${species.name} actualizados correctamente.`, speciesId };
+      return { success: true, message: `Datos de ${updatedData.name || species.name} actualizados correctamente.`, speciesId };
     } else {
-      return { success: false, message: `Error al actualizar los datos de ${species.name}.` };
+      return { success: false, message: `Error al actualizar los datos de ${updatedData.name || species.name}.` };
     }
   } catch (error) {
     console.error("Error guardando datos de especie:", error);
@@ -207,3 +214,4 @@ export async function deleteResearcherAction(
     return { success: false, message: errorMessage };
   }
 }
+
