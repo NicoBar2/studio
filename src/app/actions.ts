@@ -2,7 +2,7 @@
 "use server";
 
 import { revalidatePath } from 'next/cache';
-import { speciesList, updateSpeciesData as mockUpdateSpeciesData, type Species, type HistoricalDataPoint, type SpeciesStat } from '@/lib/species';
+import { speciesList, updateSpeciesData as mockUpdateSpeciesData, type Species, type HistoricalDataPoint, type SpeciesStat, getSpeciesById } from '@/lib/species';
 import { 
   addResearcher as addResearcherToStore, 
   getAllResearchers as getAllResearchersFromStore, 
@@ -28,7 +28,7 @@ async function generateSpeciesInsight(speciesName: string, speciesData: string):
 
 
 export async function getAISummary(speciesId: string): Promise<{ summary?: string; error?: string }> {
-  const species = speciesList.find(s => s.id === speciesId);
+  const species = getSpeciesById(speciesId); // Using the refactored getSpeciesById
   if (!species) {
     return { error: "Especie no encontrada." };
   }
@@ -59,96 +59,88 @@ export async function saveSpeciesData(prevState: any, formData: FormData): Promi
     return { success: false, message: "Falta el ID de la especie." };
   }
 
-  const species = speciesList.find(s => s.id === speciesId);
-  if (!species) {
+  const currentSpecies = getSpeciesById(speciesId); // Fetch fresh data
+  if (!currentSpecies) {
     return { success: false, message: "Especie no encontrada." };
   }
 
   try {
-    // The 'imageUrl' field from formData will now contain either the existing URL 
-    // or a new Data URI if a file was uploaded.
     const newImageUrl = formData.get('imageUrl') as string;
 
     const updatedData: Partial<Species> = {
-      name: formData.get('name') as string || species.name,
-      scientificName: formData.get('scientificName') as string || species.scientificName,
-      description: formData.get('description') as string || species.description,
-      longDescription: formData.get('longDescription') as string || species.longDescription,
-      imageUrl: newImageUrl || species.imageUrl, // Use new Data URI or existing URL
-      conservationStatus: formData.get('conservationStatus') as Species['conservationStatus'] || species.conservationStatus,
-      populationTrend: formData.get('populationTrend') as Species['populationTrend'] || species.populationTrend,
-      habitat: formData.get('habitat') as string || species.habitat,
-      threats: (formData.get('threats') as string || '').split(',').map(t => t.trim()).filter(t => t) || species.threats,
+      name: formData.get('name') as string || currentSpecies.name,
+      scientificName: formData.get('scientificName') as string || currentSpecies.scientificName,
+      description: formData.get('description') as string || currentSpecies.description,
+      longDescription: formData.get('longDescription') as string || currentSpecies.longDescription,
+      imageUrl: newImageUrl || currentSpecies.imageUrl, 
+      conservationStatus: formData.get('conservationStatus') as Species['conservationStatus'] || currentSpecies.conservationStatus,
+      populationTrend: formData.get('populationTrend') as Species['populationTrend'] || currentSpecies.populationTrend,
+      habitat: formData.get('habitat') as string || currentSpecies.habitat,
+      threats: (formData.get('threats') as string || '').split(',').map(t => t.trim()).filter(t => t).length > 0 
+                 ? (formData.get('threats') as string).split(',').map(t => t.trim()).filter(t => t) 
+                 : currentSpecies.threats,
     };
 
-    // Basic validation examples
     if (updatedData.name && updatedData.name.length < 3) {
       return { success: false, message: "El nombre de la especie debe tener al menos 3 caracteres." };
     }
-    // Commenting out URL validation as imageUrl can now be a Data URI
-    /*
-    if (updatedData.imageUrl && !updatedData.imageUrl.startsWith('https://') && !updatedData.imageUrl.startsWith('http://') && !updatedData.imageUrl.startsWith('data:image')) {
-      // A very basic URL validation, consider a more robust one for production
-      return { success: false, message: "La URL de la imagen no es válida." };
-    }
-    */
 
-
-    // Update keyStats (example for one stat)
-    // This part needs to be more robust in a real app, handling multiple stats
     const keyStatLabel = formData.get('keyStat0_label') as string;
     const keyStatValue = formData.get('keyStat0_value') as string;
     const keyStatUnit = formData.get('keyStat0_unit') as string;
     
-    if (keyStatLabel && keyStatValue) {
-        const existingStatIndex = species.keyStats.findIndex(stat => stat.label === keyStatLabel);
+    if (keyStatLabel && keyStatValue) { // Only update if new data is provided
+        const existingStatIndex = currentSpecies.keyStats.findIndex(stat => stat.label === keyStatLabel);
+        updatedData.keyStats = [...currentSpecies.keyStats]; // Start with a copy
         if (existingStatIndex !== -1) {
-            updatedData.keyStats = [...species.keyStats];
             updatedData.keyStats[existingStatIndex] = {
                 label: keyStatLabel,
                 value: isNaN(Number(keyStatValue)) ? keyStatValue : Number(keyStatValue),
                 unit: keyStatUnit || undefined
             };
-        } else {
-             updatedData.keyStats = [...species.keyStats, {
+        } else if (currentSpecies.keyStats.length > 0 && currentSpecies.keyStats[0].label === keyStatLabel) {
+             // This condition might be redundant if keyStat0_label hidden input ensures it's always the first stat
+             updatedData.keyStats[0] = {
                 label: keyStatLabel,
                 value: isNaN(Number(keyStatValue)) ? keyStatValue : Number(keyStatValue),
                 unit: keyStatUnit || undefined
-            }];
+            };
         }
+        // Not adding new stats here as form only allows editing the first one
     }
 
 
-    // Update historicalData (example for one point)
-    // This part also needs robust handling for multiple points
     const historicalYear = formData.get('historicalData0_year') as string;
     const historicalValue = formData.get('historicalData0_value') as string;
     const historicalUnit = formData.get('historicalData0_unit') as string;
 
-    if (historicalYear && historicalValue && historicalUnit) {
+    if (historicalYear && historicalValue && historicalUnit) { // Only update if new data is provided
         const yearNum = parseInt(historicalYear);
         const valueNum = parseFloat(historicalValue);
         if (!isNaN(yearNum) && !isNaN(valueNum)) {
-            const existingDataIndex = species.historicalData.findIndex(data => data.year === yearNum);
-            if (existingDataIndex !== -1) {
-                updatedData.historicalData = [...species.historicalData];
-                updatedData.historicalData[existingDataIndex] = { year: yearNum, value: valueNum, unit: historicalUnit };
-            } else {
-                 updatedData.historicalData = [...species.historicalData, { year: yearNum, value: valueNum, unit: historicalUnit }];
+            updatedData.historicalData = [...currentSpecies.historicalData]; // Start with a copy
+            // Assuming the form edits the first historical data point based on name="historicalData0_..."
+            if (updatedData.historicalData.length > 0 && updatedData.historicalData[0].year === yearNum ) { // Check if it's the one being edited
+                 updatedData.historicalData[0] = { year: yearNum, value: valueNum, unit: historicalUnit };
+            } else { // Fallback or if structure changes - find by year
+                const existingDataIndex = updatedData.historicalData.findIndex(data => data.year === yearNum);
+                if (existingDataIndex !== -1) {
+                     updatedData.historicalData[existingDataIndex] = { year: yearNum, value: valueNum, unit: historicalUnit };
+                }
+                // Not adding new historical data here as form only allows editing the first one
             }
         }
     }
 
-
     const success = mockUpdateSpeciesData(speciesId, updatedData);
 
     if (success) {
-      revalidatePath('/'); // Revalidate home page (species list)
-      revalidatePath(`/species/${speciesId}`); // Revalidate specific species page
-      revalidatePath(`/dashboard/edit/${speciesId}`); // Revalidate edit page
-      return { success: true, message: `Datos de ${updatedData.name || species.name} actualizados correctamente.`, speciesId };
+      revalidatePath('/'); 
+      revalidatePath(`/species/${speciesId}`); 
+      revalidatePath(`/dashboard/edit/${speciesId}`); 
+      return { success: true, message: `Datos de ${updatedData.name || currentSpecies.name} actualizados correctamente.`, speciesId };
     } else {
-      return { success: false, message: `Error al actualizar los datos de ${updatedData.name || species.name}.` };
+      return { success: false, message: `Error al actualizar los datos de ${updatedData.name || currentSpecies.name}.` };
     }
   } catch (error) {
     console.error("Error guardando datos de especie:", error);
@@ -168,10 +160,8 @@ export async function createResearcherAction(
   }
 
   try {
-    // For now, we assume an admin role is calling this.
-    // In a real app, you'd verify the caller's role here.
     const newResearcher = await addResearcherToStore(researcherName);
-    revalidatePath('/dashboard/admin/researchers'); // Revalidate the page to show the new researcher
+    revalidatePath('/dashboard/admin/researchers'); 
     return { success: true, message: `Investigador "${newResearcher.name}" creado correctamente.`, researcher: newResearcher };
   } catch (error) {
     console.error("Error creando investigador:", error);
@@ -186,7 +176,7 @@ export async function getResearchersAction(): Promise<Researcher[]> {
     return researchers;
   } catch (error) {
     console.error("Error obteniendo investigadores:", error);
-    return []; // Return empty array on error
+    return []; 
   }
 }
 
@@ -215,3 +205,4 @@ export async function deleteResearcherAction(
   }
 }
 
+    
