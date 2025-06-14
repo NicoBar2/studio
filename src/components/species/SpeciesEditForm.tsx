@@ -79,7 +79,8 @@ export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
       setImagePreview(species.imageUrl);
       setImageFileValue(species.imageUrl);
     }
-  }, [species.imageUrl, imagePreview]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [species.imageUrl]); 
 
   const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
