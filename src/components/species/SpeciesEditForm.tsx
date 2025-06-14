@@ -64,11 +64,14 @@ export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
         description: state.message,
         variant: state.success ? 'default' : 'destructive',
       });
-      if (state.success && state.speciesId) {
-        // Potentially update preview if URL changes via server response, though here we manage it client-side
-      }
     }
   }, [state, toast]);
+
+  // Efecto para actualizar la previsualización y el valor del archivo si species.imageUrl cambia
+  useEffect(() => {
+    setImagePreview(species.imageUrl);
+    setImageFileValue(species.imageUrl);
+  }, [species.imageUrl]);
 
   const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -81,7 +84,8 @@ export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
       };
       reader.readAsDataURL(file);
     } else {
-      setImagePreview(species.imageUrl); // Revert to original if no file selected
+      // Si se cancela la selección de archivo, volvemos a la imagen original de la especie
+      setImagePreview(species.imageUrl); 
       setImageFileValue(species.imageUrl);
     }
   };
@@ -125,12 +129,13 @@ export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
                   alt="Previsualización" 
                   width={100} 
                   height={100} 
-                  className="rounded-md object-cover aspect-square" 
+                  className="rounded-md object-cover aspect-square"
+                  key={imagePreview} // Añadir key para forzar re-render si la URL cambia
                 />
               )}
               <Input 
                 id="imageUpload" 
-                name="imageUpload" 
+                name="imageUpload" // Este nombre es para el input file, no se envía directamente
                 type="file" 
                 accept="image/*" 
                 onChange={handleImageChange}
@@ -142,9 +147,10 @@ export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
                            hover:file:bg-primary/20"
               />
             </div>
+            {/* Este campo oculto es el que se envía con la Data URI o la URL existente */}
             <input type="hidden" name="imageUrl" value={imageFileValue} />
             <p className="mt-1 text-xs text-muted-foreground">
-              Sube una nueva imagen para reemplazar la actual. Si no seleccionas una nueva, se mantendrá la imagen existente.
+              Sube una nueva imagen para reemplazar la actual. Si no seleccionas una nueva, se mantendrá la imagen existente. Las imágenes grandes pueden tardar en guardarse.
             </p>
           </div>
           
