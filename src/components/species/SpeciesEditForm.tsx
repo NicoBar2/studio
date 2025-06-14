@@ -75,12 +75,14 @@ export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
   }, [state, toast, router]);
 
   useEffect(() => {
+    // This effect updates the preview if the underlying species.imageUrl prop changes
+    // (e.g., after a successful save and router.refresh())
     if (species.imageUrl !== imagePreview) {
       setImagePreview(species.imageUrl);
       setImageFileValue(species.imageUrl);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [species.imageUrl]); 
+  }, [species.imageUrl]); // Only depend on species.imageUrl
 
   const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -93,6 +95,7 @@ export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
       };
       reader.readAsDataURL(file);
     } else {
+      // If no file is selected (e.g., user cancels file dialog), revert to original or last saved image
       setImagePreview(species.imageUrl); 
       setImageFileValue(species.imageUrl);
     }
@@ -138,12 +141,12 @@ export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
                   width={100} 
                   height={100} 
                   className="rounded-md object-cover aspect-square"
-                  key={imagePreview} 
+                  key={imagePreview} // Add key to force re-render on src change
                 />
               )}
               <Input 
                 id="imageUpload" 
-                name="imageUpload" 
+                name="imageUpload" // This name is for the file input, not directly submitted
                 type="file" 
                 accept="image/*" 
                 onChange={handleImageChange}
@@ -155,6 +158,7 @@ export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
                            hover:file:bg-primary/20"
               />
             </div>
+            {/* Hidden input to send the Data URI or original URL to the server action */}
             <input type="hidden" name="imageUrl" value={imageFileValue} />
             <p className="mt-1 text-xs text-muted-foreground">
               Sube una nueva imagen para reemplazar la actual. Si no seleccionas una nueva, se mantendrá la imagen existente.
@@ -201,9 +205,11 @@ export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
             <Input id="threats" name="threats" defaultValue={species.threats.join(', ')} className="mt-1" />
           </div>
 
+          {/* Editing only the first key stat */}
           {species.keyStats.length > 0 && (
             <Card className="bg-muted/50 p-4">
               <h4 className="font-semibold text-lg mb-2">Estadísticas Clave (Primer Elemento)</h4>
+              {/* Hidden input to preserve the label of the first key stat */}
               <input type="hidden" name="keyStat0_label" defaultValue={species.keyStats[0].label} />
               <div className="space-y-2">
                 <div>
@@ -218,6 +224,7 @@ export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
             </Card>
           )}
 
+           {/* Editing only the first historical data point */}
            {species.historicalData.length > 0 && (
             <Card className="bg-muted/50 p-4">
               <h4 className="font-semibold text-lg mb-2">Datos Históricos (Primer Punto)</h4>
@@ -246,3 +253,4 @@ export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
     </Card>
   );
 }
+    
