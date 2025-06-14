@@ -1,8 +1,8 @@
 
 "use client";
 
-import type { Species, ConservationStatus, SpeciesStat, HistoricalDataPoint } from '@/lib/species';
-import { useActionState, useState, useEffect, type ChangeEvent } from 'react';
+import type { Species, ConservationStatus } from '@/lib/species';
+import { useActionState, useState, useEffect, type ChangeEvent, useRef } from 'react';
 import { useFormStatus } from 'react-dom';
 import { saveSpeciesData } from '@/app/actions';
 import { Button } from '@/components/ui/button';
@@ -12,8 +12,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { Trash2, PlusCircle, UploadCloud } from 'lucide-react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 const initialState = {
   success: false,
@@ -54,24 +54,32 @@ const conservationStatusOptions: { value: ConservationStatus; label: string }[] 
 export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
   const [state, formAction] = useActionState(saveSpeciesData, initialState);
   const { toast } = useToast();
+  const router = useRouter();
   const [imagePreview, setImagePreview] = useState<string | null>(species.imageUrl);
-  const [imageFileValue, setImageFileValue] = useState<string>(species.imageUrl); // To hold data URI for submission
+  const [imageFileValue, setImageFileValue] = useState<string>(species.imageUrl); 
+
+  const prevMessageRef = useRef<string | undefined>();
 
   useEffect(() => {
-    if (state.message) {
+    if (state.message && state.message !== prevMessageRef.current) {
       toast({
         title: state.success ? '¡Éxito!' : 'Error',
         description: state.message,
         variant: state.success ? 'default' : 'destructive',
       });
+      if (state.success) {
+        router.refresh(); 
+      }
+      prevMessageRef.current = state.message;
     }
-  }, [state, toast]);
+  }, [state, toast, router]);
 
-  // Efecto para actualizar la previsualización y el valor del archivo si species.imageUrl cambia
   useEffect(() => {
-    setImagePreview(species.imageUrl);
-    setImageFileValue(species.imageUrl);
-  }, [species.imageUrl]);
+    if (species.imageUrl !== imagePreview) {
+      setImagePreview(species.imageUrl);
+      setImageFileValue(species.imageUrl);
+    }
+  }, [species.imageUrl, imagePreview]);
 
   const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -80,11 +88,10 @@ export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
       reader.onloadend = () => {
         const dataUri = reader.result as string;
         setImagePreview(dataUri);
-        setImageFileValue(dataUri); // Set this for the hidden input
+        setImageFileValue(dataUri); 
       };
       reader.readAsDataURL(file);
     } else {
-      // Si se cancela la selección de archivo, volvemos a la imagen original de la especie
       setImagePreview(species.imageUrl); 
       setImageFileValue(species.imageUrl);
     }
@@ -130,12 +137,12 @@ export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
                   width={100} 
                   height={100} 
                   className="rounded-md object-cover aspect-square"
-                  key={imagePreview} // Añadir key para forzar re-render si la URL cambia
+                  key={imagePreview} 
                 />
               )}
               <Input 
                 id="imageUpload" 
-                name="imageUpload" // Este nombre es para el input file, no se envía directamente
+                name="imageUpload" 
                 type="file" 
                 accept="image/*" 
                 onChange={handleImageChange}
@@ -147,10 +154,9 @@ export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
                            hover:file:bg-primary/20"
               />
             </div>
-            {/* Este campo oculto es el que se envía con la Data URI o la URL existente */}
             <input type="hidden" name="imageUrl" value={imageFileValue} />
             <p className="mt-1 text-xs text-muted-foreground">
-              Sube una nueva imagen para reemplazar la actual. Si no seleccionas una nueva, se mantendrá la imagen existente. Las imágenes grandes pueden tardar en guardarse.
+              Sube una nueva imagen para reemplazar la actual. Si no seleccionas una nueva, se mantendrá la imagen existente.
             </p>
           </div>
           
@@ -174,7 +180,7 @@ export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
               <Select name="populationTrend" defaultValue={species.populationTrend}>
                 <SelectTrigger id="populationTrend" className="mt-1">
                   <SelectValue placeholder="Seleccionar tendencia" />
-                </SelectTrigger>
+                </Trigger>
                 <SelectContent>
                   {populationTrendOptions.map(opt => (
                     <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
@@ -198,17 +204,23 @@ export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
             <Card className="bg-muted/50 p-4">
               <h4 className="font-semibold text-lg mb-2">Estadísticas Clave (Primer Elemento)</h4>
               <input type="hidden" name="keyStat0_label" defaultValue={species.keyStats[0].label} />
-              <Label htmlFor="keyStat0_value">{species.keyStats[0].label}</Label>
-              <Input id="keyStat0_value" name="keyStat0_value" defaultValue={String(species.keyStats[0].value)} className="mt-1 mb-1" />
-              <Label htmlFor="keyStat0_unit">Unidad (opcional)</Label>
-              <Input id="keyStat0_unit" name="keyStat0_unit" defaultValue={species.keyStats[0].unit || ''} className="mt-1" />
+              <div className="space-y-2">
+                <div>
+                  <Label htmlFor="keyStat0_value">{species.keyStats[0].label} - Valor</Label>
+                  <Input id="keyStat0_value" name="keyStat0_value" defaultValue={String(species.keyStats[0].value)} className="mt-1" />
+                </div>
+                <div>
+                  <Label htmlFor="keyStat0_unit">{species.keyStats[0].label} - Unidad (opcional)</Label>
+                  <Input id="keyStat0_unit" name="keyStat0_unit" defaultValue={species.keyStats[0].unit || ''} className="mt-1" />
+                </div>
+              </div>
             </Card>
           )}
 
            {species.historicalData.length > 0 && (
             <Card className="bg-muted/50 p-4">
               <h4 className="font-semibold text-lg mb-2">Datos Históricos (Primer Punto)</h4>
-               <div className="grid grid-cols-3 gap-2">
+               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                 <div>
                     <Label htmlFor="historicalData0_year">Año</Label>
                     <Input id="historicalData0_year" name="historicalData0_year" type="number" defaultValue={String(species.historicalData[0].year)} className="mt-1"/>
@@ -225,7 +237,6 @@ export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
             </Card>
           )}
 
-
           <div className="flex justify-end pt-4">
             <SubmitButton />
           </div>
@@ -234,4 +245,3 @@ export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
     </Card>
   );
 }
-    
