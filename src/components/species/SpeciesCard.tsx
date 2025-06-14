@@ -28,6 +28,7 @@ export default function SpeciesCard({ species }: SpeciesCardProps) {
     <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col h-full">
       <CardHeader className="p-0">
         <Image
+          key={species.imageUrl} // Add key here
           src={species.imageUrl}
           alt={species.name}
           width={400}

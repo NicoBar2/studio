@@ -330,23 +330,18 @@ export const updateSpeciesData = (id: string, updatedData: Partial<Species>): bo
   const speciesIndex = speciesList.findIndex(s => s.id === id);
   if (speciesIndex === -1) return false;
   
-  const currentSpecies = speciesList[speciesIndex];
-  
-  // Ensure keyStats and historicalData are handled correctly if not present in updatedData
-  // or if they are meant to be completely replaced.
-  // For this specific update, we assume partial updates merge deeply for these arrays if provided.
-  // However, the current saveSpeciesData in actions.ts has a simpler logic for these.
-  // For consistency with how `actions.ts` handles them (replacing specific indices or adding),
-  // it might be better if `actions.ts` passed the complete, modified arrays.
-  // But for now, this mock update will merge at the top level.
-  
-  speciesList[speciesIndex] = { 
-    ...currentSpecies, 
-    ...updatedData,
-    // If updatedData.keyStats or updatedData.historicalData is provided, it will overwrite.
-    // If they are not, currentSpecies versions will be kept.
-    // This matches the behavior of the spread operator.
-  };
+  // Create a new array with the updated species object
+  const newSpeciesList = speciesList.map((species, index) => {
+    if (index === speciesIndex) {
+      return {
+        ...species, // old species data
+        ...updatedData, // new partial data, potentially including imageUrl
+      };
+    }
+    return species; // other species remain unchanged
+  });
+
+  speciesList = newSpeciesList; // Assign the new array to the exported variable
   return true;
 };
 
