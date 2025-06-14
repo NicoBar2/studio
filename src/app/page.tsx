@@ -40,7 +40,7 @@ export default function HomePage() {
       );
     }
     return filteredSpecies;
-  }, [selectedIsland, searchTerm]);
+  }, [speciesList, selectedIsland, searchTerm]); // Added speciesList to dependencies
 
   return (
     <div className="space-y-8">
@@ -135,4 +135,3 @@ export default function HomePage() {
     </div>
   );
 }
-
