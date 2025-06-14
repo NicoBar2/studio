@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'; // Ensure this line is present and not commented
 import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -82,7 +82,7 @@ export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
       setImageFileValue(species.imageUrl);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [species.imageUrl]); // Only depend on species.imageUrl
+  }, [species.imageUrl]); 
 
   const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -141,12 +141,12 @@ export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
                   width={100} 
                   height={100} 
                   className="rounded-md object-cover aspect-square"
-                  key={imagePreview} // Add key to force re-render on src change
+                  key={imagePreview} 
                 />
               )}
               <Input 
                 id="imageUpload" 
-                name="imageUpload" // This name is for the file input, not directly submitted
+                name="imageUpload" 
                 type="file" 
                 accept="image/*" 
                 onChange={handleImageChange}
@@ -158,7 +158,6 @@ export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
                            hover:file:bg-primary/20"
               />
             </div>
-            {/* Hidden input to send the Data URI or original URL to the server action */}
             <input type="hidden" name="imageUrl" value={imageFileValue} />
             <p className="mt-1 text-xs text-muted-foreground">
               Sube una nueva imagen para reemplazar la actual. Si no seleccionas una nueva, se mantendrá la imagen existente.
@@ -185,7 +184,7 @@ export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
               <Select name="populationTrend" defaultValue={species.populationTrend}>
                 <SelectTrigger id="populationTrend" className="mt-1">
                   <SelectValue placeholder="Seleccionar tendencia" />
-                </Trigger>
+                </SelectTrigger>
                 <SelectContent>
                   {populationTrendOptions.map(opt => (
                     <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
@@ -205,11 +204,9 @@ export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
             <Input id="threats" name="threats" defaultValue={species.threats.join(', ')} className="mt-1" />
           </div>
 
-          {/* Editing only the first key stat */}
           {species.keyStats.length > 0 && (
             <Card className="bg-muted/50 p-4">
               <h4 className="font-semibold text-lg mb-2">Estadísticas Clave (Primer Elemento)</h4>
-              {/* Hidden input to preserve the label of the first key stat */}
               <input type="hidden" name="keyStat0_label" defaultValue={species.keyStats[0].label} />
               <div className="space-y-2">
                 <div>
@@ -224,7 +221,6 @@ export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
             </Card>
           )}
 
-           {/* Editing only the first historical data point */}
            {species.historicalData.length > 0 && (
             <Card className="bg-muted/50 p-4">
               <h4 className="font-semibold text-lg mb-2">Datos Históricos (Primer Punto)</h4>
@@ -253,4 +249,6 @@ export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
     </Card>
   );
 }
+    
+
     
