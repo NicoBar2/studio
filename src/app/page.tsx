@@ -87,16 +87,16 @@ export default function HomePage() {
             <div className="flex flex-col sm:flex-row w-full sm:w-auto gap-4 items-center">
               <div className="w-full sm:w-auto">
                 <Select
-                  value={selectedIsland || ''}
+                  value={selectedIsland || ''} // Shows placeholder if selectedIsland is null
                   onValueChange={(value) => {
-                    setSelectedIsland(value === '' ? null : value);
+                    setSelectedIsland(value === 'all-islands' ? null : value);
                   }}
                 >
                   <SelectTrigger className="w-full sm:w-[220px] bg-input">
                     <SelectValue placeholder="Filtrar por isla..." />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Todas las Islas</SelectItem>
+                    <SelectItem value="all-islands">Todas las Islas</SelectItem>
                     {GALAPAGOS_ISLANDS_NAMES.sort().map((islandName) => (
                       <SelectItem key={islandName} value={islandName}>
                         {islandName}
@@ -163,3 +163,4 @@ export default function HomePage() {
     </div>
   );
 }
+
