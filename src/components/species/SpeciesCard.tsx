@@ -2,7 +2,8 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import type { Species } from '@/lib/species';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { getSpeciesImageUrl } from '@/lib/species';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Turtle, Bird, Footprints, ShieldQuestion, Waves, Bug, type LucideIcon, HelpCircle } from 'lucide-react';
@@ -22,14 +23,16 @@ const iconMap: Record<string, LucideIcon> = {
 };
 
 export default function SpeciesCard({ species }: SpeciesCardProps) {
+  const imageUrl = getSpeciesImageUrl(species);
   const IconComponent = iconMap[species.icon] || iconMap.Default;
 
   return (
     <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col h-full">
       <CardHeader className="p-0">
+
         <Image
-          key={species.imageUrl} // Add key here
-          src={species.imageUrl}
+          key={imageUrl} 
+          src={imageUrl}
           alt={species.name}
           width={400}
           height={250}
@@ -44,13 +47,13 @@ export default function SpeciesCard({ species }: SpeciesCardProps) {
         </div>
         <CardDescription className="italic text-sm text-muted-foreground mb-3">{species.scientificName}</CardDescription>
         <p className="text-sm text-foreground mb-4 line-clamp-3 flex-grow">{species.description}</p>
-        
+
         <div className="mb-4">
           <Badge variant={species.conservationStatus === 'En Peligro' || species.conservationStatus === 'En Peligro Crítico' ? 'destructive' : 'secondary'}>
             {species.conservationStatus}
           </Badge>
         </div>
-        
+
         <div className="mt-auto">
           <Button asChild variant="default" className="w-full group">
             <Link href={`/species/${species.id}`} className="flex items-center justify-center">
@@ -63,5 +66,3 @@ export default function SpeciesCard({ species }: SpeciesCardProps) {
     </Card>
   );
 }
-
-    

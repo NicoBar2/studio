@@ -1,7 +1,7 @@
 
 "use client";
 
-import type { Species } from '@/lib/species';
+import { type Species, getSpeciesImageUrl } from '@/lib/species';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -93,7 +93,7 @@ export default function SpeciesDetailClient({ species }: SpeciesDetailClientProp
         <Card className="overflow-hidden shadow-lg">
           <CardHeader className="relative p-0">
             <Image
-              src={species.imageUrl}
+              src={getSpeciesImageUrl(species)}
               alt={species.name}
               width={1200}
               height={400}

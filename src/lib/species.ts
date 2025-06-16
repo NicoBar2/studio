@@ -4,24 +4,24 @@ import type { LucideIcon } from 'lucide-react';
 
 export type UserRole = 'admin' | 'researcher' | 'tourist';
 
-export type ConservationStatus = 
-  | 'En Peligro Crítico' 
-  | 'En Peligro' 
-  | 'Vulnerable' 
-  | 'Casi Amenazada' 
+export type ConservationStatus =
+  | 'En Peligro Crítico'
+  | 'En Peligro'
+  | 'Vulnerable'
+  | 'Casi Amenazada'
   | 'Preocupación Menor'
   | 'Datos Insuficientes';
 
-export type SpeciesStat = { 
-  label: string; 
+export type SpeciesStat = {
+  label: string;
   value: string | number;
   unit?: string;
 };
 
-export type HistoricalDataPoint = { 
-  year: number; 
-  value: number; 
-  unit: string 
+export type HistoricalDataPoint = {
+  year: number;
+  value: number;
+  unit: string
 };
 
 export type Species = {
@@ -29,7 +29,7 @@ export type Species = {
   name: string;
   scientificName: string;
   description: string;
-  longDescription: string;
+  longDescription: string; // Added based on SpeciesEditForm usage
   imageUrl: string;
   dataAiHint: string;
   icon: string; // Changed from LucideIcon to string
@@ -116,7 +116,7 @@ export let speciesList: Species[] = [
       { label: 'Estudiado Por', value: 'Charles Darwin' },
       { label: 'Ancestro Común', value: 'Una única especie del continente'}
     ],
-    historicalData: [ 
+    historicalData: [
       { year: 1977, value: 100, unit: 'índice poblacional' },
       { year: 1987, value: 120, unit: 'índice poblacional' },
       { year: 2000, value: 90, unit: 'índice poblacional' },
@@ -159,7 +159,7 @@ export let speciesList: Species[] = [
     longDescription: 'Los Pingüinos de Galápagos son una de las especies de pingüinos más pequeñas. Sobreviven en el calor ecuatorial gracias a las frías aguas de las corrientes de Humboldt y Cromwell. Anidan en grietas y cuevas volcánicas para escapar del sol. Su pequeña población es altamente susceptible a las fluctuaciones climáticas.',
     imageUrl: 'https://placehold.co/600x400.png',
     dataAiHint: 'Galapagos penguin',
-    icon: 'Bird', 
+    icon: 'Bird',
     populationTrend: 'stable',
     conservationStatus: 'En Peligro',
     habitat: 'Zonas costeras, particularmente en las islas Fernandina e Isabela.',
@@ -186,7 +186,7 @@ export let speciesList: Species[] = [
     longDescription: 'El Cormorán No Volador es la especie de cormorán más grande y la única que no puede volar. Sus alas son pequeñas y rudimentarias. Es un excelente nadador y buceador, utilizando sus poderosas patas para propulsarse bajo el agua para cazar peces y pulpos cerca del lecho marino.',
     imageUrl: 'https://placehold.co/600x400.png',
     dataAiHint: 'flightless cormorant Galapagos',
-    icon: 'Bird', 
+    icon: 'Bird',
     populationTrend: 'stable',
     conservationStatus: 'Vulnerable',
     habitat: 'Costas rocosas de las islas Fernandina e Isabela.',
@@ -240,7 +240,7 @@ export let speciesList: Species[] = [
     longDescription: 'Los Lobos Marinos de Galápagos son mamíferos marinos juguetones y curiosos. Son más pequeños que sus parientes californianos. Los machos establecen y defienden territorios durante la temporada de cría. Se alimentan de peces y calamares, y son depredados por tiburones y orcas.',
     imageUrl: 'https://placehold.co/600x400.png',
     dataAiHint: 'Galapagos sea lion',
-    icon: 'Waves', 
+    icon: 'Waves',
     populationTrend: 'decreasing',
     conservationStatus: 'En Peligro',
     habitat: 'Playas arenosas y costas rocosas en todo el archipiélago.',
@@ -267,7 +267,7 @@ export let speciesList: Species[] = [
     longDescription: 'Los Lobos Finos de Galápagos tienen un denso subpelo que les proporciona aislamiento. Prefieren costas rocosas y sombreadas y pasan más tiempo en tierra que los lobos marinos. Son cazadores nocturnos, alimentándose de peces y cefalópodos más alejados de la costa.',
     imageUrl: 'https://placehold.co/600x400.png',
     dataAiHint: 'Galapagos fur seal',
-    icon: 'Waves', 
+    icon: 'Waves',
     populationTrend: 'stable',
     conservationStatus: 'En Peligro',
     habitat: 'Costas rocosas sombreadas con cantos rodados y cuevas.',
@@ -278,7 +278,7 @@ export let speciesList: Species[] = [
       { label: 'Horario de Caza', value: 'Principalmente nocturno' },
       { label: 'Peso', value: '~65', unit: 'kg (macho)'}
     ],
-    historicalData: [ 
+    historicalData: [
       { year: 1970, value: 5000, unit: 'individuos' },
       { year: 1990, value: 30000, unit: 'individuos' },
       { year: 2000, value: 15000, unit: 'individuos' },
@@ -294,7 +294,7 @@ export let speciesList: Species[] = [
     longDescription: 'Las Lagartijas de Lava son reptiles comunes en Galápagos. Existen varias especies, cada una a menudo endémica de islas o grupos de islas específicos. Los machos suelen ser más grandes y de colores más brillantes que las hembras. Se alimentan de insectos, arañas y otros pequeños invertebrados.',
     imageUrl: 'https://placehold.co/600x400.png',
     dataAiHint: 'lava lizard Galapagos',
-    icon: 'Bug', 
+    icon: 'Bug',
     populationTrend: 'stable',
     conservationStatus: 'Preocupación Menor',
     habitat: 'Zonas áridas y costeras, campos de lava y matorrales secos.',
@@ -305,7 +305,7 @@ export let speciesList: Species[] = [
       { label: 'Dieta', value: 'Insectos, arañas, escorpiones' },
       { label: 'Tamaño', value: '15-30', unit: 'cm (longitud total)'}
     ],
-    historicalData: [ 
+    historicalData: [
       { year: 2000, value: 500000, unit: 'individuos totales (estimado)' },
       { year: 2010, value: 520000, unit: 'individuos totales (estimado)' },
       { year: 2020, value: 510000, unit: 'individuos totales (estimado)' },
@@ -316,8 +316,8 @@ export let speciesList: Species[] = [
 ];
 
 export const GALAPAGOS_ISLANDS_NAMES: string[] = [
-    'Isabela', 'Santa Cruz', 'San Cristobal', 'Fernandina', 
-    'Española', 'Floreana', 'Santiago', 'Genovesa', 
+    'Isabela', 'Santa Cruz', 'San Cristobal', 'Fernandina',
+    'Española', 'Floreana', 'Santiago', 'Genovesa',
     'Pinta', 'Marchena', 'North Seymour'
 ];
 
@@ -326,10 +326,18 @@ export const getSpeciesById = (id: string): Species | undefined => {
   return speciesList.find(s => s.id === id);
 };
 
+export const getSpeciesImageUrl = (species: Species | undefined | null): string => {
+  if (species && species.imageUrl) {
+    return species.imageUrl;
+  }
+  // Return a default placeholder if no image or species
+  return 'https://placehold.co/600x400.png';
+};
+
 export const updateSpeciesData = (id: string, updatedData: Partial<Species>): boolean => {
   const speciesIndex = speciesList.findIndex(s => s.id === id);
   if (speciesIndex === -1) return false;
-  
+
   // Create a new array with the updated species object
   const newSpeciesList = speciesList.map((species, index) => {
     if (index === speciesIndex) {
@@ -350,5 +358,3 @@ export const updateSpeciesData = (id: string, updatedData: Partial<Species>): bo
 export function setSpeciesList(newSpeciesList: Species[]) {
   speciesList = newSpeciesList;
 }
-
-    

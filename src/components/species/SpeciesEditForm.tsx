@@ -1,6 +1,6 @@
 
 "use client";
-
+import { getSpeciesImageUrl } from '@/lib/species'; // Import the helper function
 import type { Species, ConservationStatus } from '@/lib/species';
 import { useActionState, useState, useEffect, type ChangeEvent, useRef } from 'react';
 import { useFormStatus } from 'react-dom';
@@ -55,8 +55,9 @@ export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
   const [state, formAction] = useActionState(saveSpeciesData, initialState);
   const { toast } = useToast();
   const router = useRouter();
-  const [imagePreview, setImagePreview] = useState<string | null>(species.imageUrl);
-  const [imageFileValue, setImageFileValue] = useState<string>(species.imageUrl); 
+  // Use the helper function to get the initial image URL
+  const [imagePreview, setImagePreview] = useState<string | null>(getSpeciesImageUrl(species));
+  const [imageFileValue, setImageFileValue] = useState<string>(getSpeciesImageUrl(species));
 
   const prevMessageRef = useRef<string | undefined>();
 
@@ -75,11 +76,12 @@ export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
   }, [state, toast, router]);
 
   useEffect(() => {
-    // This effect updates the preview if the underlying species.imageUrl prop changes
+    // This effect updates the preview if the underlying species prop changes
     // (e.g., after a successful save and router.refresh())
-    if (species.imageUrl !== imagePreview) {
-      setImagePreview(species.imageUrl);
-      setImageFileValue(species.imageUrl);
+    const currentImageUrl = getSpeciesImageUrl(species);
+    if (currentImageUrl !== imagePreview) {
+      setImagePreview(currentImageUrl);
+      setImageFileValue(currentImageUrl);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [species.imageUrl]); 
@@ -95,8 +97,8 @@ export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
       };
       reader.readAsDataURL(file);
     } else {
-      // If no file is selected (e.g., user cancels file dialog), revert to original or last saved image
-      setImagePreview(species.imageUrl); 
+      // If no file is selected (e.g., user cancels file dialog), revert to the current species image URL
+      setImagePreview(getSpeciesImageUrl(species));
       setImageFileValue(species.imageUrl);
     }
   };
