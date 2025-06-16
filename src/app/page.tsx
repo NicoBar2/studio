@@ -2,12 +2,13 @@
 "use client"; 
 
 import { useState, useMemo } from 'react';
-import { speciesList, type Species } from '@/lib/species';
+import { speciesList, type Species, GALAPAGOS_ISLANDS_NAMES } from '@/lib/species';
 import SpeciesCard from '@/components/species/SpeciesCard';
 import GalapagosMap from '@/components/map/GalapagosMap';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { MapPinIcon, ListIcon, InfoIcon, SearchIcon } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
@@ -17,17 +18,17 @@ export default function HomePage() {
   const [searchTerm, setSearchTerm] = useState<string>('');
 
   const handleIslandClick = (islandName: string) => {
-    setSelectedIsland(islandName);
+    setSelectedIsland(islandName); // Map click sets the selected island
   };
 
   const clearSelection = () => {
-    setSelectedIsland(null);
+    setSelectedIsland(null); // Clears island selection from map and dropdown
   };
 
   const displayedSpecies = useMemo(() => {
     let filteredSpecies = speciesList;
 
-    if (selectedIsland) {
+    if (selectedIsland) { // Filters if an island is selected from map or dropdown
       filteredSpecies = filteredSpecies.filter(species => 
         species.islands && species.islands.includes(selectedIsland)
       );
@@ -40,7 +41,7 @@ export default function HomePage() {
       );
     }
     return filteredSpecies;
-  }, [speciesList, selectedIsland, searchTerm]); // Added speciesList to dependencies
+  }, [speciesList, selectedIsland, searchTerm]);
 
   return (
     <div className="space-y-8">
@@ -53,7 +54,7 @@ export default function HomePage() {
                 Explorador Interactivo de Especies de Galápagos
               </CardTitle>
               <CardDescription className="text-sm md:text-base">
-                Selecciona una isla en el mapa para descubrir las especies representativas que allí habitan, o explora todas las especies listadas abajo.
+                Selecciona una isla en el mapa o del desplegable para descubrir las especies que allí habitan, o explora todas las especies listadas abajo.
               </CardDescription>
             </div>
           </div>
@@ -63,7 +64,7 @@ export default function HomePage() {
           {selectedIsland && (
             <div className="mt-6 text-center">
               <Button onClick={clearSelection} variant="outline" size="lg">
-                <ListIcon className="mr-2 h-5 w-5" /> Ver Todas las Especies / Limpiar Selección
+                <ListIcon className="mr-2 h-5 w-5" /> Ver Todas las Especies / Limpiar Selección de Isla
               </Button>
             </div>
           )}
@@ -83,15 +84,37 @@ export default function HomePage() {
                     </>
                 )}
             </h2>
-            <div className="relative w-full sm:w-auto sm:max-w-xs">
-                <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                <Input 
-                    type="search"
-                    placeholder="Buscar especie por nombre..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 bg-input"
-                />
+            <div className="flex flex-col sm:flex-row w-full sm:w-auto gap-4 items-center">
+              <div className="w-full sm:w-auto">
+                <Select
+                  value={selectedIsland || ''}
+                  onValueChange={(value) => {
+                    setSelectedIsland(value === '' ? null : value);
+                  }}
+                >
+                  <SelectTrigger className="w-full sm:w-[220px] bg-input">
+                    <SelectValue placeholder="Filtrar por isla..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">Todas las Islas</SelectItem>
+                    {GALAPAGOS_ISLANDS_NAMES.sort().map((islandName) => (
+                      <SelectItem key={islandName} value={islandName}>
+                        {islandName}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="relative w-full sm:w-auto sm:max-w-xs">
+                  <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                  <Input 
+                      type="search"
+                      placeholder="Buscar por nombre..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="pl-10 bg-input"
+                  />
+              </div>
             </div>
         </div>
          {selectedIsland && displayedSpecies.length > 0 && (
@@ -118,16 +141,21 @@ export default function HomePage() {
             <CardContent className="flex flex-col items-center">
               <InfoIcon className="h-12 w-12 text-muted-foreground mb-4" />
               <p className="text-lg font-medium text-foreground">
-                {searchTerm 
-                    ? `No se encontraron especies que coincidan con "${searchTerm}"` 
-                    : selectedIsland 
-                        ? `No se encontraron especies destacadas en ${selectedIsland} en nuestra base de datos actual.` 
-                        : 'No hay datos de especies disponibles para mostrar.'
+                {searchTerm && selectedIsland 
+                    ? `No se encontraron especies que coincidan con "${searchTerm}" en ${selectedIsland}.`
+                    : searchTerm
+                        ? `No se encontraron especies que coincidan con "${searchTerm}".` 
+                        : selectedIsland 
+                            ? `No se encontraron especies destacadas en ${selectedIsland} en nuestra base de datos actual.` 
+                            : 'No hay datos de especies disponibles para mostrar.'
                 }
               </p>
               <p className="text-muted-foreground mt-1">
-                {selectedIsland && !searchTerm ? 'Intenta seleccionar otra isla o limpia la selección para ver todas las especies.' : 'Intenta con otro término de búsqueda o revisa más tarde.'}
+                {selectedIsland && !searchTerm ? 'Intenta seleccionar otra isla o limpia la selección para ver todas las especies.' : 'Intenta con otro término de búsqueda o ajusta los filtros.'}
               </p>
+              { (searchTerm || selectedIsland) &&
+                <Button onClick={() => { setSearchTerm(''); setSelectedIsland(null);}} variant="link" className="mt-2">Limpiar todos los filtros</Button>
+              }
             </CardContent>
           </Card>
         )}
