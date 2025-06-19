@@ -15,9 +15,20 @@ import {
 import { useAuth } from '@/contexts/AuthContext';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
-import SpeciesDataChart from '@/components/charts/SpeciesDataChart';
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
+// import SpeciesDataChart from '@/components/charts/SpeciesDataChart'; // To be dynamically imported
+// import jsPDF from 'jspdf'; // To be dynamically imported
+// import html2canvas from 'html2canvas'; // To be dynamically imported
+import dynamic from 'next/dynamic';
+
+const SpeciesDataChart = dynamic(() => import('@/components/charts/SpeciesDataChart'), {
+  loading: () => (
+    <div className="min-h-[300px] flex items-center justify-center">
+      <p>Cargando gráfico...</p>
+    </div>
+  ),
+  ssr: false // Charts are often client-side interactive
+});
+
 
 type SpeciesDetailClientProps = {
   species: Species;
@@ -67,17 +78,20 @@ export default function SpeciesDetailClient({ species }: SpeciesDetailClientProp
     startPdfTransition(async () => {
       if (!pdfContentRef.current) return;
 
+      const { default: jsPDF } = await import('jspdf');
+      const { default: html2canvas } = await import('html2canvas');
+
       const canvas = await html2canvas(pdfContentRef.current, {
-        scale: 2, // Aumentar la escala para mejor calidad
-        useCORS: true, // Para imágenes de dominios externos si las hubiera
-        backgroundColor: '#ffffff', // Explicitly set background to white
+        scale: 2, 
+        useCORS: true, 
+        backgroundColor: '#ffffff', 
       });
       
       const imgData = canvas.toDataURL('image/png');
       const pdf = new jsPDF({
         orientation: 'p',
         unit: 'px',
-        format: [canvas.width, canvas.height] // Usar dimensiones del canvas para el formato
+        format: [canvas.width, canvas.height] 
       });
 
       pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
@@ -89,7 +103,7 @@ export default function SpeciesDetailClient({ species }: SpeciesDetailClientProp
 
   return (
     <div className="space-y-8">
-      <div ref={pdfContentRef}> {/* Envolver el contenido a capturar */}
+      <div ref={pdfContentRef}> 
         <Card className="overflow-hidden shadow-lg">
           <CardHeader className="relative p-0">
             <Image
@@ -211,7 +225,7 @@ export default function SpeciesDetailClient({ species }: SpeciesDetailClientProp
                             dataKey="value" 
                             nameKey="year" 
                             unit={species.historicalData[0].unit || 'conteo'} 
-                            chartType="bar" // Cambiado a 'bar'
+                            chartType="bar" 
                           />
                       ) : (
                           <p className="text-muted-foreground">No hay datos históricos disponibles para visualización.</p>

@@ -1,10 +1,10 @@
 
-"use client"; // Charts are interactive, client component needed
+"use client"; 
 
 import { getSpeciesById, type Species, type HistoricalDataPoint } from '@/lib/species';
 import RoleBasedGuard from '@/components/auth/RoleBasedGuard';
 import { notFound, useRouter } from 'next/navigation';
-import SpeciesDataChart from '@/components/charts/SpeciesDataChart';
+// import SpeciesDataChart from '@/components/charts/SpeciesDataChart'; // To be dynamically imported
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,6 +14,16 @@ import { ArrowLeft, AlertTriangle, TrendingUp, TrendingDown, MinusSquare, Filter
 import { useAuth } from '@/contexts/AuthContext';
 import { useEffect, useState, useMemo } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import dynamic from 'next/dynamic';
+
+const SpeciesDataChart = dynamic(() => import('@/components/charts/SpeciesDataChart'), {
+  loading: () => (
+    <div className="min-h-[300px] flex items-center justify-center">
+      <p>Cargando gráfico...</p>
+    </div>
+  ),
+  ssr: false // Charts are often client-side interactive
+});
 
 type VisualizeSpeciesPageProps = {
   params: { id: string };
@@ -54,7 +64,7 @@ export default function VisualizeSpeciesPage({ params }: VisualizeSpeciesPagePro
       const valuePass = (!isNaN(minValue) ? point.value >= minValue : true) &&
                         (!isNaN(maxValue) ? point.value <= maxValue : true);
       return yearPass && valuePass;
-    }).sort((a, b) => a.year - b.year); // Sort by year
+    }).sort((a, b) => a.year - b.year); 
   }, [species?.historicalData, yearFilter, valueFilter]);
 
 
