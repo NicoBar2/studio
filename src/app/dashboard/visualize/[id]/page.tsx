@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import Link from 'next/link';
-import { ArrowLeft, AlertTriangle, TrendingUp, TrendingDown, MinusSquare, Filter, FilterX } from 'lucide-react';
+import { ArrowLeft, AlertTriangle, TrendingUp, TrendingDown, MinusSquare, Filter, FilterX, TableIcon } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useEffect, useState, useMemo } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -54,7 +54,7 @@ export default function VisualizeSpeciesPage({ params }: VisualizeSpeciesPagePro
       const valuePass = (!isNaN(minValue) ? point.value >= minValue : true) &&
                         (!isNaN(maxValue) ? point.value <= maxValue : true);
       return yearPass && valuePass;
-    });
+    }).sort((a, b) => a.year - b.year); // Sort by year
   }, [species?.historicalData, yearFilter, valueFilter]);
 
 
@@ -124,7 +124,7 @@ export default function VisualizeSpeciesPage({ params }: VisualizeSpeciesPagePro
             <CardTitle className="text-2xl font-headline text-primary flex items-center">
               <Filter className="mr-2 h-6 w-6" /> Filtros de Datos Históricos
             </CardTitle>
-            <CardDescription>Ajusta los rangos para filtrar los datos que se muestran en el gráfico y las estadísticas.</CardDescription>
+            <CardDescription>Ajusta los rangos para filtrar los datos que se muestran en el gráfico, estadísticas y tabla.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -205,6 +205,37 @@ export default function VisualizeSpeciesPage({ params }: VisualizeSpeciesPagePro
           </CardContent>
         </Card>
 
+        {filteredHistoricalData && filteredHistoricalData.length > 0 && (
+           <Card className="shadow-lg">
+            <CardHeader>
+              <CardTitle className="text-2xl font-headline text-primary flex items-center">
+                <TableIcon className="mr-2 h-6 w-6" /> Datos Históricos Tabulados (Filtrados)
+              </CardTitle>
+              <CardDescription>Tabla de los datos históricos filtrados para {species.name}.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-[150px]">Año</TableHead>
+                    <TableHead className="text-right">Valor</TableHead>
+                    <TableHead>Unidad</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredHistoricalData.map((point) => (
+                    <TableRow key={point.year}>
+                      <TableCell className="font-medium">{point.year}</TableCell>
+                      <TableCell className="text-right">{point.value.toLocaleString()}</TableCell>
+                      <TableCell>{point.unit}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        )}
+
         {stats && (
           <Card className="shadow-lg">
             <CardHeader>
@@ -251,4 +282,5 @@ export default function VisualizeSpeciesPage({ params }: VisualizeSpeciesPagePro
     </RoleBasedGuard>
   );
 }
-
+    
+    
