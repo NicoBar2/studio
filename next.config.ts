@@ -18,6 +18,11 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  i18n: {
+    locales: ['en', 'es'],
+    defaultLocale: 'es',
+    localeDetection: false, // Optional: set to true to enable auto-detection based on browser preferences
+  },
 };
 
 export default nextConfig;

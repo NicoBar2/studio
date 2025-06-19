@@ -5,6 +5,7 @@ import { MountainIcon, LogIn, LogOut, UserCircle } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
+import LanguageSwitcher from '@/components/i18n/LanguageSwitcher'; // Import the new component
 
 export default function Header() {
   const { role, logout, isLoading } = useAuth();
@@ -45,6 +46,8 @@ export default function Header() {
               Panel
             </Link>
           )}
+
+          <LanguageSwitcher /> {/* Add the language switcher here */}
 
           {isLoading ? (
             <div className="text-sm text-muted-foreground">Cargando...</div>
