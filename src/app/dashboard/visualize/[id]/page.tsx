@@ -7,10 +7,12 @@ import { notFound, useRouter } from 'next/navigation';
 import SpeciesDataChart from '@/components/charts/SpeciesDataChart';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import Link from 'next/link';
-import { ArrowLeft, AlertTriangle, TrendingUp, TrendingDown, MinusSquare } from 'lucide-react';
+import { ArrowLeft, AlertTriangle, TrendingUp, TrendingDown, MinusSquare, Filter, FilterX } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 type VisualizeSpeciesPageProps = {
@@ -22,6 +24,9 @@ export default function VisualizeSpeciesPage({ params }: VisualizeSpeciesPagePro
   const [species, setSpecies] = useState<Species | null | undefined>(undefined);
   const { role, isLoading: authLoading } = useAuth();
   const router = useRouter();
+
+  const [yearFilter, setYearFilter] = useState<{ min: string; max: string }>({ min: '', max: '' });
+  const [valueFilter, setValueFilter] = useState<{ min: string; max: string }>({ min: '', max: '' });
 
   useEffect(() => {
     const foundSpecies = getSpeciesById(params.id);
@@ -35,6 +40,23 @@ export default function VisualizeSpeciesPage({ params }: VisualizeSpeciesPagePro
       document.title = `Especie No Encontrada | Galapagos DataLens`;
     }
   }, [species]);
+
+  const filteredHistoricalData = useMemo(() => {
+    if (!species?.historicalData) return [];
+    return species.historicalData.filter(point => {
+      const minYear = yearFilter.min !== '' ? parseInt(yearFilter.min) : -Infinity;
+      const maxYear = yearFilter.max !== '' ? parseInt(yearFilter.max) : Infinity;
+      const minValue = valueFilter.min !== '' ? parseFloat(valueFilter.min) : -Infinity;
+      const maxValue = valueFilter.max !== '' ? parseFloat(valueFilter.max) : Infinity;
+
+      const yearPass = (!isNaN(minYear) ? point.year >= minYear : true) &&
+                       (!isNaN(maxYear) ? point.year <= maxYear : true);
+      const valuePass = (!isNaN(minValue) ? point.value >= minValue : true) &&
+                        (!isNaN(maxValue) ? point.value <= maxValue : true);
+      return yearPass && valuePass;
+    });
+  }, [species?.historicalData, yearFilter, valueFilter]);
+
 
   const getHistoricalStats = (data: HistoricalDataPoint[]) => {
     if (!data || data.length === 0) {
@@ -54,9 +76,26 @@ export default function VisualizeSpeciesPage({ params }: VisualizeSpeciesPagePro
     };
   };
 
-  const stats = species && species.historicalData && species.historicalData.length > 0 
-    ? getHistoricalStats(species.historicalData) 
+  const stats = filteredHistoricalData.length > 0
+    ? getHistoricalStats(filteredHistoricalData)
     : null;
+
+  const handleFilterChange = (
+    filterType: 'year' | 'value',
+    boundary: 'min' | 'max',
+    inputValue: string
+  ) => {
+    if (filterType === 'year') {
+      setYearFilter(prev => ({ ...prev, [boundary]: inputValue }));
+    } else {
+      setValueFilter(prev => ({ ...prev, [boundary]: inputValue }));
+    }
+  };
+
+  const clearFilters = () => {
+    setYearFilter({ min: '', max: '' });
+    setValueFilter({ min: '', max: '' });
+  };
 
 
   if (authLoading || species === undefined) {
@@ -79,25 +118,88 @@ export default function VisualizeSpeciesPage({ params }: VisualizeSpeciesPagePro
             <ArrowLeft className="mr-2 h-4 w-4" /> Volver al Panel
           </Link>
         </Button>
+
+        <Card className="shadow-lg">
+          <CardHeader>
+            <CardTitle className="text-2xl font-headline text-primary flex items-center">
+              <Filter className="mr-2 h-6 w-6" /> Filtros de Datos Históricos
+            </CardTitle>
+            <CardDescription>Ajusta los rangos para filtrar los datos que se muestran en el gráfico y las estadísticas.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="minYear">Año Mínimo</Label>
+                <Input 
+                  id="minYear" 
+                  type="number" 
+                  placeholder="Ej: 1990" 
+                  value={yearFilter.min}
+                  onChange={(e) => handleFilterChange('year', 'min', e.target.value)}
+                  className="bg-input"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="maxYear">Año Máximo</Label>
+                <Input 
+                  id="maxYear" 
+                  type="number" 
+                  placeholder="Ej: 2023" 
+                  value={yearFilter.max}
+                  onChange={(e) => handleFilterChange('year', 'max', e.target.value)}
+                  className="bg-input"
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="minValue">Valor Mínimo ({filteredHistoricalData[0]?.unit || species.historicalData[0]?.unit || 'unidad'})</Label>
+                <Input 
+                  id="minValue" 
+                  type="number" 
+                  placeholder="Ej: 1000" 
+                  value={valueFilter.min}
+                  onChange={(e) => handleFilterChange('value', 'min', e.target.value)}
+                  className="bg-input"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="maxValue">Valor Máximo ({filteredHistoricalData[0]?.unit || species.historicalData[0]?.unit || 'unidad'})</Label>
+                <Input 
+                  id="maxValue" 
+                  type="number" 
+                  placeholder="Ej: 50000" 
+                  value={valueFilter.max}
+                  onChange={(e) => handleFilterChange('value', 'max', e.target.value)}
+                  className="bg-input"
+                />
+              </div>
+            </div>
+            <Button onClick={clearFilters} variant="outline">
+              <FilterX className="mr-2 h-4 w-4" /> Limpiar Filtros
+            </Button>
+          </CardContent>
+        </Card>
+
         <Card className="shadow-lg">
           <CardHeader>
             <CardTitle className="text-3xl font-headline text-primary">Visualización de Datos: {species.name}</CardTitle>
-            <CardDescription>Gráficos de barras interactivos que muestran datos históricos para {species.scientificName}.</CardDescription>
+            <CardDescription>Gráficos de barras interactivos que muestran datos históricos filtrados para {species.scientificName}.</CardDescription>
           </CardHeader>
           <CardContent>
-            {species.historicalData && species.historicalData.length > 0 ? (
+            {filteredHistoricalData && filteredHistoricalData.length > 0 ? (
               <SpeciesDataChart 
-                data={species.historicalData} 
+                data={filteredHistoricalData} 
                 dataKey="value" 
                 nameKey="year"
-                unit={species.historicalData[0]?.unit || 'conteo'} 
+                unit={filteredHistoricalData[0]?.unit || species.historicalData[0]?.unit || 'conteo'} 
                 chartType="bar"
               />
             ) : (
               <div className="flex flex-col items-center justify-center p-8 border border-dashed rounded-lg">
                 <AlertTriangle className="h-12 w-12 text-muted-foreground mb-4" />
-                <p className="text-lg font-medium text-muted-foreground">No hay datos históricos disponibles para visualización.</p>
-                <p className="text-sm text-muted-foreground">Considera agregar datos a través de la página de edición.</p>
+                <p className="text-lg font-medium text-muted-foreground">No hay datos históricos que coincidan con los filtros aplicados.</p>
+                <p className="text-sm text-muted-foreground">Intenta ajustar los filtros o limpiarlos para ver más datos.</p>
               </div>
             )}
           </CardContent>
@@ -106,8 +208,8 @@ export default function VisualizeSpeciesPage({ params }: VisualizeSpeciesPagePro
         {stats && (
           <Card className="shadow-lg">
             <CardHeader>
-              <CardTitle className="text-2xl font-headline text-primary">Estadísticas Históricas Clave</CardTitle>
-              <CardDescription>Un resumen de los datos históricos de {species.name}.</CardDescription>
+              <CardTitle className="text-2xl font-headline text-primary">Estadísticas Históricas Clave (Filtradas)</CardTitle>
+              <CardDescription>Un resumen de los datos históricos filtrados de {species.name}.</CardDescription>
             </CardHeader>
             <CardContent>
               <Table>
@@ -121,21 +223,21 @@ export default function VisualizeSpeciesPage({ params }: VisualizeSpeciesPagePro
                 <TableBody>
                   <TableRow>
                     <TableCell className="font-medium flex items-center">
-                      <TrendingUp className="mr-2 h-5 w-5 text-green-600" /> Máximo Histórico
+                      <TrendingUp className="mr-2 h-5 w-5 text-green-600" /> Máximo en Rango Filtrado
                     </TableCell>
                     <TableCell>{stats.maxPoint.year}</TableCell>
                     <TableCell className="text-right">{stats.maxPoint.value.toLocaleString()} {stats.unit}</TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell className="font-medium flex items-center">
-                      <TrendingDown className="mr-2 h-5 w-5 text-red-600" /> Mínimo Histórico
+                      <TrendingDown className="mr-2 h-5 w-5 text-red-600" /> Mínimo en Rango Filtrado
                     </TableCell>
                     <TableCell>{stats.minPoint.year}</TableCell>
                     <TableCell className="text-right">{stats.minPoint.value.toLocaleString()} {stats.unit}</TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell className="font-medium flex items-center">
-                      <MinusSquare className="mr-2 h-5 w-5 text-blue-600" /> Promedio Histórico
+                      <MinusSquare className="mr-2 h-5 w-5 text-blue-600" /> Promedio en Rango Filtrado
                     </TableCell>
                     <TableCell>N/A</TableCell>
                     <TableCell className="text-right">{stats.average.toLocaleString()} {stats.unit}</TableCell>
@@ -149,3 +251,4 @@ export default function VisualizeSpeciesPage({ params }: VisualizeSpeciesPagePro
     </RoleBasedGuard>
   );
 }
+
