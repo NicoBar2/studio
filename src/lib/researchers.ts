@@ -9,6 +9,7 @@ export type Researcher = {
   institution?: string;
   specialization?: string;
   isVerified: boolean;
+  password?: string; // Added password field
 };
 
 let researcherList: Researcher[] = [];
@@ -40,6 +41,7 @@ export async function addResearcher(
     institution: institution?.trim() || undefined,
     specialization: specialization?.trim() || undefined,
     isVerified: false, // Researchers start as not verified
+    // Password is not set on creation
   };
   // Check if email already exists
   if (researcherList.some(r => r.email === newResearcher.email)) {
@@ -67,23 +69,39 @@ export async function getResearcherByEmail(email: string): Promise<Researcher | 
   return researcherList.find(researcher => researcher.email === email.toLowerCase());
 }
 
-export async function updateResearcher(id: string, updates: Partial<Omit<Researcher, 'id'>>): Promise<Researcher | null> {
+export async function updateResearcher(id: string, updates: Partial<Omit<Researcher, 'id' | 'password'>>): Promise<Researcher | null> {
   await new Promise(resolve => setTimeout(resolve, 200));
   const index = researcherList.findIndex(r => r.id === id);
   if (index === -1) {
     return null;
   }
+  
+  const currentResearcher = researcherList[index];
   // Ensure email is handled correctly if updated
-  if (updates.email) {
-    updates.email = updates.email.toLowerCase();
-    // Optional: Check for email uniqueness if email is being changed
-    // if (researcherList.some(r => r.email === updates.email && r.id !== id)) {
-    //   throw new Error("Otro investigador ya usa este correo electrónico.");
-    // }
+  if (updates.email && updates.email !== currentResearcher.email) {
+    const newEmail = updates.email.toLowerCase();
+    if (researcherList.some(r => r.email === newEmail && r.id !== id)) {
+      throw new Error("Otro investigador ya usa este correo electrónico.");
+    }
+    updates.email = newEmail;
   }
-  researcherList[index] = { ...researcherList[index], ...updates };
+
+  researcherList[index] = { ...currentResearcher, ...updates };
   return researcherList[index];
 }
+
+export async function setResearcherPassword(email: string, passwordToSet: string): Promise<Researcher | null> {
+  await new Promise(resolve => setTimeout(resolve, 100));
+  const researcherEmail = email.toLowerCase();
+  const index = researcherList.findIndex(r => r.email === researcherEmail);
+  if (index === -1) {
+    return null; // Researcher not found
+  }
+  // In a real app, hash the password here before saving
+  researcherList[index].password = passwordToSet;
+  return researcherList[index];
+}
+
 
 export async function deleteResearcherById(id: string): Promise<boolean> {
   // Simulate async operation

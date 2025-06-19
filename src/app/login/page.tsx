@@ -24,13 +24,14 @@ export default function LoginPage() {
     setError(null);
     setIsLoading(true);
 
-    const success = await login(email, password);
+    const result = await login(email, password); // login now returns { success: boolean; error?: string }
     setIsLoading(false);
 
-    if (success) {
+    if (result.success) {
       router.push('/dashboard'); // Redirigir al panel principal tras el login
+      // Success toast is handled within AuthContext.login
     } else {
-      setError('Credenciales incorrectas. Por favor, inténtalo de nuevo.');
+      setError(result.error || 'Error desconocido durante el inicio de sesión.');
     }
   };
 
@@ -39,7 +40,10 @@ export default function LoginPage() {
       <Card className="w-full max-w-md shadow-xl">
         <CardHeader>
           <CardTitle className="text-2xl font-headline text-primary">Iniciar Sesión</CardTitle>
-          <CardDescription>Accede a tu cuenta para gestionar los datos de Galápagos.</CardDescription>
+          <CardDescription>
+            Accede a tu cuenta. Si eres un investigador verificado y es tu primer inicio de sesión,
+            la contraseña que ingreses aquí se establecerá como tu nueva contraseña.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
