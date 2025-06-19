@@ -6,16 +6,15 @@ import React, { createContext, useContext, useState, ReactNode, useEffect } from
 
 type AuthContextType = {
   role: UserRole | null;
+  userEmail: string | null; // Added userEmail
   isLoading: boolean;
   login: (email: string, password: string) => Promise<boolean>;
   logout: () => void;
-  // setRole is kept for potential direct role changes if needed, but login/logout are primary
   setRole: (role: UserRole | null) => void; 
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Credenciales predefinidas para el prototipo
 const PREDEFINED_CREDENTIALS: Record<string, { pass: string; role: UserRole }> = {
   'admin@galapagos.com': { pass: 'admin123', role: 'admin' },
   'researcher@galapagos.com': { pass: 'researcher123', role: 'researcher' },
@@ -23,28 +22,37 @@ const PREDEFINED_CREDENTIALS: Record<string, { pass: string; role: UserRole }> =
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [role, setRoleState] = useState<UserRole | null>(null);
+  const [userEmail, setUserEmailState] = useState<string | null>(null); // Added userEmail state
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Cargar rol desde localStorage al iniciar para persistir la "sesión"
     const storedRole = localStorage.getItem('galapagos-auth-role') as UserRole | null;
+    const storedEmail = localStorage.getItem('galapagos-auth-email'); // Load email
+
     if (storedRole && ['admin', 'researcher', 'tourist'].includes(storedRole)) {
       setRoleState(storedRole);
+      if (storedRole === 'admin' || storedRole === 'researcher') {
+        setUserEmailState(storedEmail); // Set email if admin or researcher
+      } else {
+        setUserEmailState(null);
+      }
     } else {
-      setRoleState('tourist'); // Por defecto es turista si no hay rol guardado o es inválido
+      setRoleState('tourist');
+      setUserEmailState(null);
     }
     setIsLoading(false);
   }, []);
 
   const login = async (email: string, password: string): Promise<boolean> => {
     setIsLoading(true);
-    // Simular llamada a API
     await new Promise(resolve => setTimeout(resolve, 500));
 
     const userCredentials = PREDEFINED_CREDENTIALS[email.toLowerCase()];
     if (userCredentials && userCredentials.pass === password) {
       setRoleState(userCredentials.role);
+      setUserEmailState(email.toLowerCase()); // Store email on login
       localStorage.setItem('galapagos-auth-role', userCredentials.role);
+      localStorage.setItem('galapagos-auth-email', email.toLowerCase()); // Save email
       setIsLoading(false);
       return true;
     }
@@ -55,19 +63,25 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const logout = () => {
     setRoleState('tourist');
+    setUserEmailState(null); // Clear email on logout
     localStorage.setItem('galapagos-auth-role', 'tourist');
-    // Podrías limpiar más cosas aquí si es necesario, ej: router.push('/login');
+    localStorage.removeItem('galapagos-auth-email'); // Remove email
   };
 
-  // Direct setRole, útil para el simulador si se quiere reintroducir o para pruebas.
-  // Para el login normal, usar login() y logout().
   const setRole = (newRole: UserRole | null) => {
     const roleToSet = newRole || 'tourist';
     setRoleState(roleToSet);
     localStorage.setItem('galapagos-auth-role', roleToSet);
+    // Note: This direct setRole might not always have the email context.
+    // For simulated roles, email might need to be handled separately if not going through login.
+    // For this app, login is the primary way to get a role other than tourist.
+    if (roleToSet !== 'admin' && roleToSet !== 'researcher') {
+        setUserEmailState(null);
+        localStorage.removeItem('galapagos-auth-email');
+    }
   };
   
-  if (isLoading && role === null) { // Muestra carga solo si aún no se ha determinado el rol inicial
+  if (isLoading && role === null) { 
     return (
       <div className="flex items-center justify-center min-h-screen bg-background">
         <p className="text-foreground text-lg">Cargando aplicación...</p>
@@ -76,7 +90,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }
 
   return (
-    <AuthContext.Provider value={{ role, isLoading, login, logout, setRole }}>
+    <AuthContext.Provider value={{ role, userEmail, isLoading, login, logout, setRole }}>
       {children}
     </AuthContext.Provider>
   );

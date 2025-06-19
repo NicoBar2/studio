@@ -9,6 +9,7 @@ import {
   deleteResearcherById as deleteResearcherByIdFromStore, 
   updateResearcher as updateResearcherInStore,
   getResearcherById as getResearcherByIdFromStore,
+  getResearcherByEmail as getResearcherByEmailFromStore, // Import new function
   type Researcher 
 } from '@/lib/researchers';
 // Assuming a Genkit flow for insights exists at this path
@@ -30,13 +31,12 @@ async function generateSpeciesInsight(speciesName: string, speciesData: string):
 
 
 export async function getAISummary(speciesId: string): Promise<{ summary?: string; error?: string }> {
-  const species = getSpeciesById(speciesId); // Using the refactored getSpeciesById
+  const species = getSpeciesById(speciesId); 
   if (!species) {
     return { error: "Especie no encontrada." };
   }
 
   try {
-    // Prepare a simplified data string for the AI
     const dataForAI = `
       Nombre: ${species.name}
       Nombre Científico: ${species.scientificName}
@@ -56,12 +56,31 @@ export async function getAISummary(speciesId: string): Promise<{ summary?: strin
 
 export async function saveSpeciesData(prevState: any, formData: FormData): Promise<{ success: boolean; message: string; speciesId?: string }> {
   const speciesId = formData.get('id') as string;
+  const userRole = formData.get('userRole') as string;
+  const userEmail = formData.get('userEmail') as string;
   
   if (!speciesId) {
     return { success: false, message: "Falta el ID de la especie." };
   }
 
-  const currentSpecies = getSpeciesById(speciesId); // Fetch fresh data
+  // Authorization check
+  if (userRole === 'researcher') {
+    if (!userEmail) {
+      return { success: false, message: "No se pudo identificar al investigador." };
+    }
+    const researcher = await getResearcherByEmailFromStore(userEmail);
+    if (!researcher) {
+      return { success: false, message: "Investigador no encontrado." };
+    }
+    if (!researcher.isVerified) {
+      return { success: false, message: "Acción no permitida. El investigador debe estar verificado para guardar cambios." };
+    }
+  } else if (userRole !== 'admin') {
+    return { success: false, message: "Acción no permitida. Rol de usuario no autorizado." };
+  }
+  // Admin role can proceed
+
+  const currentSpecies = getSpeciesById(speciesId); 
   if (!currentSpecies) {
     return { success: false, message: "Especie no encontrada." };
   }
@@ -91,9 +110,9 @@ export async function saveSpeciesData(prevState: any, formData: FormData): Promi
     const keyStatValue = formData.get('keyStat0_value') as string;
     const keyStatUnit = formData.get('keyStat0_unit') as string;
     
-    if (keyStatLabel && keyStatValue) { // Only update if new data is provided
+    if (keyStatLabel && keyStatValue) { 
         const existingStatIndex = currentSpecies.keyStats.findIndex(stat => stat.label === keyStatLabel);
-        updatedData.keyStats = [...currentSpecies.keyStats]; // Start with a copy
+        updatedData.keyStats = [...currentSpecies.keyStats]; 
         if (existingStatIndex !== -1) {
             updatedData.keyStats[existingStatIndex] = {
                 label: keyStatLabel,
@@ -101,14 +120,12 @@ export async function saveSpeciesData(prevState: any, formData: FormData): Promi
                 unit: keyStatUnit || undefined
             };
         } else if (currentSpecies.keyStats.length > 0 && currentSpecies.keyStats[0].label === keyStatLabel) {
-             // This condition might be redundant if keyStat0_label hidden input ensures it's always the first stat
              updatedData.keyStats[0] = {
                 label: keyStatLabel,
                 value: isNaN(Number(keyStatValue)) ? keyStatValue : Number(keyStatValue),
                 unit: keyStatUnit || undefined
             };
         }
-        // Not adding new stats here as form only allows editing the first one
     }
 
 
@@ -116,20 +133,18 @@ export async function saveSpeciesData(prevState: any, formData: FormData): Promi
     const historicalValue = formData.get('historicalData0_value') as string;
     const historicalUnit = formData.get('historicalData0_unit') as string;
 
-    if (historicalYear && historicalValue && historicalUnit) { // Only update if new data is provided
+    if (historicalYear && historicalValue && historicalUnit) { 
         const yearNum = parseInt(historicalYear);
         const valueNum = parseFloat(historicalValue);
         if (!isNaN(yearNum) && !isNaN(valueNum)) {
-            updatedData.historicalData = [...currentSpecies.historicalData]; // Start with a copy
-            // Assuming the form edits the first historical data point based on name="historicalData0_..."
-            if (updatedData.historicalData.length > 0 && updatedData.historicalData[0].year === yearNum ) { // Check if it's the one being edited
+            updatedData.historicalData = [...currentSpecies.historicalData]; 
+            if (updatedData.historicalData.length > 0 && updatedData.historicalData[0].year === yearNum ) { 
                  updatedData.historicalData[0] = { year: yearNum, value: valueNum, unit: historicalUnit };
-            } else { // Fallback or if structure changes - find by year
+            } else { 
                 const existingDataIndex = updatedData.historicalData.findIndex(data => data.year === yearNum);
                 if (existingDataIndex !== -1) {
                      updatedData.historicalData[existingDataIndex] = { year: yearNum, value: valueNum, unit: historicalUnit };
                 }
-                // Not adding new historical data here as form only allows editing the first one
             }
         }
     }
@@ -168,7 +183,7 @@ export async function createResearcherAction(
   }
 
   try {
-    const newResearcher = await addResearcherToStore(researcherName, email, institution, specialization);
+    const newResearcher = await addResearcherToStore(researcherName, email.toLowerCase(), institution, specialization);
     revalidatePath('/dashboard/admin/researchers'); 
     return { success: true, message: `Investigador "${newResearcher.name}" creado correctamente.`, researcher: newResearcher };
   } catch (error) {
@@ -223,8 +238,7 @@ export async function toggleResearcherVerificationAction(
   }
 
   try {
-    // Simular llamada a una API de verificación y envío de correo
-    await new Promise(resolve => setTimeout(resolve, 1000)); // Simula latencia de red
+    await new Promise(resolve => setTimeout(resolve, 1000)); 
 
     const researcher = await getResearcherByIdFromStore(researcherId);
     if (!researcher) {

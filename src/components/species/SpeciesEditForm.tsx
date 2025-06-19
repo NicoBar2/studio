@@ -1,6 +1,6 @@
 
 "use client";
-import { getSpeciesImageUrl } from '@/lib/species'; // Import the helper function
+import { getSpeciesImageUrl } from '@/lib/species'; 
 import type { Species, ConservationStatus } from '@/lib/species';
 import { useActionState, useState, useEffect, type ChangeEvent, useRef } from 'react';
 import { useFormStatus } from 'react-dom';
@@ -10,10 +10,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'; // Ensure this line is present and not commented
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/contexts/AuthContext'; // Import useAuth
 
 const initialState = {
   success: false,
@@ -55,7 +56,8 @@ export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
   const [state, formAction] = useActionState(saveSpeciesData, initialState);
   const { toast } = useToast();
   const router = useRouter();
-  // Use the helper function to get the initial image URL
+  const { role, userEmail } = useAuth(); // Get role and userEmail from AuthContext
+
   const [imagePreview, setImagePreview] = useState<string | null>(getSpeciesImageUrl(species));
   const [imageFileValue, setImageFileValue] = useState<string>(getSpeciesImageUrl(species));
 
@@ -76,8 +78,6 @@ export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
   }, [state, toast, router]);
 
   useEffect(() => {
-    // This effect updates the preview if the underlying species prop changes
-    // (e.g., after a successful save and router.refresh())
     const currentImageUrl = getSpeciesImageUrl(species);
     if (currentImageUrl !== imagePreview) {
       setImagePreview(currentImageUrl);
@@ -97,7 +97,6 @@ export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
       };
       reader.readAsDataURL(file);
     } else {
-      // If no file is selected (e.g., user cancels file dialog), revert to the current species image URL
       setImagePreview(getSpeciesImageUrl(species));
       setImageFileValue(species.imageUrl);
     }
@@ -112,6 +111,8 @@ export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
       <CardContent>
         <form action={formAction} className="space-y-6">
           <input type="hidden" name="id" defaultValue={species.id} />
+          <input type="hidden" name="userRole" value={role || ''} />
+          <input type="hidden" name="userEmail" value={userEmail || ''} />
 
           <div>
             <Label htmlFor="name" className="font-semibold">Nombre de la Especie</Label>

@@ -36,11 +36,15 @@ export async function addResearcher(
   const newResearcher: Researcher = {
     id: generateId(),
     name: name.trim(),
-    email: email.trim(),
+    email: email.trim().toLowerCase(), // Store email in lowercase for consistent lookup
     institution: institution?.trim() || undefined,
     specialization: specialization?.trim() || undefined,
     isVerified: false, // Researchers start as not verified
   };
+  // Check if email already exists
+  if (researcherList.some(r => r.email === newResearcher.email)) {
+    throw new Error("Ya existe un investigador con este correo electrónico.");
+  }
   researcherList.push(newResearcher);
   return newResearcher;
 }
@@ -48,7 +52,7 @@ export async function addResearcher(
 export async function getAllResearchers(): Promise<Researcher[]> {
   // Simulate async operation
   await new Promise(resolve => setTimeout(resolve, 100));
-  return [...researcherList]; // Return a copy
+  return [...researcherList].sort((a, b) => a.name.localeCompare(b.name)); // Return sorted copy
 }
 
 export async function getResearcherById(id: string): Promise<Researcher | undefined> {
@@ -57,11 +61,25 @@ export async function getResearcherById(id: string): Promise<Researcher | undefi
   return researcherList.find(researcher => researcher.id === id);
 }
 
+export async function getResearcherByEmail(email: string): Promise<Researcher | undefined> {
+  // Simulate async operation
+  await new Promise(resolve => setTimeout(resolve, 50));
+  return researcherList.find(researcher => researcher.email === email.toLowerCase());
+}
+
 export async function updateResearcher(id: string, updates: Partial<Omit<Researcher, 'id'>>): Promise<Researcher | null> {
   await new Promise(resolve => setTimeout(resolve, 200));
   const index = researcherList.findIndex(r => r.id === id);
   if (index === -1) {
     return null;
+  }
+  // Ensure email is handled correctly if updated
+  if (updates.email) {
+    updates.email = updates.email.toLowerCase();
+    // Optional: Check for email uniqueness if email is being changed
+    // if (researcherList.some(r => r.email === updates.email && r.id !== id)) {
+    //   throw new Error("Otro investigador ya usa este correo electrónico.");
+    // }
   }
   researcherList[index] = { ...researcherList[index], ...updates };
   return researcherList[index];
@@ -79,3 +97,11 @@ export async function deleteResearcherById(id: string): Promise<boolean> {
 export function _clearResearchers() {
   researcherList = [];
 }
+// Initialize with a verified researcher for testing
+// _clearResearchers();
+// addResearcher('Dr. Verified Researcher', 'researcher@galapagos.com', 'Galapagos Institute', 'Marine Biology')
+//   .then(researcher => updateResearcher(researcher.id, { isVerified: true }))
+//   .catch(console.error);
+// addResearcher('Dr. Unverified Researcher', 'unverified@galapagos.com', 'Local University', 'Ornithology')
+//   .catch(console.error);
+
