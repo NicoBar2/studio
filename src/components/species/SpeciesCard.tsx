@@ -59,8 +59,6 @@ export default function SpeciesCard({ species }: SpeciesCardProps) {
             <Link 
               href={`/species/${species.id}`} 
               className="flex items-center justify-center"
-              target="_blank"
-              rel="noopener noreferrer"
             >
               Saber Más
               <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
