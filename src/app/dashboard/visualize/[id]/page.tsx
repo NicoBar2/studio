@@ -1,16 +1,17 @@
 
 "use client"; // Charts are interactive, client component needed
 
-import { getSpeciesById, Species } from '@/lib/species';
+import { getSpeciesById, type Species, type HistoricalDataPoint } from '@/lib/species';
 import RoleBasedGuard from '@/components/auth/RoleBasedGuard';
 import { notFound, useRouter } from 'next/navigation';
 import SpeciesDataChart from '@/components/charts/SpeciesDataChart';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { ArrowLeft, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, AlertTriangle, TrendingUp, TrendingDown, MinusSquare } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useEffect, useState } from 'react';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 type VisualizeSpeciesPageProps = {
   params: { id: string };
@@ -27,8 +28,6 @@ export default function VisualizeSpeciesPage({ params }: VisualizeSpeciesPagePro
     setSpecies(foundSpecies);
   }, [params.id]);
 
-  // Metadata would typically be generated server-side if possible
-  // For client component, you might set document.title in useEffect
   useEffect(() => {
     if (species) {
       document.title = `Visualizar ${species.name} | Galapagos DataLens`;
@@ -36,6 +35,28 @@ export default function VisualizeSpeciesPage({ params }: VisualizeSpeciesPagePro
       document.title = `Especie No Encontrada | Galapagos DataLens`;
     }
   }, [species]);
+
+  const getHistoricalStats = (data: HistoricalDataPoint[]) => {
+    if (!data || data.length === 0) {
+      return null;
+    }
+
+    const values = data.map(d => d.value);
+    const maxPoint = data.reduce((max, p) => p.value > max.value ? p : max, data[0]);
+    const minPoint = data.reduce((min, p) => p.value < min.value ? p : min, data[0]);
+    const average = values.reduce((sum, val) => sum + val, 0) / values.length;
+
+    return {
+      maxPoint,
+      minPoint,
+      average: parseFloat(average.toFixed(2)),
+      unit: data[0]?.unit || '',
+    };
+  };
+
+  const stats = species && species.historicalData && species.historicalData.length > 0 
+    ? getHistoricalStats(species.historicalData) 
+    : null;
 
 
   if (authLoading || species === undefined) {
@@ -69,8 +90,8 @@ export default function VisualizeSpeciesPage({ params }: VisualizeSpeciesPagePro
                 data={species.historicalData} 
                 dataKey="value" 
                 nameKey="year"
-                unit={species.historicalData[0]?.unit || 'conteo'} // Use unit from first data point or default
-                chartType="bar" // Cambiado a 'bar'
+                unit={species.historicalData[0]?.unit || 'conteo'} 
+                chartType="bar"
               />
             ) : (
               <div className="flex flex-col items-center justify-center p-8 border border-dashed rounded-lg">
@@ -81,15 +102,50 @@ export default function VisualizeSpeciesPage({ params }: VisualizeSpeciesPagePro
             )}
           </CardContent>
         </Card>
-         {/* Add more charts or data views here as needed */}
+
+        {stats && (
+          <Card className="shadow-lg">
+            <CardHeader>
+              <CardTitle className="text-2xl font-headline text-primary">Estadísticas Históricas Clave</CardTitle>
+              <CardDescription>Un resumen de los datos históricos de {species.name}.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-[200px]">Métrica</TableHead>
+                    <TableHead>Año</TableHead>
+                    <TableHead className="text-right">Valor</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  <TableRow>
+                    <TableCell className="font-medium flex items-center">
+                      <TrendingUp className="mr-2 h-5 w-5 text-green-600" /> Máximo Histórico
+                    </TableCell>
+                    <TableCell>{stats.maxPoint.year}</TableCell>
+                    <TableCell className="text-right">{stats.maxPoint.value.toLocaleString()} {stats.unit}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell className="font-medium flex items-center">
+                      <TrendingDown className="mr-2 h-5 w-5 text-red-600" /> Mínimo Histórico
+                    </TableCell>
+                    <TableCell>{stats.minPoint.year}</TableCell>
+                    <TableCell className="text-right">{stats.minPoint.value.toLocaleString()} {stats.unit}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell className="font-medium flex items-center">
+                      <MinusSquare className="mr-2 h-5 w-5 text-blue-600" /> Promedio Histórico
+                    </TableCell>
+                    <TableCell>N/A</TableCell>
+                    <TableCell className="text-right">{stats.average.toLocaleString()} {stats.unit}</TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </RoleBasedGuard>
   );
 }
-
-// This page is client-rendered due to chart interactions and RoleBasedGuard.
-// generateStaticParams might not be suitable here unless parts are server-rendered.
-// If static generation is needed, consider structuring with server component fetching data
-// and passing to a client component for rendering charts.
-// For this setup, we'll rely on client-side fetching via getSpeciesById.
-
