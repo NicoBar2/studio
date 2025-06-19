@@ -7,6 +7,8 @@ import {
   addResearcher as addResearcherToStore, 
   getAllResearchers as getAllResearchersFromStore, 
   deleteResearcherById as deleteResearcherByIdFromStore, 
+  updateResearcher as updateResearcherInStore,
+  getResearcherById as getResearcherByIdFromStore,
   type Researcher 
 } from '@/lib/researchers';
 // Assuming a Genkit flow for insights exists at this path
@@ -154,13 +156,19 @@ export async function createResearcherAction(
   formData: FormData
 ): Promise<{ success: boolean; message: string; researcher?: Researcher }> {
   const researcherName = formData.get('researcherName') as string;
+  const email = formData.get('email') as string;
+  const institution = formData.get('institution') as string | undefined;
+  const specialization = formData.get('specialization') as string | undefined;
 
   if (!researcherName || researcherName.trim().length < 3) {
     return { success: false, message: "El nombre del investigador debe tener al menos 3 caracteres." };
   }
+  if (!email || !email.trim().match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g)) {
+    return { success: false, message: "Por favor, introduce un correo electrónico válido." };
+  }
 
   try {
-    const newResearcher = await addResearcherToStore(researcherName);
+    const newResearcher = await addResearcherToStore(researcherName, email, institution, specialization);
     revalidatePath('/dashboard/admin/researchers'); 
     return { success: true, message: `Investigador "${newResearcher.name}" creado correctamente.`, researcher: newResearcher };
   } catch (error) {
@@ -205,4 +213,36 @@ export async function deleteResearcherAction(
   }
 }
 
+export async function toggleResearcherVerificationAction(
+  prevState: { success: boolean; message: string; updatedResearcher?: Researcher },
+  formData: FormData
+): Promise<{ success: boolean; message: string; updatedResearcher?: Researcher }> {
+  const researcherId = formData.get('researcherId') as string;
+  if (!researcherId) {
+    return { success: false, message: "Falta el ID del investigador." };
+  }
+
+  try {
+    const researcher = await getResearcherByIdFromStore(researcherId);
+    if (!researcher) {
+      return { success: false, message: "Investigador no encontrado." };
+    }
+
+    const updatedResearcher = await updateResearcherInStore(researcherId, { isVerified: !researcher.isVerified });
+    if (updatedResearcher) {
+      revalidatePath('/dashboard/admin/researchers');
+      return { 
+        success: true, 
+        message: `Estado de verificación de ${updatedResearcher.name} cambiado a ${updatedResearcher.isVerified ? 'Verificado' : 'No Verificado'}.`,
+        updatedResearcher 
+      };
+    } else {
+      return { success: false, message: "Error al actualizar el estado de verificación." };
+    }
+  } catch (error) {
+    console.error("Error cambiando estado de verificación:", error);
+    const errorMessage = error instanceof Error ? error.message : "Error desconocido.";
+    return { success: false, message: errorMessage };
+  }
+}
     

@@ -1,10 +1,10 @@
 
 "use client";
 
-import { useEffect, useState, useActionState } from 'react';
+import { useEffect, useState, useActionState, useRef } from 'react';
 import { createResearcherAction, getResearchersAction } from '@/app/actions';
 import type { Researcher } from '@/lib/researchers';
-import ResearcherItem from './ResearcherItem'; // Import the new component
+import ResearcherItem from './ResearcherItem'; 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -23,9 +23,15 @@ export default function ResearcherManagementClient() {
   const [researchers, setResearchers] = useState<Researcher[]>([]);
   const [isLoadingList, setIsLoadingList] = useState(true);
   const { toast } = useToast();
+  const formRef = useRef<HTMLFormElement>(null);
 
   const [formState, formAction, isCreating] = useActionState(createResearcherAction, initialFormState);
-  const [newResearcherName, setNewResearcherName] = useState('');
+  
+  // States for controlled inputs to allow form reset
+  const [researcherName, setResearcherName] = useState('');
+  const [email, setEmail] = useState('');
+  const [institution, setInstitution] = useState('');
+  const [specialization, setSpecialization] = useState('');
 
 
   useEffect(() => {
@@ -39,22 +45,33 @@ export default function ResearcherManagementClient() {
   }, []);
   
   useEffect(() => {
-    // This effect handles feedback for the CREATE action
-    if (formState.message && formState.message !== initialFormState.message) { // Ensure message has changed
+    if (formState.message && formState.message !== initialFormState.message) { 
       toast({
         title: formState.success ? '¡Éxito!' : 'Error',
         description: formState.message,
         variant: formState.success ? 'default' : 'destructive',
       });
       if (formState.success && formState.researcher) {
-        setResearchers(prev => [...prev, formState.researcher!]);
-        setNewResearcherName(''); // Reset the input field
+        setResearchers(prev => [formState.researcher!, ...prev].sort((a, b) => a.name.localeCompare(b.name)));
+        // Reset form fields
+        setResearcherName('');
+        setEmail('');
+        setInstitution('');
+        setSpecialization('');
+        formRef.current?.reset(); // Also try native form reset
       }
     }
   }, [formState, toast]);
 
   const handleDeleteResearcher = (researcherId: string) => {
     setResearchers(prev => prev.filter(r => r.id !== researcherId));
+  };
+
+  const handleVerificationChange = (updatedResearcher: Researcher) => {
+    setResearchers(prev => 
+      prev.map(r => r.id === updatedResearcher.id ? updatedResearcher : r)
+        .sort((a, b) => a.name.localeCompare(b.name))
+    );
   };
 
 
@@ -72,23 +89,61 @@ export default function ResearcherManagementClient() {
         </CardHeader>
         <CardContent>
           <form 
+            ref={formRef}
             action={(formData) => {
               formAction(formData);
             }} 
             className="space-y-4"
           >
-            <div>
-              <Label htmlFor="researcherName" className="font-semibold">Nombre del Investigador</Label>
-              <Input 
-                id="researcherName" 
-                name="researcherName" 
-                placeholder="Ej: Dra. Jane Goodall" 
-                className="mt-1" 
-                required 
-                minLength={3}
-                value={newResearcherName}
-                onChange={(e) => setNewResearcherName(e.target.value)}
-              />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="researcherName" className="font-semibold">Nombre del Investigador</Label>
+                <Input 
+                  id="researcherName" 
+                  name="researcherName" 
+                  placeholder="Ej: Dra. Jane Goodall" 
+                  className="mt-1" 
+                  required 
+                  minLength={3}
+                  value={researcherName}
+                  onChange={(e) => setResearcherName(e.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="email" className="font-semibold">Correo Electrónico</Label>
+                <Input 
+                  id="email" 
+                  name="email" 
+                  type="email"
+                  placeholder="investigador@ejemplo.com" 
+                  className="mt-1" 
+                  required 
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="institution" className="font-semibold">Institución (Opcional)</Label>
+                <Input 
+                  id="institution" 
+                  name="institution" 
+                  placeholder="Ej: Universidad de Galápagos" 
+                  className="mt-1" 
+                  value={institution}
+                  onChange={(e) => setInstitution(e.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="specialization" className="font-semibold">Especialización (Opcional)</Label>
+                <Input 
+                  id="specialization" 
+                  name="specialization" 
+                  placeholder="Ej: Biología Marina, Ornitología" 
+                  className="mt-1" 
+                  value={specialization}
+                  onChange={(e) => setSpecialization(e.target.value)}
+                />
+              </div>
             </div>
             <Button type="submit" disabled={isCreating} className="bg-primary hover:bg-primary/90">
               {isCreating ? 'Creando...' : 'Crear Investigador'}
@@ -110,9 +165,9 @@ export default function ResearcherManagementClient() {
         <CardContent>
           {isLoadingList ? (
             <div className="space-y-2">
-              <Skeleton className="h-10 w-full rounded-md" />
-              <Skeleton className="h-10 w-full rounded-md" />
-              <Skeleton className="h-10 w-4/5 rounded-md" />
+              <Skeleton className="h-16 w-full rounded-md" />
+              <Skeleton className="h-16 w-full rounded-md" />
+              <Skeleton className="h-16 w-4/5 rounded-md" />
             </div>
           ) : researchers.length > 0 ? (
             <ul className="space-y-3">
@@ -120,7 +175,8 @@ export default function ResearcherManagementClient() {
                 <ResearcherItem 
                   key={researcher.id} 
                   researcher={researcher} 
-                  onDelete={handleDeleteResearcher} 
+                  onDelete={handleDeleteResearcher}
+                  onVerificationChange={handleVerificationChange}
                 />
               ))}
             </ul>
@@ -132,4 +188,3 @@ export default function ResearcherManagementClient() {
     </div>
   );
 }
-

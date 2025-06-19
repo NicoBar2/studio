@@ -2,15 +2,17 @@
 "use client";
 
 import type { Researcher } from '@/lib/researchers';
-import { useActionState, useEffect } from 'react';
-import { deleteResearcherAction } from '@/app/actions';
+import { useActionState, useEffect, useRef } from 'react';
+import { deleteResearcherAction, toggleResearcherVerificationAction } from '@/app/actions';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { Trash2, Users } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Trash2, Users, Mail, Building, Award, CheckCircle, XCircle, ShieldCheck } from 'lucide-react';
 
 type ResearcherItemProps = {
   researcher: Researcher;
   onDelete: (researcherId: string) => void;
+  onVerificationChange: (updatedResearcher: Researcher) => void;
 };
 
 const initialDeleteState = {
@@ -19,15 +21,28 @@ const initialDeleteState = {
   deletedResearcherId: undefined as string | undefined,
 };
 
-export default function ResearcherItem({ researcher, onDelete }: ResearcherItemProps) {
+const initialVerifyState = {
+  success: false,
+  message: '',
+  updatedResearcher: undefined as Researcher | undefined,
+};
+
+export default function ResearcherItem({ researcher, onDelete, onVerificationChange }: ResearcherItemProps) {
   const { toast } = useToast();
   const [deleteState, deleteFormAction, isDeleting] = useActionState(
     deleteResearcherAction,
     initialDeleteState
   );
+  const [verifyState, verifyFormAction, isVerifying] = useActionState(
+    toggleResearcherVerificationAction,
+    initialVerifyState
+  );
+
+  const prevDeleteMessageRef = useRef<string>();
+  const prevVerifyMessageRef = useRef<string>();
 
   useEffect(() => {
-    if (deleteState.message && deleteState.message !== initialDeleteState.message) { // Ensure message has changed
+    if (deleteState.message && deleteState.message !== prevDeleteMessageRef.current) {
       toast({
         title: deleteState.success ? '¡Éxito!' : 'Error',
         description: deleteState.message,
@@ -36,38 +51,82 @@ export default function ResearcherItem({ researcher, onDelete }: ResearcherItemP
       if (deleteState.success && deleteState.deletedResearcherId) {
         onDelete(deleteState.deletedResearcherId);
       }
+      prevDeleteMessageRef.current = deleteState.message;
     }
   }, [deleteState, toast, onDelete]);
 
+  useEffect(() => {
+    if (verifyState.message && verifyState.message !== prevVerifyMessageRef.current) {
+      toast({
+        title: verifyState.success ? '¡Éxito!' : 'Error',
+        description: verifyState.message,
+        variant: verifyState.success ? 'default' : 'destructive',
+      });
+      if (verifyState.success && verifyState.updatedResearcher) {
+        onVerificationChange(verifyState.updatedResearcher);
+      }
+      prevVerifyMessageRef.current = verifyState.message;
+    }
+  }, [verifyState, toast, onVerificationChange]);
+
   return (
-    <li className="flex items-center justify-between p-3 bg-muted/50 rounded-md hover:bg-muted transition-colors">
-      <div className="flex items-center">
-        <Users className="h-5 w-5 mr-3 text-primary shrink-0" />
-        <div>
-            <span className="font-medium">{researcher.name}</span>
-            <p className="text-xs text-muted-foreground">ID: {researcher.id}</p>
+    <li className="p-4 bg-card rounded-lg border shadow-sm hover:shadow-md transition-shadow">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="flex-grow space-y-2">
+          <div className="flex items-center gap-3">
+            <Users className="h-6 w-6 text-primary shrink-0" />
+            <h3 className="text-lg font-semibold text-primary">{researcher.name}</h3>
+            <Badge variant={researcher.isVerified ? 'default' : 'secondary'} className="ml-auto sm:ml-2">
+              {researcher.isVerified ? <CheckCircle className="mr-1 h-4 w-4" /> : <XCircle className="mr-1 h-4 w-4" />}
+              {researcher.isVerified ? 'Verificado' : 'Pendiente'}
+            </Badge>
+          </div>
+          <p className="text-sm text-muted-foreground flex items-center gap-2">
+            <Mail className="h-4 w-4" /> {researcher.email}
+          </p>
+          {researcher.institution && (
+            <p className="text-sm text-muted-foreground flex items-center gap-2">
+              <Building className="h-4 w-4" /> {researcher.institution}
+            </p>
+          )}
+          {researcher.specialization && (
+            <p className="text-sm text-muted-foreground flex items-center gap-2">
+              <Award className="h-4 w-4" /> {researcher.specialization}
+            </p>
+          )}
+           <p className="text-xs text-muted-foreground">ID: {researcher.id}</p>
+        </div>
+        
+        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto sm:ml-2 shrink-0">
+          <form action={verifyFormAction} className="w-full sm:w-auto">
+            <input type="hidden" name="researcherId" value={researcher.id} />
+            <Button
+              type="submit"
+              variant="outline"
+              size="sm"
+              className="w-full justify-center"
+              disabled={isVerifying}
+            >
+              <ShieldCheck className="mr-2 h-4 w-4" />
+              {isVerifying ? 'Actualizando...' : (researcher.isVerified ? 'Marcar No Verificado' : 'Marcar Verificado')}
+            </Button>
+          </form>
+          <form action={deleteFormAction} className="w-full sm:w-auto">
+            <input type="hidden" name="researcherId" value={researcher.id} />
+            <Button
+              type="submit"
+              variant="destructive"
+              size="sm"
+              className="w-full justify-center"
+              aria-label={`Eliminar a ${researcher.name}`}
+              disabled={isDeleting}
+            >
+              <Trash2 className="mr-2 h-4 w-4" />
+              {isDeleting ? 'Eliminando...' : 'Eliminar'}
+            </Button>
+          </form>
         </div>
       </div>
-      <form action={deleteFormAction} className="ml-2">
-        <input type="hidden" name="researcherId" value={researcher.id} />
-        <Button
-          type="submit"
-          variant="destructive"
-          size="sm-icon"
-          aria-label={`Eliminar a ${researcher.name}`}
-          disabled={isDeleting}
-          className="shrink-0"
-        >
-          {isDeleting ? (
-            <svg className="animate-spin h-4 w-4 text-destructive-foreground" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-          ) : (
-            <Trash2 className="h-4 w-4 text-destructive-foreground" />
-          )}
-        </Button>
-      </form>
     </li>
   );
 }
