@@ -223,6 +223,9 @@ export async function toggleResearcherVerificationAction(
   }
 
   try {
+    // Simular llamada a una API de verificación y envío de correo
+    await new Promise(resolve => setTimeout(resolve, 1000)); // Simula latencia de red
+
     const researcher = await getResearcherByIdFromStore(researcherId);
     if (!researcher) {
       return { success: false, message: "Investigador no encontrado." };
@@ -231,9 +234,12 @@ export async function toggleResearcherVerificationAction(
     const updatedResearcher = await updateResearcherInStore(researcherId, { isVerified: !researcher.isVerified });
     if (updatedResearcher) {
       revalidatePath('/dashboard/admin/researchers');
+      const verificationStatusMessage = updatedResearcher.isVerified
+        ? `Verificación de ${updatedResearcher.name} completada. Se ha enviado un correo de confirmación (simulado).`
+        : `Verificación de ${updatedResearcher.name} revocada.`;
       return { 
         success: true, 
-        message: `Estado de verificación de ${updatedResearcher.name} cambiado a ${updatedResearcher.isVerified ? 'Verificado' : 'No Verificado'}.`,
+        message: verificationStatusMessage,
         updatedResearcher 
       };
     } else {
