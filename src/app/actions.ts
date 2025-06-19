@@ -9,7 +9,7 @@ import {
   deleteResearcherById as deleteResearcherByIdFromStore, 
   updateResearcher as updateResearcherInStore,
   getResearcherById as getResearcherByIdFromStore,
-  getResearcherByEmail as getResearcherByEmailFromStore, // Import new function
+  getResearcherByEmail as getResearcherByEmailFromStore, 
   type Researcher 
 } from '@/lib/researchers';
 // Assuming a Genkit flow for insights exists at this path
@@ -177,6 +177,9 @@ export async function createResearcherAction(
 
   if (!researcherName || researcherName.trim().length < 3) {
     return { success: false, message: "El nombre del investigador debe tener al menos 3 caracteres." };
+  }
+  if (researcherName.trim().split(' ').filter(word => word.length > 0).length < 2) {
+    return { success: false, message: "El nombre del investigador debe contener al menos un nombre y un apellido." };
   }
   if (!email || !email.trim().match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g)) {
     return { success: false, message: "Por favor, introduce un correo electrónico válido." };
