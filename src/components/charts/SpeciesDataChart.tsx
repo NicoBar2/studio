@@ -32,74 +32,54 @@ export default function SpeciesDataChart({ data, dataKey, nameKey, unit, chartTy
 
 
   return (
-    <ChartContainer config={chartConfig} className="min-h-[300px] w-full">
+    <ChartContainer config={chartConfig} className="w-full h-full">
       {chartType === 'line' ? (
-        <LineChart data={formattedData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
-          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
+        <LineChart data={formattedData} margin={{ top: 20, right: 20, bottom: 5, left: 10 }}>
+          <CartesianGrid strokeDasharray="3 3" vertical={false} />
           <XAxis
             dataKey={nameKey}
             tickLine={false}
             axisLine={false}
             tickMargin={8}
             tickFormatter={(value) => value}
-            stroke="hsl(var(--foreground))"
           />
           <YAxis
             tickFormatter={(value) => `${value} ${unit}`}
-            tickLine={false}
-            axisLine={false}
-            tickMargin={8}
-            stroke="hsl(var(--foreground))"
           />
-          <Tooltip
-            cursor={{ stroke: 'hsl(var(--accent))', strokeWidth: 1.5 }}
-            content={<ChartTooltipContent 
-                formatter={(value, name, item) => (
-                    <>
-                        <div className="font-medium">{item.payload[nameKey]}</div>
-                        <div className="text-muted-foreground">
-                           {unit}: {typeof value === 'number' ? value.toLocaleString() : value}
-                        </div>
-                    </>
-                )} 
-            />}
-          />
+          <Tooltip content={<ChartTooltipContent />} />
           <Legend content={<ChartLegendContent />} />
           <Line
             type="monotone"
             dataKey={dataKey}
-            stroke={`hsl(var(--primary))`}
-            strokeWidth={2.5}
+            stroke={`var(--color-${dataKey})`}
+            strokeWidth={2}
             dot={{
-              fill: `hsl(var(--primary))`,
               r: 4,
+              fill: `var(--color-${dataKey})`,
+              stroke: "transparent"
             }}
             activeDot={{
               r: 6,
-              style: { stroke: `hsl(var(--accent))`, opacity: 0.5 },
+              fill: `var(--color-${dataKey})`,
+              stroke: "hsl(var(--background))"
             }}
           />
         </LineChart>
       ) : (
-        <BarChart data={formattedData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
-          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
+        <BarChart data={formattedData} margin={{ top: 20, right: 20, bottom: 5, left: 10 }}>
+          <CartesianGrid strokeDasharray="3 3" vertical={false} />
           <XAxis
             dataKey={nameKey}
             tickLine={false}
             axisLine={false}
             tickMargin={8}
             tickFormatter={(value) => value}
-            stroke="hsl(var(--foreground))"
           />
           <YAxis
             tickFormatter={(value) => `${value} ${unit}`}
-            tickLine={false}
-            axisLine={false}
-            tickMargin={8}
-            stroke="hsl(var(--foreground))"
           />
           <Tooltip
-            cursor={{ fill: 'hsl(var(--accent))', opacity: 0.3 }}
+            cursor={false}
             content={<ChartTooltipContent 
                 formatter={(value, name, item) => (
                     <>
@@ -112,7 +92,7 @@ export default function SpeciesDataChart({ data, dataKey, nameKey, unit, chartTy
             />}
           />
           <Legend content={<ChartLegendContent />} />
-          <Bar dataKey={dataKey} fill={`hsl(var(--primary))`} radius={[4, 4, 0, 0]} />
+          <Bar dataKey={dataKey} fill={`var(--color-${dataKey})`} radius={4} />
         </BarChart>
       )}
     </ChartContainer>
