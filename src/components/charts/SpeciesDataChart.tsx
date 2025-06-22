@@ -32,9 +32,9 @@ export default function SpeciesDataChart({ data, dataKey, nameKey, unit, chartTy
 
 
   return (
-    <ChartContainer config={chartConfig} className="min-h-[300px] w-full aspect-video">
+    <ChartContainer config={chartConfig} className="min-h-[300px] w-full">
       {chartType === 'line' ? (
-        <LineChart data={formattedData} margin={{ top: 5, right: 20, left: -10, bottom: 5 }}>
+        <LineChart data={formattedData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
           <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
           <XAxis
             dataKey={nameKey}
@@ -81,7 +81,7 @@ export default function SpeciesDataChart({ data, dataKey, nameKey, unit, chartTy
           />
         </LineChart>
       ) : (
-        <BarChart data={formattedData} margin={{ top: 5, right: 20, left: -10, bottom: 5 }}>
+        <BarChart data={formattedData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
           <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
           <XAxis
             dataKey={nameKey}
