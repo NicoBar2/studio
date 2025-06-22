@@ -1,8 +1,9 @@
 
 "use client"; 
 
-import { useState, useMemo } from 'react';
-import { speciesList, type Species, GALAPAGOS_ISLANDS_NAMES } from '@/lib/species';
+import { useState, useMemo, useEffect } from 'react';
+import { type Species, GALAPAGOS_ISLANDS_NAMES } from '@/lib/species';
+import { getSpeciesListAction } from '@/app/actions';
 import SpeciesCard from '@/components/species/SpeciesCard';
 import GalapagosMap from '@/components/map/GalapagosMap';
 import { Button } from '@/components/ui/button';
@@ -11,11 +12,25 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { MapPinIcon, ListIcon, InfoIcon, SearchIcon } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
 
 
 export default function HomePage() {
+  const [speciesList, setSpeciesList] = useState<Species[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [selectedIsland, setSelectedIsland] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>('');
+  
+  useEffect(() => {
+    const fetchSpecies = async () => {
+      setIsLoading(true);
+      const data = await getSpeciesListAction();
+      setSpeciesList(data);
+      setIsLoading(false);
+    };
+    fetchSpecies();
+  }, []);
+
 
   const handleIslandClick = (islandName: string) => {
     setSelectedIsland(islandName); // Map click sets the selected island
@@ -129,8 +144,13 @@ export default function HomePage() {
             </Badge>
         )}
 
-
-        {displayedSpecies.length > 0 ? (
+        {isLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[...Array(6)].map((_, i) => (
+              <Skeleton key={i} className="h-96 w-full" />
+            ))}
+          </div>
+        ) : displayedSpecies.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {displayedSpecies.map((species) => (
               <SpeciesCard key={species.id} species={species} />
@@ -163,4 +183,3 @@ export default function HomePage() {
     </div>
   );
 }
-

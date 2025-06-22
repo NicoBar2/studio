@@ -4,8 +4,11 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { speciesList } from '@/lib/species';
+import { type Species } from '@/lib/species';
+import { getSpeciesListAction } from '@/app/actions';
 import { Edit3, BarChart3, Turtle, Bird, Footprints, ShieldQuestion, Waves, Bug, type LucideIcon, HelpCircle } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const iconMap: Record<string, LucideIcon> = {
   Turtle,
@@ -19,6 +22,18 @@ const iconMap: Record<string, LucideIcon> = {
 
 export default function DashboardPage() {
   const { role } = useAuth();
+  const [speciesList, setSpeciesList] = useState<Species[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchSpecies = async () => {
+      setIsLoading(true);
+      const data = await getSpeciesListAction();
+      setSpeciesList(data);
+      setIsLoading(false);
+    };
+    fetchSpecies();
+  }, []);
 
   return (
     <div className="space-y-8">
@@ -65,39 +80,47 @@ export default function DashboardPage() {
       <section>
         <h2 className="text-2xl font-headline font-semibold text-primary mb-4">Resumen de Especies</h2>
         <div className="space-y-4">
-          {speciesList.map(species => {
-            const IconComponent = iconMap[species.icon] || iconMap.Default;
-            return (
-              <Card key={species.id} className="shadow-sm hover:shadow-md transition-shadow">
-                <CardHeader>
-                  <CardTitle className="flex items-center justify-between">
-                    {species.name}
-                    <IconComponent className="h-6 w-6 text-muted-foreground" />
-                  </CardTitle>
-                  <CardDescription>{species.scientificName}</CardDescription>
-                </CardHeader>
-                <CardContent className="flex flex-col sm:flex-row gap-2">
-                  <Button asChild variant="outline" size="sm">
-                    <Link href={`/dashboard/edit/${species.id}`}>
-                      <Edit3 className="mr-2 h-4 w-4" /> Editar Datos
-                    </Link>
-                  </Button>
-                  {role === 'researcher' && (
+          {isLoading ? (
+            <>
+              <Skeleton className="h-40 w-full" />
+              <Skeleton className="h-40 w-full" />
+              <Skeleton className="h-40 w-full" />
+            </>
+          ) : (
+            speciesList.map(species => {
+              const IconComponent = iconMap[species.icon] || iconMap.Default;
+              return (
+                <Card key={species.id} className="shadow-sm hover:shadow-md transition-shadow">
+                  <CardHeader>
+                    <CardTitle className="flex items-center justify-between">
+                      {species.name}
+                      <IconComponent className="h-6 w-6 text-muted-foreground" />
+                    </CardTitle>
+                    <CardDescription>{species.scientificName}</CardDescription>
+                  </CardHeader>
+                  <CardContent className="flex flex-col sm:flex-row gap-2">
                     <Button asChild variant="outline" size="sm">
-                      <Link href={`/dashboard/visualize/${species.id}`}>
-                        <BarChart3 className="mr-2 h-4 w-4" /> Ver Visualizaciones
+                      <Link href={`/dashboard/edit/${species.id}`}>
+                        <Edit3 className="mr-2 h-4 w-4" /> Editar Datos
                       </Link>
                     </Button>
-                  )}
-                  <Button asChild variant="ghost" size="sm" className="text-primary hover:text-primary/90">
-                    <Link href={`/species/${species.id}`}>
-                      Ver Página Pública
-                    </Link>
-                  </Button>
-                </CardContent>
-              </Card>
-            );
-          })}
+                    {(role === 'researcher' || role === 'admin') && (
+                      <Button asChild variant="outline" size="sm">
+                        <Link href={`/dashboard/visualize/${species.id}`}>
+                          <BarChart3 className="mr-2 h-4 w-4" /> Ver Visualizaciones
+                        </Link>
+                      </Button>
+                    )}
+                    <Button asChild variant="ghost" size="sm" className="text-primary hover:text-primary/90">
+                      <Link href={`/species/${species.id}`}>
+                        Ver Página Pública
+                      </Link>
+                    </Button>
+                  </CardContent>
+                </Card>
+              );
+            })
+          )}
         </div>
       </section>
     </div>

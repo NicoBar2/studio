@@ -1,5 +1,5 @@
 
-import { getSpeciesById, Species } from '@/lib/species';
+import { getSpeciesById, getSpeciesList } from '@/lib/species';
 import SpeciesEditForm from '@/components/species/SpeciesEditForm';
 import RoleBasedGuard from '@/components/auth/RoleBasedGuard';
 import { notFound } from 'next/navigation';
@@ -12,7 +12,7 @@ type EditSpeciesPageProps = {
 };
 
 export async function generateMetadata({ params }: EditSpeciesPageProps) {
-  const species = getSpeciesById(params.id);
+  const species = await getSpeciesById(params.id);
   if (!species) {
     return { title: 'Especie No Encontrada' };
   }
@@ -21,8 +21,8 @@ export async function generateMetadata({ params }: EditSpeciesPageProps) {
   };
 }
 
-export default function EditSpeciesPage({ params }: EditSpeciesPageProps) {
-  const species = getSpeciesById(params.id);
+export default async function EditSpeciesPage({ params }: EditSpeciesPageProps) {
+  const species = await getSpeciesById(params.id);
 
   if (!species) {
     notFound();
@@ -44,7 +44,7 @@ export default function EditSpeciesPage({ params }: EditSpeciesPageProps) {
 
 // Enable static generation for edit pages if desired, or server render
 export async function generateStaticParams() {
-  const { speciesList } = await import('@/lib/species');
+  const speciesList = await getSpeciesList();
   return speciesList.map((species) => ({
     id: species.id,
   }));

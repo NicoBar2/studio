@@ -1,6 +1,6 @@
 
-// Using a simple in-memory array to store researchers for now.
-// In a real application, this would be a database.
+import { promises as fs } from 'fs';
+import path from 'path';
 
 export type Researcher = {
   id: string;
@@ -12,11 +12,36 @@ export type Researcher = {
   password?: string; // Added password field
 };
 
-let researcherList: Researcher[] = [];
+// Path to the JSON file database
+const researchersDbPath = path.join(process.cwd(), 'src', 'lib', 'data', 'researchers.json');
+
+// Helper to read data from the JSON file
+async function readResearchers(): Promise<Researcher[]> {
+    try {
+        // Check if the file exists
+        await fs.access(researchersDbPath);
+        const data = await fs.readFile(researchersDbPath, 'utf-8');
+        // Handle case where file is empty
+        return data ? JSON.parse(data) : [];
+    } catch (error) {
+        // If file doesn't exist, it's the first run. Create it with an empty array.
+        await writeResearchers([]);
+        return [];
+    }
+}
+
+// Helper to write data to the JSON file
+async function writeResearchers(data: Researcher[]): Promise<void> {
+    try {
+        await fs.writeFile(researchersDbPath, JSON.stringify(data, null, 2), 'utf-8');
+    } catch (error) {
+        console.error('Failed to write researchers data:', error);
+    }
+}
 
 // Function to generate a unique ID (simple version)
 function generateId(): string {
-  return Math.random().toString(36).substr(2, 9);
+  return Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
 }
 
 export async function addResearcher(
@@ -28,98 +53,88 @@ export async function addResearcher(
   if (!name || name.trim() === "") {
     throw new Error("El nombre del investigador no puede estar vacío.");
   }
-  if (!email || !email.trim().match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g)) { // Basic email validation
+  if (!email || !email.trim().match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g)) {
     throw new Error("Por favor, introduce un correo electrónico válido.");
   }
-  // Simulate async operation
-  await new Promise(resolve => setTimeout(resolve, 300)); 
   
+  const researchers = await readResearchers();
+  const lowerCaseEmail = email.trim().toLowerCase();
+
+  // Check if email already exists
+  if (researchers.some(r => r.email === lowerCaseEmail)) {
+    throw new Error("Ya existe un investigador con este correo electrónico.");
+  }
+
   const newResearcher: Researcher = {
     id: generateId(),
     name: name.trim(),
-    email: email.trim().toLowerCase(), // Store email in lowercase for consistent lookup
+    email: lowerCaseEmail,
     institution: institution?.trim() || undefined,
     specialization: specialization?.trim() || undefined,
-    isVerified: false, // Researchers start as not verified
-    // Password is not set on creation
+    isVerified: false,
   };
-  // Check if email already exists
-  if (researcherList.some(r => r.email === newResearcher.email)) {
-    throw new Error("Ya existe un investigador con este correo electrónico.");
-  }
-  researcherList.push(newResearcher);
+  
+  researchers.push(newResearcher);
+  await writeResearchers(researchers);
   return newResearcher;
 }
 
 export async function getAllResearchers(): Promise<Researcher[]> {
-  // Simulate async operation
-  await new Promise(resolve => setTimeout(resolve, 100));
-  return [...researcherList].sort((a, b) => a.name.localeCompare(b.name)); // Return sorted copy
+  const researchers = await readResearchers();
+  return [...researchers].sort((a, b) => a.name.localeCompare(b.name));
 }
 
 export async function getResearcherById(id: string): Promise<Researcher | undefined> {
-  // Simulate async operation
-  await new Promise(resolve => setTimeout(resolve, 50));
-  return researcherList.find(researcher => researcher.id === id);
+  const researchers = await readResearchers();
+  return researchers.find(researcher => researcher.id === id);
 }
 
 export async function getResearcherByEmail(email: string): Promise<Researcher | undefined> {
-  // Simulate async operation
-  await new Promise(resolve => setTimeout(resolve, 50));
-  return researcherList.find(researcher => researcher.email === email.toLowerCase());
+  const researchers = await readResearchers();
+  return researchers.find(researcher => researcher.email === email.toLowerCase());
 }
 
 export async function updateResearcher(id: string, updates: Partial<Omit<Researcher, 'id' | 'password'>>): Promise<Researcher | null> {
-  await new Promise(resolve => setTimeout(resolve, 200));
-  const index = researcherList.findIndex(r => r.id === id);
+  const researchers = await readResearchers();
+  const index = researchers.findIndex(r => r.id === id);
   if (index === -1) {
     return null;
   }
   
-  const currentResearcher = researcherList[index];
-  // Ensure email is handled correctly if updated
+  const currentResearcher = researchers[index];
   if (updates.email && updates.email !== currentResearcher.email) {
     const newEmail = updates.email.toLowerCase();
-    if (researcherList.some(r => r.email === newEmail && r.id !== id)) {
+    if (researchers.some(r => r.email === newEmail && r.id !== id)) {
       throw new Error("Otro investigador ya usa este correo electrónico.");
     }
     updates.email = newEmail;
   }
 
-  researcherList[index] = { ...currentResearcher, ...updates };
-  return researcherList[index];
+  researchers[index] = { ...currentResearcher, ...updates };
+  await writeResearchers(researchers);
+  return researchers[index];
 }
 
 export async function setResearcherPassword(email: string, passwordToSet: string): Promise<Researcher | null> {
-  await new Promise(resolve => setTimeout(resolve, 100));
+  const researchers = await readResearchers();
   const researcherEmail = email.toLowerCase();
-  const index = researcherList.findIndex(r => r.email === researcherEmail);
+  const index = researchers.findIndex(r => r.email === researcherEmail);
   if (index === -1) {
     return null; // Researcher not found
   }
   // In a real app, hash the password here before saving
-  researcherList[index].password = passwordToSet;
-  return researcherList[index];
+  researchers[index].password = passwordToSet;
+  await writeResearchers(researchers);
+  return researchers[index];
 }
-
 
 export async function deleteResearcherById(id: string): Promise<boolean> {
-  // Simulate async operation
-  await new Promise(resolve => setTimeout(resolve, 300));
-  const initialLength = researcherList.length;
-  researcherList = researcherList.filter(researcher => researcher.id !== id);
-  return researcherList.length < initialLength;
+  let researchers = await readResearchers();
+  const initialLength = researchers.length;
+  researchers = researchers.filter(researcher => researcher.id !== id);
+  if (researchers.length < initialLength) {
+    await writeResearchers(researchers);
+    return true;
+  }
+  return false;
 }
-
-// Helper to clear list for testing if needed, not for production
-export function _clearResearchers() {
-  researcherList = [];
-}
-// Initialize with a verified researcher for testing
-// _clearResearchers();
-// addResearcher('Dr. Verified Researcher', 'researcher@galapagos.com', 'Galapagos Institute', 'Marine Biology')
-//   .then(researcher => updateResearcher(researcher.id, { isVerified: true }))
-//   .catch(console.error);
-// addResearcher('Dr. Unverified Researcher', 'unverified@galapagos.com', 'Local University', 'Ornithology')
-//   .catch(console.error);
-

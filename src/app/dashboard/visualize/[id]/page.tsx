@@ -3,8 +3,7 @@
 
 import { getSpeciesById, type Species, type HistoricalDataPoint } from '@/lib/species';
 import RoleBasedGuard from '@/components/auth/RoleBasedGuard';
-import { notFound, useRouter } from 'next/navigation';
-// import SpeciesDataChart from '@/components/charts/SpeciesDataChart'; // To be dynamically imported
+import { notFound } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -15,14 +14,15 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useEffect, useState, useMemo } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import dynamic from 'next/dynamic';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const SpeciesDataChart = dynamic(() => import('@/components/charts/SpeciesDataChart'), {
   loading: () => (
     <div className="min-h-[300px] flex items-center justify-center">
-      <p>Cargando gráfico...</p>
+      <Skeleton className="h-full w-full" />
     </div>
   ),
-  ssr: false // Charts are often client-side interactive
+  ssr: false
 });
 
 type VisualizeSpeciesPageProps = {
@@ -33,23 +33,23 @@ type VisualizeSpeciesPageProps = {
 export default function VisualizeSpeciesPage({ params }: VisualizeSpeciesPageProps) {
   const [species, setSpecies] = useState<Species | null | undefined>(undefined);
   const { role, isLoading: authLoading } = useAuth();
-  const router = useRouter();
 
   const [yearFilter, setYearFilter] = useState<{ min: string; max: string }>({ min: '', max: '' });
   const [valueFilter, setValueFilter] = useState<{ min: string; max: string }>({ min: '', max: '' });
 
   useEffect(() => {
-    const foundSpecies = getSpeciesById(params.id);
-    setSpecies(foundSpecies);
+    const fetchSpecies = async () => {
+        const foundSpecies = await getSpeciesById(params.id);
+        setSpecies(foundSpecies);
+        if (foundSpecies) {
+          document.title = `Visualizar ${foundSpecies.name} | Galapagos DataLens`;
+        } else if (foundSpecies === null) {
+          document.title = `Especie No Encontrada | Galapagos DataLens`;
+        }
+    };
+    fetchSpecies();
   }, [params.id]);
 
-  useEffect(() => {
-    if (species) {
-      document.title = `Visualizar ${species.name} | Galapagos DataLens`;
-    } else if (species === null) {
-      document.title = `Especie No Encontrada | Galapagos DataLens`;
-    }
-  }, [species]);
 
   const filteredHistoricalData = useMemo(() => {
     if (!species?.historicalData) return [];
@@ -110,13 +110,15 @@ export default function VisualizeSpeciesPage({ params }: VisualizeSpeciesPagePro
 
   if (authLoading || species === undefined) {
     return (
-      <div className="flex items-center justify-center min-h-[300px]">
-        <p>Cargando datos de la especie...</p>
+      <div className="space-y-6">
+        <Skeleton className="h-10 w-40" />
+        <Skeleton className="h-64 w-full" />
+        <Skeleton className="h-80 w-full" />
       </div>
     );
   }
   
-  if (!species) {
+  if (species === null) {
     notFound();
   }
 
@@ -292,5 +294,3 @@ export default function VisualizeSpeciesPage({ params }: VisualizeSpeciesPagePro
     </RoleBasedGuard>
   );
 }
-    
-    

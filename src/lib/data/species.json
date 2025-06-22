@@ -1,0 +1,684 @@
+
+[
+  {
+    "id": "giant-tortoise",
+    "name": "Tortuga Gigante de Galápagos",
+    "scientificName": "Chelonoidis niger",
+    "description": "Reptiles icónicos conocidos por su larga vida y gran tamaño, desempeñando un papel crucial en la configuración de su entorno.",
+    "longDescription": "La Tortuga Gigante de Galápagos comprende 15 subespecies distintas, cada una adaptada a su entorno insular específico. Son herbívoras, alimentándose de cactus, pastos, hojas y frutas. Su lento metabolismo y capacidad para almacenar agua les permiten sobrevivir largos períodos sin comida ni agua. Son una especie clave, que influye en los patrones de vegetación a través del pastoreo y la dispersión de semillas.",
+    "imageUrl": "https://placehold.co/600x400.png",
+    "dataAiHint": "giant tortoise Galapagos",
+    "icon": "Turtle",
+    "populationTrend": "stable",
+    "conservationStatus": "Vulnerable",
+    "habitat": "Tierras altas con vegetación exuberante y tierras bajas costeras con matorral árido.",
+    "threats": [
+      "Especies introducidas (ratas, cerdos, cabras)",
+      "Pérdida de hábitat por agricultura",
+      "Explotación pasada para alimento y aceite",
+      "Cambio climático que afecta la vegetación"
+    ],
+    "keyStats": [
+      {
+        "label": "Esperanza de Vida Promedio",
+        "value": "100-150",
+        "unit": "años"
+      },
+      {
+        "label": "Peso Promedio",
+        "value": "250",
+        "unit": "kg"
+      },
+      {
+        "label": "Longitud del Caparazón",
+        "value": "Hasta 1.5",
+        "unit": "m"
+      },
+      {
+        "label": "Número de Subespecies",
+        "value": 15
+      }
+    ],
+    "historicalData": [
+      {
+        "year": 1970,
+        "value": 3000,
+        "unit": "individuos (total estimado)"
+      },
+      {
+        "year": 1990,
+        "value": 8000,
+        "unit": "individuos (total estimado)"
+      },
+      {
+        "year": 2010,
+        "value": 15000,
+        "unit": "individuos (total estimado)"
+      },
+      {
+        "year": 2023,
+        "value": 19000,
+        "unit": "individuos (total estimado)"
+      }
+    ],
+    "islands": [
+      "Isabela",
+      "Santa Cruz",
+      "San Cristobal",
+      "Española",
+      "Santiago",
+      "Fernandina"
+    ]
+  },
+  {
+    "id": "marine-iguana",
+    "name": "Iguana Marina",
+    "scientificName": "Amblyrhynchus cristatus",
+    "description": "El único lagarto marino del mundo, encontrado exclusivamente en Galápagos, que se alimenta de algas marinas.",
+    "longDescription": "Las Iguanas Marinas son únicas entre los lagartos modernos por su capacidad para alimentarse en el mar. Tienen glándulas especializadas para excretar el exceso de sal y colas aplanadas para nadar. Toman el sol en rocas volcánicas para calentarse después de las frías inmersiones oceánicas. La coloración varía entre islas, de negro a rojizo o verdoso.",
+    "imageUrl": "https://placehold.co/600x400.png",
+    "dataAiHint": "marine iguana Galapagos",
+    "icon": "ShieldQuestion",
+    "populationTrend": "stable",
+    "conservationStatus": "Vulnerable",
+    "habitat": "Costas rocosas, orillas de lava y zonas intermareales.",
+    "threats": [
+      "Eventos de El Niño (reduciendo algas)",
+      "Depredadores introducidos (gatos, perros)",
+      "Contaminación marina",
+      "Cambio climático que afecta el crecimiento de algas"
+    ],
+    "keyStats": [
+      {
+        "label": "Profundidad de Buceo",
+        "value": "Hasta 20",
+        "unit": "m"
+      },
+      {
+        "label": "Dieta",
+        "value": "Algas marinas"
+      },
+      {
+        "label": "Nombre del Grupo",
+        "value": "Colonia o Desorden"
+      },
+      {
+        "label": "Característica Única",
+        "value": "Glándulas nasales excretoras de sal"
+      }
+    ],
+    "historicalData": [
+      {
+        "year": 1980,
+        "value": 250000,
+        "unit": "individuos"
+      },
+      {
+        "year": 1998,
+        "value": 150000,
+        "unit": "individuos (post El Niño)"
+      },
+      {
+        "year": 2010,
+        "value": 200000,
+        "unit": "individuos"
+      },
+      {
+        "year": 2023,
+        "value": 220000,
+        "unit": "individuos"
+      }
+    ],
+    "islands": [
+      "Isabela",
+      "Fernandina",
+      "Santa Cruz",
+      "San Cristobal",
+      "Española",
+      "Floreana",
+      "Genovesa"
+    ]
+  },
+  {
+    "id": "darwins-finches",
+    "name": "Pinzones de Darwin",
+    "scientificName": "Subfamilia Geospizinae",
+    "description": "Un grupo de unas 15 especies de aves estrechamente relacionadas, famosas por la diversidad de sus picos que ilustra la radiación adaptativa.",
+    "longDescription": "Los Pinzones de Darwin son un ejemplo clásico de evolución por selección natural. Las formas y tamaños de sus picos se han adaptado a diferentes fuentes de alimento disponibles en varias islas, como semillas, insectos y néctar. Esta diversidad desempeñó un papel clave en la formulación de la teoría de la evolución de Charles Darwin.",
+    "imageUrl": "https://placehold.co/600x400.png",
+    "dataAiHint": "finch bird Galapagos",
+    "icon": "Bird",
+    "populationTrend": "stable",
+    "conservationStatus": "Preocupación Menor",
+    "habitat": "Diversos hábitats en todas las islas, desde tierras bajas áridas hasta tierras altas húmedas.",
+    "threats": [
+      "Mosca parásita introducida (Philornis downsi)",
+      "Degradación del hábitat",
+      "Competencia con especies de aves introducidas",
+      "Enfermedades aviares"
+    ],
+    "keyStats": [
+      {
+        "label": "Número de Especies",
+        "value": "~15"
+      },
+      {
+        "label": "Adaptación Primaria",
+        "value": "Forma y tamaño del pico"
+      },
+      {
+        "label": "Estudiado Por",
+        "value": "Charles Darwin"
+      },
+      {
+        "label": "Ancestro Común",
+        "value": "Una única especie del continente"
+      }
+    ],
+    "historicalData": [
+      {
+        "year": 1977,
+        "value": 100,
+        "unit": "índice poblacional"
+      },
+      {
+        "year": 1987,
+        "value": 120,
+        "unit": "índice poblacional"
+      },
+      {
+        "year": 2000,
+        "value": 90,
+        "unit": "índice poblacional"
+      },
+      {
+        "year": 2020,
+        "value": 110,
+        "unit": "índice poblacional"
+      }
+    ],
+    "islands": [
+      "Isabela",
+      "Santa Cruz",
+      "San Cristobal",
+      "Española",
+      "Fernandina",
+      "Santiago",
+      "Floreana",
+      "Genovesa",
+      "Pinta",
+      "Marchena"
+    ]
+  },
+  {
+    "id": "blue-footed-booby",
+    "name": "Piquero de Patas Azules",
+    "scientificName": "Sula nebouxii",
+    "description": "Un ave marina conocida por sus distintivas patas de color azul brillante, utilizadas en elaborados rituales de apareamiento.",
+    "longDescription": "El Piquero de Patas Azules es un ave marina cómica y carismática. Sus patas azules son el resultado de pigmentos carotenoides de su dieta. Los machos exhiben sus patas en una danza de cortejo de pasos altos. Son buceadores de zambullida, alimentándose de peces pequeños como sardinas y anchoas.",
+    "imageUrl": "https://placehold.co/600x400.png",
+    "dataAiHint": "blue footed booby Galapagos",
+    "icon": "Footprints",
+    "populationTrend": "decreasing",
+    "conservationStatus": "Preocupación Menor",
+    "habitat": "Costas tropicales y subtropicales del Pacífico; anida en costas rocosas y acantilados.",
+    "threats": [
+      "Disminución de las poblaciones de sardinas (fuente clave de alimento)",
+      "Perturbaciones en los sitios de anidación",
+      "Cambio climático que afecta las poblaciones de peces"
+    ],
+    "keyStats": [
+      {
+        "label": "Origen del Color de las Patas",
+        "value": "Carotenoides dietéticos"
+      },
+      {
+        "label": "Envergadura",
+        "value": "~1.5",
+        "unit": "m"
+      },
+      {
+        "label": "Hábito de Anidación",
+        "value": "Anida en el suelo"
+      },
+      {
+        "label": "Tamaño de la Puesta",
+        "value": "1-3 huevos"
+      }
+    ],
+    "historicalData": [
+      {
+        "year": 1960,
+        "value": 20000,
+        "unit": "parejas reproductoras (Galápagos)"
+      },
+      {
+        "year": 1990,
+        "value": 15000,
+        "unit": "parejas reproductoras (Galápagos)"
+      },
+      {
+        "year": 2012,
+        "value": 6500,
+        "unit": "parejas reproductoras (Galápagos)"
+      },
+      {
+        "year": 2023,
+        "value": 6000,
+        "unit": "parejas reproductoras (Galápagos)"
+      }
+    ],
+    "islands": [
+      "Isabela",
+      "Santa Cruz",
+      "North Seymour",
+      "Española",
+      "Fernandina",
+      "Genovesa"
+    ]
+  },
+  {
+    "id": "galapagos-penguin",
+    "name": "Pingüino de Galápagos",
+    "scientificName": "Spheniscus mendiculus",
+    "description": "La única especie de pingüino que se encuentra al norte del ecuador, adaptada de forma única al cálido clima de Galápagos.",
+    "longDescription": "Los Pingüinos de Galápagos son una de las especies de pingüinos más pequeñas. Sobreviven en el calor ecuatorial gracias a las frías aguas de las corrientes de Humboldt y Cromwell. Anidan en grietas y cuevas volcánicas para escapar del sol. Su pequeña población es altamente susceptible a las fluctuaciones climáticas.",
+    "imageUrl": "https://placehold.co/600x400.png",
+    "dataAiHint": "Galapagos penguin",
+    "icon": "Bird",
+    "populationTrend": "stable",
+    "conservationStatus": "En Peligro",
+    "habitat": "Zonas costeras, particularmente en las islas Fernandina e Isabela.",
+    "threats": [
+      "Eventos de El Niño (reduciendo el suministro de alimentos)",
+      "Depredación por especies introducidas",
+      "Captura incidental en pesquerías",
+      "Cambio climático que calienta las temperaturas del mar"
+    ],
+    "keyStats": [
+      {
+        "label": "Altura",
+        "value": "~49",
+        "unit": "cm"
+      },
+      {
+        "label": "Peso",
+        "value": "~2.5",
+        "unit": "kg"
+      },
+      {
+        "label": "Rasgo Único",
+        "value": "Pingüino más septentrional"
+      },
+      {
+        "label": "Dieta",
+        "value": "Peces pequeños, crustáceos"
+      }
+    ],
+    "historicalData": [
+      {
+        "year": 1971,
+        "value": 3400,
+        "unit": "individuos"
+      },
+      {
+        "year": 1983,
+        "value": 500,
+        "unit": "individuos (post El Niño)"
+      },
+      {
+        "year": 2004,
+        "value": 1000,
+        "unit": "individuos"
+      },
+      {
+        "year": 2023,
+        "value": 2000,
+        "unit": "individuos"
+      }
+    ],
+    "islands": [
+      "Isabela",
+      "Fernandina",
+      "Santiago",
+      "Floreana"
+    ]
+  },
+  {
+    "id": "flightless-cormorant",
+    "name": "Cormorán No Volador",
+    "scientificName": "Phalacrocorax harrisi",
+    "description": "Una especie única de cormorán que ha perdido la capacidad de volar, endémica de las Islas Galápagos.",
+    "longDescription": "El Cormorán No Volador es la especie de cormorán más grande y la única que no puede volar. Sus alas son pequeñas y rudimentarias. Es un excelente nadador y buceador, utilizando sus poderosas patas para propulsarse bajo el agua para cazar peces y pulpos cerca del lecho marino.",
+    "imageUrl": "https://placehold.co/600x400.png",
+    "dataAiHint": "flightless cormorant Galapagos",
+    "icon": "Bird",
+    "populationTrend": "stable",
+    "conservationStatus": "Vulnerable",
+    "habitat": "Costas rocosas de las islas Fernandina e Isabela.",
+    "threats": [
+      "Rango limitado los hace vulnerables",
+      "Depredadores introducidos",
+      "Eventos de El Niño que afectan la disponibilidad de alimentos",
+      "Perturbación humana"
+    ],
+    "keyStats": [
+      {
+        "label": "Envergadura",
+        "value": "Demasiado pequeña para volar"
+      },
+      {
+        "label": "Capacidad de Buceo",
+        "value": "Excelente"
+      },
+      {
+        "label": "Endémico De",
+        "value": "Islas Fernandina e Isabela"
+      },
+      {
+        "label": "Peso",
+        "value": "~4",
+        "unit": "kg"
+      }
+    ],
+    "historicalData": [
+      {
+        "year": 1977,
+        "value": 800,
+        "unit": "parejas reproductoras"
+      },
+      {
+        "year": 2000,
+        "value": 900,
+        "unit": "parejas reproductoras"
+      },
+      {
+        "year": 2013,
+        "value": 1200,
+        "unit": "parejas reproductoras"
+      },
+      {
+        "year": 2023,
+        "value": 1000,
+        "unit": "parejas reproductoras"
+      }
+    ],
+    "islands": [
+      "Isabela",
+      "Fernandina"
+    ]
+  },
+  {
+    "id": "waved-albatross",
+    "name": "Albatros de Galápagos",
+    "scientificName": "Phoebastria irrorata",
+    "description": "Una gran ave marina que se reproduce casi exclusivamente en la Isla Española en Galápagos, conocida por sus elaboradas danzas de cortejo.",
+    "longDescription": "El Albatros de Galápagos es una especie en peligro crítico. Son magníficos voladores, pasando la mayor parte de sus vidas en el mar. Regresan a la Isla Española para reproducirse, participando en complejos rituales de apareamiento que incluyen círculos con el pico y apuntar al cielo. Ponen un solo huevo por temporada de cría.",
+    "imageUrl": "https://placehold.co/600x400.png",
+    "dataAiHint": "waved albatross Galapagos",
+    "icon": "Bird",
+    "populationTrend": "decreasing",
+    "conservationStatus": "En Peligro Crítico",
+    "habitat": "Se reproduce en la Isla Española; se alimenta en el Océano Pacífico oriental.",
+    "threats": [
+      "Captura incidental en pesca con palangre",
+      "Ingestión de plástico",
+      "Rango de reproducción limitado",
+      "Depredadores introducidos en zonas de cría (históricamente)"
+    ],
+    "keyStats": [
+      {
+        "label": "Envergadura",
+        "value": "Hasta 2.5",
+        "unit": "m"
+      },
+      {
+        "label": "Sitio de Cría",
+        "value": "Principalmente Isla Española"
+      },
+      {
+        "label": "Esperanza de Vida",
+        "value": "Hasta 40-50",
+        "unit": "años"
+      },
+      {
+        "label": "Estilo de Vuelo",
+        "value": "Planeo dinámico"
+      }
+    ],
+    "historicalData": [
+      {
+        "year": 1970,
+        "value": 30000,
+        "unit": "parejas reproductoras"
+      },
+      {
+        "year": 1994,
+        "value": 18000,
+        "unit": "parejas reproductoras"
+      },
+      {
+        "year": 2007,
+        "value": 12000,
+        "unit": "parejas reproductoras"
+      },
+      {
+        "year": 2023,
+        "value": 10000,
+        "unit": "parejas reproductoras (estimado)"
+      }
+    ],
+    "islands": [
+      "Española"
+    ]
+  },
+  {
+    "id": "galapagos-sea-lion",
+    "name": "Lobo Marino de Galápagos",
+    "scientificName": "Zalophus wollebaeki",
+    "description": "Una especie endémica de lobo marino que se reproduce en Galápagos, a menudo vista jugando en las olas o descansando en las playas.",
+    "longDescription": "Los Lobos Marinos de Galápagos son mamíferos marinos juguetones y curiosos. Son más pequeños que sus parientes californianos. Los machos establecen y defienden territorios durante la temporada de cría. Se alimentan de peces y calamares, y son depredados por tiburones y orcas.",
+    "imageUrl": "https://placehold.co/600x400.png",
+    "dataAiHint": "Galapagos sea lion",
+    "icon": "Waves",
+    "populationTrend": "decreasing",
+    "conservationStatus": "En Peligro",
+    "habitat": "Playas arenosas y costas rocosas en todo el archipiélago.",
+    "threats": [
+      "Eventos de El Niño (reduciendo alimentos, aumentando mortalidad de crías)",
+      "Brotes de enfermedades",
+      "Enredo en aparejos de pesca",
+      "Perturbación humana"
+    ],
+    "keyStats": [
+      {
+        "label": "Peso del Macho",
+        "value": "Hasta 250",
+        "unit": "kg"
+      },
+      {
+        "label": "Peso de la Hembra",
+        "value": "Hasta 100",
+        "unit": "kg"
+      },
+      {
+        "label": "Estructura Social",
+        "value": "Cría basada en harén"
+      },
+      {
+        "label": "Profundidad de Buceo",
+        "value": "Hasta 200",
+        "unit": "m"
+      }
+    ],
+    "historicalData": [
+      {
+        "year": 1978,
+        "value": 40000,
+        "unit": "individuos"
+      },
+      {
+        "year": 2001,
+        "value": 20000,
+        "unit": "individuos"
+      },
+      {
+        "year": 2015,
+        "value": 16000,
+        "unit": "individuos"
+      },
+      {
+        "year": 2023,
+        "value": 14000,
+        "unit": "individuos (estimado)"
+      }
+    ],
+    "islands": [
+      "Isabela",
+      "Santa Cruz",
+      "San Cristobal",
+      "Española",
+      "Fernandina",
+      "Santiago",
+      "Floreana",
+      "Genovesa"
+    ]
+  },
+  {
+    "id": "galapagos-fur-seal",
+    "name": "Lobo Fino de Galápagos",
+    "scientificName": "Arctocephalus galapagoensis",
+    "description": "El más pequeño de todos los otarios, también endémico de Galápagos, con un pelaje más grueso que los lobos marinos.",
+    "longDescription": "Los Lobos Finos de Galápagos tienen un denso subpelo que les proporciona aislamiento. Prefieren costas rocosas y sombreadas y pasan más tiempo en tierra que los lobos marinos. Son cazadores nocturnos, alimentándose de peces y cefalópodos más alejados de la costa.",
+    "imageUrl": "https://placehold.co/600x400.png",
+    "dataAiHint": "Galapagos fur seal",
+    "icon": "Waves",
+    "populationTrend": "stable",
+    "conservationStatus": "En Peligro",
+    "habitat": "Costas rocosas sombreadas con cantos rodados y cuevas.",
+    "threats": [
+      "Caza pasada por su pelaje",
+      "Eventos de El Niño",
+      "Sensibilidad a los cambios de temperatura del mar",
+      "Enredos"
+    ],
+    "keyStats": [
+      {
+        "label": "Rasgo Único",
+        "value": "Otario más pequeño"
+      },
+      {
+        "label": "Pelaje",
+        "value": "Subpelo denso"
+      },
+      {
+        "label": "Horario de Caza",
+        "value": "Principalmente nocturno"
+      },
+      {
+        "label": "Peso",
+        "value": "~65",
+        "unit": "kg (macho)"
+      }
+    ],
+    "historicalData": [
+      {
+        "year": 1970,
+        "value": 5000,
+        "unit": "individuos"
+      },
+      {
+        "year": 1990,
+        "value": 30000,
+        "unit": "individuos"
+      },
+      {
+        "year": 2000,
+        "value": 15000,
+        "unit": "individuos"
+      },
+      {
+        "year": 2023,
+        "value": 25000,
+        "unit": "individuos (estimado)"
+      }
+    ],
+    "islands": [
+      "Isabela",
+      "Fernandina",
+      "Santiago",
+      "Genovesa",
+      "Pinta",
+      "Marchena",
+      "Santa Cruz"
+    ]
+  },
+  {
+    "id": "lava-lizard",
+    "name": "Lagartija de Lava",
+    "scientificName": "Microlophus spp.",
+    "description": "Pequeñas y ágiles lagartijas que se encuentran en todo Galápagos, con varias especies adaptadas a diferentes islas.",
+    "longDescription": "Las Lagartijas de Lava son reptiles comunes en Galápagos. Existen varias especies, cada una a menudo endémica de islas o grupos de islas específicos. Los machos suelen ser más grandes y de colores más brillantes que las hembras. Se alimentan de insectos, arañas y otros pequeños invertebrados.",
+    "imageUrl": "https://placehold.co/600x400.png",
+    "dataAiHint": "lava lizard Galapagos",
+    "icon": "Bug",
+    "populationTrend": "stable",
+    "conservationStatus": "Preocupación Menor",
+    "habitat": "Zonas áridas y costeras, campos de lava y matorrales secos.",
+    "threats": [
+      "Depredadores introducidos (gatos, ratas)",
+      "Alteración del hábitat en algunas áreas"
+    ],
+    "keyStats": [
+      {
+        "label": "Número de Especies",
+        "value": "~7-9 (Galápagos)"
+      },
+      {
+        "label": "Comportamiento",
+        "value": "Territorial, exhibiciones de \"push-ups\""
+      },
+      {
+        "label": "Dieta",
+        "value": "Insectos, arañas, escorpiones"
+      },
+      {
+        "label": "Tamaño",
+        "value": "15-30",
+        "unit": "cm (longitud total)"
+      }
+    ],
+    "historicalData": [
+      {
+        "year": 2000,
+        "value": 500000,
+        "unit": "individuos totales (estimado)"
+      },
+      {
+        "year": 2010,
+        "value": 520000,
+        "unit": "individuos totales (estimado)"
+      },
+      {
+        "year": 2020,
+        "value": 510000,
+        "unit": "individuos totales (estimado)"
+      },
+      {
+        "year": 2023,
+        "value": 515000,
+        "unit": "individuos totales (estimado)"
+      }
+    ],
+    "islands": [
+      "Isabela",
+      "Santa Cruz",
+      "San Cristobal",
+      "Española",
+      "Fernandina",
+      "Santiago",
+      "Floreana",
+      "Genovesa"
+    ]
+  }
+]

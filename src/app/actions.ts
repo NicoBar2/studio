@@ -2,7 +2,14 @@
 "use server";
 
 import { revalidatePath } from 'next/cache';
-import { speciesList, updateSpeciesData as mockUpdateSpeciesData, type Species, type HistoricalDataPoint, type SpeciesStat, getSpeciesById } from '@/lib/species';
+import { 
+  updateSpeciesData, 
+  type Species, 
+  type HistoricalDataPoint, 
+  type SpeciesStat, 
+  getSpeciesById,
+  getSpeciesList
+} from '@/lib/species';
 import { 
   addResearcher as addResearcherToStore, 
   getAllResearchers as getAllResearchersFromStore, 
@@ -30,9 +37,13 @@ async function generateSpeciesInsight(speciesName: string, speciesData: string):
   return `Resumen generado para ${speciesName}: Esta especie juega un papel vital en su ecosistema. Datos recientes indican una tendencia notable que requiere mayor observación. Los esfuerzos de conservación son cruciales para su supervivencia a largo plazo. Sus características clave incluyen adaptaciones únicas al entorno de Galápagos. (Resumen de IA simulado)`;
 }
 
+export async function getSpeciesListAction(): Promise<Species[]> {
+  return getSpeciesList();
+}
+
 
 export async function getAISummary(speciesId: string): Promise<{ summary?: string; error?: string }> {
-  const species = getSpeciesById(speciesId); 
+  const species = await getSpeciesById(speciesId); 
   if (!species) {
     return { error: "Especie no encontrada." };
   }
@@ -81,7 +92,7 @@ export async function saveSpeciesData(prevState: any, formData: FormData): Promi
   }
   // Admin role can proceed
 
-  const currentSpecies = getSpeciesById(speciesId); 
+  const currentSpecies = await getSpeciesById(speciesId); 
   if (!currentSpecies) {
     return { success: false, message: "Especie no encontrada." };
   }
@@ -150,7 +161,7 @@ export async function saveSpeciesData(prevState: any, formData: FormData): Promi
         }
     }
 
-    const success = mockUpdateSpeciesData(speciesId, updatedData);
+    const success = await updateSpeciesData(speciesId, updatedData);
 
     if (success) {
       revalidatePath('/'); 
@@ -278,4 +289,3 @@ export async function getResearcherByEmailFromStore(email: string): Promise<Rese
 export async function setResearcherPasswordAction(email: string, passwordToSet: string): Promise<Researcher | null> {
   return setResearcherPasswordInternal(email, passwordToSet);
 }
-    

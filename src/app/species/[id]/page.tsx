@@ -1,5 +1,5 @@
 
-import { getSpeciesById, Species } from '@/lib/species';
+import { getSpeciesById, getSpeciesList } from '@/lib/species';
 import SpeciesDetailClient from './SpeciesDetailClient';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
@@ -11,18 +11,18 @@ type SpeciesDetailPageProps = {
 };
 
 export async function generateMetadata({ params }: SpeciesDetailPageProps) {
-  const species = getSpeciesById(params.id);
+  const species = await getSpeciesById(params.id);
   if (!species) {
     return { title: 'Especie No Encontrada' };
   }
   return {
     title: `${species.name} | Galapagos DataLens`,
-    description: species.description, // La descripción de la especie ya está en español desde species.ts
+    description: species.description,
   };
 }
 
-export default function SpeciesDetailPage({ params }: SpeciesDetailPageProps) {
-  const species = getSpeciesById(params.id);
+export default async function SpeciesDetailPage({ params }: SpeciesDetailPageProps) {
+  const species = await getSpeciesById(params.id);
 
   if (!species) {
     notFound();
@@ -42,7 +42,7 @@ export default function SpeciesDetailPage({ params }: SpeciesDetailPageProps) {
 
 // Enable static generation for all species pages
 export async function generateStaticParams() {
-  const { speciesList } = await import('@/lib/species');
+  const speciesList = await getSpeciesList();
   return speciesList.map((species) => ({
     id: species.id,
   }));
