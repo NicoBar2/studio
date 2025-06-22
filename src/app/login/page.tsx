@@ -32,7 +32,7 @@ function LoginForm() {
     setIsLoading(false);
 
     if (result.success) {
-      router.push('/dashboard');
+      router.push('/');
     } else {
       setError(result.error || 'Error desconocido durante el inicio de sesión.');
     }
