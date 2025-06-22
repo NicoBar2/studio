@@ -69,12 +69,6 @@ async function writeSpecies(data: Species[]): Promise<void> {
 }
 
 
-export const GALAPAGOS_ISLANDS_NAMES: string[] = [
-    'Isabela', 'Santa Cruz', 'San Cristobal', 'Fernandina',
-    'Española', 'Floreana', 'Santiago', 'Genovesa',
-    'Pinta', 'Marchena', 'North Seymour'
-];
-
 export const getSpeciesList = async (): Promise<Species[]> => {
     return await readSpecies();
 }
@@ -82,14 +76,6 @@ export const getSpeciesList = async (): Promise<Species[]> => {
 export const getSpeciesById = async (id: string): Promise<Species | undefined> => {
   const speciesList = await readSpecies();
   return speciesList.find(s => s.id === id);
-};
-
-export const getSpeciesImageUrl = (species: Species | undefined | null): string => {
-  if (species && species.imageUrl) {
-    return species.imageUrl;
-  }
-  // Return a default placeholder if no image or species
-  return 'https://placehold.co/600x400.png';
 };
 
 export const updateSpeciesData = async (id: string, updatedData: Partial<Species>): Promise<boolean> => {

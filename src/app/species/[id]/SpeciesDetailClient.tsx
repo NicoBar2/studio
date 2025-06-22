@@ -1,7 +1,8 @@
 
 "use client";
 
-import { type Species, getSpeciesImageUrl } from '@/lib/species';
+import { type Species } from '@/lib/species';
+import { getSpeciesImageUrl } from '@/lib/utils';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -246,4 +247,3 @@ export default function SpeciesDetailClient({ species }: SpeciesDetailClientProp
     </div>
   );
 }
-

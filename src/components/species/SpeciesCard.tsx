@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import type { Species } from '@/lib/species';
-import { getSpeciesImageUrl } from '@/lib/species';
+import { getSpeciesImageUrl } from '@/lib/utils';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';

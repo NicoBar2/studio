@@ -2,7 +2,7 @@
 "use client"; 
 
 import { useState, useMemo, useEffect } from 'react';
-import { type Species, GALAPAGOS_ISLANDS_NAMES } from '@/lib/species';
+import { type Species } from '@/lib/species';
 import { getSpeciesListAction } from '@/app/actions';
 import SpeciesCard from '@/components/species/SpeciesCard';
 import GalapagosMap from '@/components/map/GalapagosMap';
@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { MapPinIcon, ListIcon, InfoIcon, SearchIcon } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
+import { GALAPAGOS_ISLANDS_NAMES } from '@/lib/utils';
 
 
 export default function HomePage() {

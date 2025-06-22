@@ -1,6 +1,6 @@
 
 "use client";
-import { getSpeciesImageUrl } from '@/lib/species'; 
+import { getSpeciesImageUrl } from '@/lib/utils'; 
 import type { Species, ConservationStatus } from '@/lib/species';
 import { useActionState, useState, useEffect, type ChangeEvent, useRef } from 'react';
 import { useFormStatus } from 'react-dom';
