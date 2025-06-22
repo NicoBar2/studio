@@ -4,14 +4,14 @@ import RoleBasedGuard from '@/components/auth/RoleBasedGuard';
 import { Sidebar, SidebarProvider, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarHeader, SidebarInset } from '@/components/ui/sidebar';
 import { LayoutDashboard, Users, HomeIcon } from 'lucide-react';
 import Link from 'next/link';
-import { useAuth } from '@/contexts/AuthContext'; // Import useAuth
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const { role } = useAuth(); // Get current role
+  const { role } = useAuth();
 
   return (
     <RoleBasedGuard allowedRoles={['admin', 'researcher']}>

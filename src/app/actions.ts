@@ -16,8 +16,8 @@ import {
   deleteResearcherById as deleteResearcherByIdFromStore, 
   updateResearcher as updateResearcherInStore,
   getResearcherById as getResearcherByIdFromStore,
-  getResearcherByEmail as getResearcherByEmailFromStoreInternal, // Renamed to avoid conflict if imported directly
-  setResearcherPassword as setResearcherPasswordInternal, // Renamed
+  getResearcherByEmail as getResearcherByEmailFromStoreInternal,
+  setResearcherPassword as setResearcherPasswordInternal,
   type Researcher 
 } from '@/lib/researchers';
 // Assuming a Genkit flow for insights exists at this path
@@ -84,7 +84,7 @@ export async function saveSpeciesData(prevState: any, formData: FormData): Promi
     if (!userEmail) {
       return { success: false, message: "No se pudo identificar al investigador." };
     }
-    const researcher = await getResearcherByEmailFromStoreInternal(userEmail); // Use renamed internal function
+    const researcher = await getResearcherByEmailFromStoreInternal(userEmail);
     if (!researcher) {
       return { success: false, message: "Investigador no encontrado." };
     }
@@ -203,8 +203,12 @@ export async function createResearcherAction(
 
   try {
     const newResearcher = await addResearcherToStore(researcherName, email.toLowerCase(), institution, specialization);
-    revalidatePath('/dashboard/admin/researchers'); 
-    return { success: true, message: `Investigador "${newResearcher.name}" creado correctamente.`, researcher: newResearcher };
+    revalidatePath('/dashboard/admin/researchers');
+    return { 
+        success: true, 
+        message: `¡Registro exitoso! Un administrador verificará tu cuenta pronto.`, 
+        researcher: newResearcher 
+    };
   } catch (error) {
     console.error("Error creando investigador:", error);
     const errorMessage = error instanceof Error ? error.message : "Error desconocido al crear investigador.";
@@ -257,7 +261,7 @@ export async function toggleResearcherVerificationAction(
   }
 
   try {
-    await new Promise(resolve => setTimeout(resolve, 1000)); 
+    await new Promise(resolve => setTimeout(resolve, 500)); // Simulate network delay for API call
 
     const researcher = await getResearcherByIdFromStore(researcherId);
     if (!researcher) {
@@ -285,7 +289,6 @@ export async function toggleResearcherVerificationAction(
   }
 }
 
-// Exporting researcher store functions for use in AuthContext
 export async function getResearcherByEmailFromStore(email: string): Promise<Researcher | undefined> {
   return getResearcherByEmailFromStoreInternal(email);
 }

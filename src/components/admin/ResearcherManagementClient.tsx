@@ -27,7 +27,6 @@ export default function ResearcherManagementClient() {
 
   const [formState, formAction, isCreating] = useActionState(createResearcherAction, initialFormState);
   
-  // States for controlled inputs to allow form reset
   const [researcherName, setResearcherName] = useState('');
   const [email, setEmail] = useState('');
   const [institution, setInstitution] = useState('');
@@ -45,6 +44,7 @@ export default function ResearcherManagementClient() {
   }, []);
   
   useEffect(() => {
+    // Check if the message is not the initial one to avoid showing toast on load
     if (formState.message && formState.message !== initialFormState.message) { 
       toast({
         title: formState.success ? '¡Éxito!' : 'Error',
@@ -58,7 +58,7 @@ export default function ResearcherManagementClient() {
         setEmail('');
         setInstitution('');
         setSpecialization('');
-        formRef.current?.reset(); // Also try native form reset
+        formRef.current?.reset();
       }
     }
   }, [formState, toast]);
@@ -81,10 +81,10 @@ export default function ResearcherManagementClient() {
         <CardHeader>
           <CardTitle className="flex items-center text-2xl font-headline text-primary">
             <UserPlus className="mr-3 h-7 w-7" />
-            Crear Nuevo Investigador
+            Crear Nuevo Investigador (Admin)
           </CardTitle>
           <CardDescription>
-            Añade un nuevo investigador al sistema. Podrán gestionar datos de especies.
+            Añade un nuevo investigador directamente al sistema. La cuenta se creará como no verificada.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -97,9 +97,9 @@ export default function ResearcherManagementClient() {
           >
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="researcherName" className="font-semibold">Nombre del Investigador</Label>
+                <Label htmlFor="researcherNameAdmin" className="font-semibold">Nombre del Investigador</Label>
                 <Input 
-                  id="researcherName" 
+                  id="researcherNameAdmin" 
                   name="researcherName" 
                   placeholder="Ej: Dra. Jane Goodall" 
                   className="mt-1" 
@@ -110,9 +110,9 @@ export default function ResearcherManagementClient() {
                 />
               </div>
               <div>
-                <Label htmlFor="email" className="font-semibold">Correo Electrónico</Label>
+                <Label htmlFor="emailAdmin" className="font-semibold">Correo Electrónico</Label>
                 <Input 
-                  id="email" 
+                  id="emailAdmin" 
                   name="email" 
                   type="email"
                   placeholder="investigador@ejemplo.com" 
@@ -123,9 +123,9 @@ export default function ResearcherManagementClient() {
                 />
               </div>
               <div>
-                <Label htmlFor="institution" className="font-semibold">Institución (Opcional)</Label>
+                <Label htmlFor="institutionAdmin" className="font-semibold">Institución (Opcional)</Label>
                 <Input 
-                  id="institution" 
+                  id="institutionAdmin" 
                   name="institution" 
                   placeholder="Ej: Universidad de Galápagos" 
                   className="mt-1" 
@@ -134,9 +134,9 @@ export default function ResearcherManagementClient() {
                 />
               </div>
               <div>
-                <Label htmlFor="specialization" className="font-semibold">Especialización (Opcional)</Label>
+                <Label htmlFor="specializationAdmin" className="font-semibold">Especialización (Opcional)</Label>
                 <Input 
-                  id="specialization" 
+                  id="specializationAdmin" 
                   name="specialization" 
                   placeholder="Ej: Biología Marina, Ornitología" 
                   className="mt-1" 
@@ -159,15 +159,15 @@ export default function ResearcherManagementClient() {
             Lista de Investigadores
           </CardTitle>
           <CardDescription>
-            Investigadores actualmente registrados en el sistema.
+            Gestiona los investigadores registrados en el sistema. Verifica, desverifica o elimina sus cuentas.
           </CardDescription>
         </CardHeader>
         <CardContent>
           {isLoadingList ? (
             <div className="space-y-2">
-              <Skeleton className="h-16 w-full rounded-md" />
-              <Skeleton className="h-16 w-full rounded-md" />
-              <Skeleton className="h-16 w-4/5 rounded-md" />
+              <Skeleton className="h-24 w-full rounded-md" />
+              <Skeleton className="h-24 w-full rounded-md" />
+              <Skeleton className="h-24 w-4/5 rounded-md" />
             </div>
           ) : researchers.length > 0 ? (
             <ul className="space-y-3">
@@ -181,7 +181,7 @@ export default function ResearcherManagementClient() {
               ))}
             </ul>
           ) : (
-            <p className="text-muted-foreground">No hay investigadores registrados todavía.</p>
+            <p className="text-muted-foreground text-center py-4">No hay investigadores registrados todavía.</p>
           )}
         </CardContent>
       </Card>
