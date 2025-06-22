@@ -41,6 +41,10 @@ export async function getSpeciesListAction(): Promise<Species[]> {
   return getSpeciesList();
 }
 
+export async function getSpeciesByIdAction(id: string): Promise<Species | undefined> {
+  return getSpeciesById(id);
+}
+
 
 export async function getAISummary(speciesId: string): Promise<{ summary?: string; error?: string }> {
   const species = await getSpeciesById(speciesId); 

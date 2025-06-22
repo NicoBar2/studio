@@ -1,7 +1,8 @@
 
 "use client"; 
 
-import { getSpeciesById, type Species, type HistoricalDataPoint } from '@/lib/species';
+import { type Species, type HistoricalDataPoint } from '@/lib/species';
+import { getSpeciesByIdAction } from '@/app/actions';
 import RoleBasedGuard from '@/components/auth/RoleBasedGuard';
 import { notFound } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -39,7 +40,7 @@ export default function VisualizeSpeciesPage({ params }: VisualizeSpeciesPagePro
 
   useEffect(() => {
     const fetchSpecies = async () => {
-        const foundSpecies = await getSpeciesById(params.id);
+        const foundSpecies = await getSpeciesByIdAction(params.id);
         setSpecies(foundSpecies);
         if (foundSpecies) {
           document.title = `Visualizar ${foundSpecies.name} | Galapagos DataLens`;
