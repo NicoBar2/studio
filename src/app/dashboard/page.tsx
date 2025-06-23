@@ -6,9 +6,10 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { type Species } from '@/lib/species';
 import { getSpeciesListAction } from '@/app/actions';
-import { Edit3, BarChart3, Turtle, Bird, Footprints, ShieldQuestion, Waves, Bug, type LucideIcon, HelpCircle } from 'lucide-react';
+import { Edit3, BarChart3, Turtle, Bird, Footprints, ShieldQuestion, Waves, Bug, type LucideIcon, HelpCircle, BrainCircuit } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
+import EnrichButton from '@/components/dashboard/EnrichButton';
 
 const iconMap: Record<string, LucideIcon> = {
   Turtle,
@@ -45,6 +46,20 @@ export default function DashboardPage() {
           Gestiona y analiza los datos de las especies de Galápagos.
         </p>
       </section>
+
+      {role === 'admin' && (
+        <Card className="bg-primary/10 border-primary">
+          <CardHeader>
+            <CardTitle className="flex items-center text-primary">
+              <BrainCircuit className="mr-2 h-6 w-6" />
+              Nueva Función de IA
+            </CardTitle>
+            <CardDescription>
+              Como administrador, ahora puedes usar el botón "Enriquecer con IA" en cada especie para obtener y guardar automáticamente datos reales de internet sobre su hábitat, estado de conservación, amenazas y estadísticas clave.
+            </CardDescription>
+          </CardHeader>
+        </Card>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card>
@@ -98,7 +113,7 @@ export default function DashboardPage() {
                     </CardTitle>
                     <CardDescription>{species.scientificName}</CardDescription>
                   </CardHeader>
-                  <CardContent className="flex flex-col sm:flex-row gap-2">
+                  <CardContent className="flex flex-wrap items-center gap-2">
                     <Button asChild variant="outline" size="sm">
                       <Link href={`/dashboard/edit/${species.id}`}>
                         <Edit3 className="mr-2 h-4 w-4" /> Editar Datos
@@ -111,7 +126,10 @@ export default function DashboardPage() {
                         </Link>
                       </Button>
                     )}
-                    <Button asChild variant="ghost" size="sm" className="text-primary hover:text-primary/90">
+                    {role === 'admin' && (
+                       <EnrichButton species={species} />
+                    )}
+                    <Button asChild variant="ghost" size="sm" className="text-primary hover:text-primary/90 sm:ml-auto">
                       <Link href={`/species/${species.id}`}>
                         Ver Página Pública
                       </Link>

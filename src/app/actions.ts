@@ -22,8 +22,7 @@ import {
   setResearcherPassword as setResearcherPasswordInternal,
   type Researcher 
 } from '@/lib/researchers';
-// Assuming a Genkit flow for insights exists at this path
-// import { generateSpeciesInsight } from '@/ai/flows/generateInsights'; 
+import { enrichSpeciesData, type EnrichedData } from '@/ai/flows/enrichSpeciesData';
 
 // Placeholder for AI insight generation
 async function generateSpeciesInsight(speciesName: string, speciesData: string): Promise<string> {
@@ -173,6 +172,7 @@ export async function saveSpeciesData(prevState: any, formData: FormData): Promi
       revalidatePath('/'); 
       revalidatePath(`/species/${speciesId}`); 
       revalidatePath(`/dashboard/edit/${speciesId}`); 
+      revalidatePath('/dashboard');
       return { success: true, message: `Datos de ${updatedData.name || currentSpecies.name} actualizados correctamente.`, speciesId };
     } else {
       return { success: false, message: `Error al actualizar los datos de ${updatedData.name || currentSpecies.name}.` };
@@ -385,5 +385,46 @@ export async function importSpeciesDataAction(
     console.error("Error en la importación de datos:", error);
     const errorMessage = error instanceof Error ? error.message : "Ocurrió un error desconocido durante la importación.";
     return { success: false, message: `Error al procesar el archivo: ${errorMessage}` };
+  }
+}
+
+export async function enrichSpeciesDataAction(prevState: any, formData: FormData): Promise<{ success: boolean; message: string; speciesId?: string }> {
+  const speciesId = formData.get('speciesId') as string;
+  if (!speciesId) {
+    return { success: false, message: "Falta el ID de la especie." };
+  }
+
+  const species = await getSpeciesById(speciesId);
+  if (!species) {
+    return { success: false, message: "Especie no encontrada." };
+  }
+
+  try {
+    // Call the Genkit flow
+    const enrichedData: EnrichedData = await enrichSpeciesData(species.name);
+
+    // Prepare the data for updating
+    const updatedData: Partial<Species> = {
+      habitat: enrichedData.habitat,
+      conservationStatus: enrichedData.conservationStatus,
+      populationTrend: enrichedData.populationTrend,
+      threats: enrichedData.threats,
+      keyStats: enrichedData.keyStats,
+    };
+
+    // Update the species in our JSON DB
+    const success = await updateSpeciesData(speciesId, updatedData);
+
+    if (success) {
+      revalidatePath('/dashboard');
+      revalidatePath(`/species/${speciesId}`);
+      return { success: true, message: `¡Datos de ${species.name} enriquecidos con IA!`, speciesId };
+    } else {
+      return { success: false, message: "Error al guardar los datos enriquecidos." };
+    }
+
+  } catch (error) {
+    console.error("Error enriqueciendo datos de especie con IA:", error);
+    return { success: false, message: "Ocurrió un error al contactar al servicio de IA." };
   }
 }
