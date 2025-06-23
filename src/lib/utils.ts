@@ -28,11 +28,14 @@ export const GALAPAGOS_ISLANDS_NAMES: string[] = [
 
 
 export const getSpeciesImageUrl = (species: Species | undefined | null): string => {
-  if (species && species.imageUrl && !species.imageUrl.startsWith('data:image')) {
-     return `https://placehold.co/600x400.png?text=${encodeURIComponent(species.spanishCommonName)}`;
-  }
+  // If an imageUrl is provided (either a data URI or a normal URL), use it.
   if (species && species.imageUrl) {
     return species.imageUrl;
   }
+  // If no imageUrl is provided, but we have a name, generate a placeholder.
+  if (species && species.spanishCommonName) {
+     return `https://placehold.co/600x400.png?text=${encodeURIComponent(species.spanishCommonName)}`;
+  }
+  // Fallback if there's no species or no name.
   return 'https://placehold.co/600x400.png';
 };

@@ -1,4 +1,3 @@
-
 [
   {
     "id": "giant-tortoise",
@@ -7,18 +6,13 @@
     "specificEpithet": "niger",
     "englishDescription": "Iconic reptiles known for their long lifespan and large size, playing a crucial role in shaping their environment.",
     "spanishDescription": "La Tortuga Gigante de Galápagos comprende 15 subespecies distintas, cada una adaptada a su entorno insular específico. Son herbívoras, alimentándose de cactus, pastos, hojas y frutas. Su lento metabolismo y capacidad para almacenar agua les permiten sobrevivir largos períodos sin comida ni agua. Son una especie clave, que influye en los patrones de vegetación a través del pastoreo y la dispersión de semillas.",
-    "imageUrl": "https://placehold.co/600x400.png",
+    "imageUrl": "https://placehold.co/600x400.png?text=Tortuga%20Gigante%20de%20Gal%C3%A1pagos",
     "dataAiHint": "giant tortoise Galapagos",
     "icon": "Turtle",
     "populationTrend": "stable",
     "iucnStatus": "Vulnerable",
     "habitat": "Tierras altas con vegetación exuberante y tierras bajas costeras con matorral árido.",
-    "threats": [
-      "Especies introducidas (ratas, cerdos, cabras)",
-      "Pérdida de hábitat por agricultura",
-      "Explotación pasada para alimento y aceite",
-      "Cambio climático que afecta la vegetación"
-    ],
+    "threats": [],
     "keyStats": [
       {
         "label": "Esperanza de Vida Promedio",
@@ -62,12 +56,20 @@
         "unit": "individuos (total estimado)"
       }
     ],
-    "is_isabela": true,
-    "is_santaCruz": true,
-    "is_sanCristóbal": true,
-    "is_española": true,
-    "is_santiago": true,
-    "is_fernandina": true
+    "is_isabela": false,
+    "is_santaCruz": false,
+    "is_sanCristóbal": false,
+    "is_española": false,
+    "is_santiago": false,
+    "is_fernandina": false,
+    "is_darwin": false,
+    "is_floreana": false,
+    "is_genovesa": false,
+    "is_marchena": false,
+    "is_pinta": false,
+    "is_pinzón": false,
+    "is_santaFé": false,
+    "is_wolf": false
   },
   {
     "id": "marine-iguana",
