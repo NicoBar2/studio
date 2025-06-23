@@ -19,21 +19,21 @@ const iconMap: Record<string, LucideIcon> = {
   ShieldQuestion,
   Waves,
   Bug,
-  Default: HelpCircle, // Fallback icon
+  Default: HelpCircle,
 };
 
 export default function SpeciesCard({ species }: SpeciesCardProps) {
   const imageUrl = getSpeciesImageUrl(species);
   const IconComponent = iconMap[species.icon] || iconMap.Default;
+  const scientificName = `${species.genus || ''} ${species.specificEpithet || ''}`.trim();
 
   return (
     <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col h-full">
       <CardHeader className="p-0">
-
         <Image
           key={imageUrl} 
           src={imageUrl}
-          alt={species.name}
+          alt={species.spanishCommonName}
           width={400}
           height={250}
           className="w-full h-48 object-cover"
@@ -43,14 +43,14 @@ export default function SpeciesCard({ species }: SpeciesCardProps) {
       <CardContent className="p-6 flex flex-col flex-grow">
         <div className="flex items-center mb-2">
           <IconComponent className="h-8 w-8 text-primary mr-3" />
-          <CardTitle className="text-2xl font-headline text-primary">{species.name}</CardTitle>
+          <CardTitle className="text-2xl font-headline text-primary">{species.spanishCommonName}</CardTitle>
         </div>
-        <CardDescription className="italic text-sm text-muted-foreground mb-3">{species.scientificName}</CardDescription>
-        <p className="text-sm text-foreground mb-4 line-clamp-3 flex-grow">{species.description}</p>
+        <CardDescription className="italic text-sm text-muted-foreground mb-3">{scientificName}</CardDescription>
+        <p className="text-sm text-foreground mb-4 line-clamp-3 flex-grow">{species.spanishDescription}</p>
 
         <div className="mb-4">
-          <Badge variant={species.conservationStatus === 'En Peligro' || species.conservationStatus === 'En Peligro Crítico' ? 'destructive' : 'secondary'}>
-            {species.conservationStatus}
+          <Badge variant={species.iucnStatus === 'En Peligro' || species.iucnStatus === 'En Peligro Crítico' ? 'destructive' : 'secondary'}>
+            {species.iucnStatus}
           </Badge>
         </div>
 

@@ -11,14 +11,11 @@ import { useState, useTransition, useRef } from 'react';
 import { getAISummary } from '@/app/actions';
 import { 
   AlertCircle, Brain, Edit, BarChart2, Tag, TrendingUp, ShieldAlert, Home, ListChecks, Download,
-  Turtle, Bird, Footprints, ShieldQuestion, Waves, Bug, type LucideIcon, HelpCircle
+  Turtle, Bird, Footprints, ShieldQuestion, Waves, Bug, type LucideIcon, HelpCircle, Sigma
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
-// import SpeciesDataChart from '@/components/charts/SpeciesDataChart'; // To be dynamically imported
-// import jsPDF from 'jspdf'; // To be dynamically imported
-// import html2canvas from 'html2canvas'; // To be dynamically imported
 import dynamic from 'next/dynamic';
 
 const SpeciesDataChart = dynamic(() => import('@/components/charts/SpeciesDataChart'), {
@@ -27,7 +24,7 @@ const SpeciesDataChart = dynamic(() => import('@/components/charts/SpeciesDataCh
       <p>Cargando gráfico...</p>
     </div>
   ),
-  ssr: false // Charts are often client-side interactive
+  ssr: false
 });
 
 
@@ -61,6 +58,8 @@ export default function SpeciesDetailClient({ species }: SpeciesDetailClientProp
   const pdfContentRef = useRef<HTMLDivElement>(null);
   
   const IconComponent = iconMap[species.icon] || iconMap.Default;
+  const scientificName = `${species.genus || ''} ${species.specificEpithet || ''}`.trim();
+
 
   const handleGenerateSummary = () => {
     startSummaryTransition(async () => {
@@ -96,7 +95,7 @@ export default function SpeciesDetailClient({ species }: SpeciesDetailClientProp
       });
 
       pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
-      pdf.save(`${species.name.toLowerCase().replace(/\s+/g, '_')}_informe.pdf`);
+      pdf.save(`${species.spanishCommonName.toLowerCase().replace(/\s+/g, '_')}_informe.pdf`);
     });
   };
 
@@ -109,7 +108,7 @@ export default function SpeciesDetailClient({ species }: SpeciesDetailClientProp
           <CardHeader className="relative p-0">
             <Image
               src={getSpeciesImageUrl(species)}
-              alt={species.name}
+              alt={species.spanishCommonName}
               width={1200}
               height={400}
               className="w-full h-64 md:h-96 object-cover"
@@ -120,9 +119,9 @@ export default function SpeciesDetailClient({ species }: SpeciesDetailClientProp
             <div className="absolute bottom-0 left-0 p-6 md:p-8">
               <div className="flex items-center mb-2">
                 <IconComponent className="h-12 w-12 text-accent mr-4" />
-                <h1 className="text-4xl md:text-5xl font-headline font-bold text-white">{species.name}</h1>
+                <h1 className="text-4xl md:text-5xl font-headline font-bold text-white">{species.spanishCommonName}</h1>
               </div>
-              <p className="text-xl italic text-gray-200">{species.scientificName}</p>
+              <p className="text-xl italic text-gray-200">{scientificName}</p>
             </div>
             {(role === 'admin' || role === 'researcher') && (
               <Button asChild size="sm" className="absolute top-4 right-4 bg-accent text-accent-foreground hover:bg-accent/90">
@@ -135,10 +134,26 @@ export default function SpeciesDetailClient({ species }: SpeciesDetailClientProp
           <CardContent className="p-6 md:p-8 space-y-6">
             <section>
               <h2 className="text-2xl font-headline font-semibold text-primary mb-3 flex items-center">
-                <Tag className="mr-2 h-6 w-6" /> Información General
+                <Tag className="mr-2 h-6 w-6" /> Descripción
               </h2>
-              <p className="text-foreground leading-relaxed">{species.longDescription}</p>
+              <p className="text-foreground leading-relaxed">{species.spanishDescription}</p>
             </section>
+            
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center text-xl text-primary"><Sigma className="mr-2 h-5 w-5" /> Clasificación Taxonómica</CardTitle>
+                </CardHeader>
+                <CardContent className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 text-sm">
+                    {species.kingdom && <div><strong>Reino:</strong> {species.kingdom}</div>}
+                    {species.phylum && <div><strong>Filo:</strong> {species.phylum}</div>}
+                    {species.class && <div><strong>Clase:</strong> {species.class}</div>}
+                    {species.order && <div><strong>Orden:</strong> {species.order}</div>}
+                    {species.family && <div><strong>Familia:</strong> {species.family}</div>}
+                    {species.genus && <div><strong>Género:</strong> {species.genus}</div>}
+                    {species.specificEpithet && <div><strong>Especie:</strong> {species.specificEpithet}</div>}
+                </CardContent>
+            </Card>
+
 
             <div className="grid md:grid-cols-2 gap-6">
               <Card>
@@ -146,7 +161,7 @@ export default function SpeciesDetailClient({ species }: SpeciesDetailClientProp
                   <CardTitle className="flex items-center text-xl text-primary"><ShieldAlert className="mr-2 h-5 w-5" /> Conservación y Población</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2">
-                  <p><strong>Estado:</strong> <Badge variant={species.conservationStatus === 'En Peligro' || species.conservationStatus === 'En Peligro Crítico' ? 'destructive' : 'secondary'}>{species.conservationStatus}</Badge></p>
+                  <p><strong>Estado UICN:</strong> <Badge variant={species.iucnStatus === 'En Peligro' || species.iucnStatus === 'En Peligro Crítico' ? 'destructive' : 'secondary'}>{species.iucnStatus}</Badge></p>
                   <p><strong>Tendencia Poblacional:</strong> <span className={`font-medium ${species.populationTrend === 'decreasing' ? 'text-destructive' : species.populationTrend === 'increasing' ? 'text-green-600' : 'text-foreground'}`}>{displayPopulationTrend}</span></p>
                 </CardContent>
               </Card>

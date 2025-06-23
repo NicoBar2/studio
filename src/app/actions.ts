@@ -26,12 +26,7 @@ import { enrichSpeciesData, type EnrichedData } from '@/ai/flows/enrichSpeciesDa
 
 // Placeholder for AI insight generation
 async function generateSpeciesInsight(speciesName: string, speciesData: string): Promise<string> {
-  // In a real scenario, this would call the Genkit flow:
-  // const insight = await runFlow(generateSpeciesInsight, { speciesName, speciesData });
-  // return insight.result;
-  
-  // Mock implementation
-  await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate AI processing time
+  await new Promise(resolve => setTimeout(resolve, 1500));
   if (!speciesName || !speciesData) {
     return "No se pudo generar el resumen debido a datos faltantes.";
   }
@@ -55,15 +50,15 @@ export async function getAISummary(speciesId: string): Promise<{ summary?: strin
 
   try {
     const dataForAI = `
-      Nombre: ${species.name}
-      Nombre Científico: ${species.scientificName}
-      Estado de Conservación: ${species.conservationStatus}
+      Nombre: ${species.spanishCommonName}
+      Nombre Científico: ${species.genus} ${species.specificEpithet}
+      Estado de Conservación: ${species.iucnStatus}
       Tendencia Poblacional: ${species.populationTrend}
       Hábitat: ${species.habitat}
       Amenazas Clave: ${species.threats.join(', ')}
-      Descripción: ${species.description}
+      Descripción: ${species.spanishDescription}
     `;
-    const summary = await generateSpeciesInsight(species.name, dataForAI);
+    const summary = await generateSpeciesInsight(species.spanishCommonName, dataForAI);
     return { summary };
   } catch (error) {
     console.error("Error generando resumen con IA:", error);
@@ -80,22 +75,17 @@ export async function saveSpeciesData(prevState: any, formData: FormData): Promi
     return { success: false, message: "Falta el ID de la especie." };
   }
 
-  // Authorization check
   if (userRole === 'researcher') {
     if (!userEmail) {
       return { success: false, message: "No se pudo identificar al investigador." };
     }
     const researcher = await getResearcherByEmailFromStoreInternal(userEmail);
-    if (!researcher) {
-      return { success: false, message: "Investigador no encontrado." };
-    }
-    if (!researcher.isVerified) {
-      return { success: false, message: "Acción no permitida. El investigador debe estar verificado para guardar cambios." };
+    if (!researcher || !researcher.isVerified) {
+      return { success: false, message: "Acción no permitida." };
     }
   } else if (userRole !== 'admin') {
     return { success: false, message: "Acción no permitida. Rol de usuario no autorizado." };
   }
-  // Admin role can proceed
 
   const currentSpecies = await getSpeciesById(speciesId); 
   if (!currentSpecies) {
@@ -103,67 +93,38 @@ export async function saveSpeciesData(prevState: any, formData: FormData): Promi
   }
 
   try {
-    const newImageUrl = formData.get('imageUrl') as string;
-
     const updatedData: Partial<Species> = {
-      name: formData.get('name') as string || currentSpecies.name,
-      scientificName: formData.get('scientificName') as string || currentSpecies.scientificName,
-      description: formData.get('description') as string || currentSpecies.description,
-      longDescription: formData.get('longDescription') as string || currentSpecies.longDescription,
-      imageUrl: newImageUrl || currentSpecies.imageUrl, 
-      conservationStatus: formData.get('conservationStatus') as Species['conservationStatus'] || currentSpecies.conservationStatus,
+      spanishCommonName: formData.get('spanishCommonName') as string || currentSpecies.spanishCommonName,
+      englishCommonName: formData.get('englishCommonName') as string || currentSpecies.englishCommonName,
+      genus: formData.get('genus') as string || currentSpecies.genus,
+      specificEpithet: formData.get('specificEpithet') as string || currentSpecies.specificEpithet,
+      spanishDescription: formData.get('spanishDescription') as string || currentSpecies.spanishDescription,
+      englishDescription: formData.get('englishDescription') as string || currentSpecies.englishDescription,
+      imageUrl: formData.get('imageUrl') as string || currentSpecies.imageUrl,
+      iucnStatus: formData.get('iucnStatus') as Species['iucnStatus'] || currentSpecies.iucnStatus,
       populationTrend: formData.get('populationTrend') as Species['populationTrend'] || currentSpecies.populationTrend,
       habitat: formData.get('habitat') as string || currentSpecies.habitat,
-      threats: (formData.get('threats') as string || '').split(',').map(t => t.trim()).filter(t => t).length > 0 
-                 ? (formData.get('threats') as string).split(',').map(t => t.trim()).filter(t => t) 
-                 : currentSpecies.threats,
+      threats: (formData.get('threats') as string || '').split(',').map(t => t.trim()).filter(Boolean),
+      
+      // Update island booleans
+      is_darwin: formData.get('is_darwin') === 'on',
+      is_española: formData.get('is_española') === 'on',
+      is_fernandina: formData.get('is_fernandina') === 'on',
+      is_floreana: formData.get('is_floreana') === 'on',
+      is_genovesa: formData.get('is_genovesa') === 'on',
+      is_isabela: formData.get('is_isabela') === 'on',
+      is_marchena: formData.get('is_marchena') === 'on',
+      is_pinta: formData.get('is_pinta') === 'on',
+      is_pinzón: formData.get('is_pinzón') === 'on',
+      is_sanCristóbal: formData.get('is_sanCristóbal') === 'on',
+      is_santaCruz: formData.get('is_santaCruz') === 'on',
+      is_santaFé: formData.get('is_santaFé') === 'on',
+      is_santiago: formData.get('is_santiago') === 'on',
+      is_wolf: formData.get('is_wolf') === 'on',
     };
 
-    if (updatedData.name && updatedData.name.length < 3) {
-      return { success: false, message: "El nombre de la especie debe tener al menos 3 caracteres." };
-    }
-
-    const keyStatLabel = formData.get('keyStat0_label') as string;
-    const keyStatValue = formData.get('keyStat0_value') as string;
-    const keyStatUnit = formData.get('keyStat0_unit') as string;
-    
-    if (keyStatLabel && keyStatValue) { 
-        const existingStatIndex = currentSpecies.keyStats.findIndex(stat => stat.label === keyStatLabel);
-        updatedData.keyStats = [...currentSpecies.keyStats]; 
-        if (existingStatIndex !== -1) {
-            updatedData.keyStats[existingStatIndex] = {
-                label: keyStatLabel,
-                value: isNaN(Number(keyStatValue)) ? keyStatValue : Number(keyStatValue),
-                unit: keyStatUnit || undefined
-            };
-        } else if (currentSpecies.keyStats.length > 0 && currentSpecies.keyStats[0].label === keyStatLabel) {
-             updatedData.keyStats[0] = {
-                label: keyStatLabel,
-                value: isNaN(Number(keyStatValue)) ? keyStatValue : Number(keyStatValue),
-                unit: keyStatUnit || undefined
-            };
-        }
-    }
-
-
-    const historicalYear = formData.get('historicalData0_year') as string;
-    const historicalValue = formData.get('historicalData0_value') as string;
-    const historicalUnit = formData.get('historicalData0_unit') as string;
-
-    if (historicalYear && historicalValue && historicalUnit) { 
-        const yearNum = parseInt(historicalYear);
-        const valueNum = parseFloat(historicalValue);
-        if (!isNaN(yearNum) && !isNaN(valueNum)) {
-            updatedData.historicalData = [...currentSpecies.historicalData]; 
-            if (updatedData.historicalData.length > 0 && updatedData.historicalData[0].year === yearNum ) { 
-                 updatedData.historicalData[0] = { year: yearNum, value: valueNum, unit: historicalUnit };
-            } else { 
-                const existingDataIndex = updatedData.historicalData.findIndex(data => data.year === yearNum);
-                if (existingDataIndex !== -1) {
-                     updatedData.historicalData[existingDataIndex] = { year: yearNum, value: valueNum, unit: historicalUnit };
-                }
-            }
-        }
+    if (!updatedData.spanishCommonName || updatedData.spanishCommonName.length < 3) {
+      return { success: false, message: "El nombre común en español debe tener al menos 3 caracteres." };
     }
 
     const success = await updateSpeciesData(speciesId, updatedData);
@@ -173,9 +134,9 @@ export async function saveSpeciesData(prevState: any, formData: FormData): Promi
       revalidatePath(`/species/${speciesId}`); 
       revalidatePath(`/dashboard/edit/${speciesId}`); 
       revalidatePath('/dashboard');
-      return { success: true, message: `Datos de ${updatedData.name || currentSpecies.name} actualizados correctamente.`, speciesId };
+      return { success: true, message: `Datos de ${updatedData.spanishCommonName || currentSpecies.spanishCommonName} actualizados correctamente.`, speciesId };
     } else {
-      return { success: false, message: `Error al actualizar los datos de ${updatedData.name || currentSpecies.name}.` };
+      return { success: false, message: `Error al actualizar los datos de ${updatedData.spanishCommonName || currentSpecies.spanishCommonName}.` };
     }
   } catch (error) {
     console.error("Error guardando datos de especie:", error);
@@ -263,7 +224,7 @@ export async function toggleResearcherVerificationAction(
   }
 
   try {
-    await new Promise(resolve => setTimeout(resolve, 500)); // Simulate network delay for API call
+    await new Promise(resolve => setTimeout(resolve, 500)); 
 
     const researcher = await getResearcherByIdFromStore(researcherId);
     if (!researcher) {
@@ -309,19 +270,23 @@ export async function importSpeciesDataAction(
     return { success: false, message: "No se ha seleccionado ningún archivo." };
   }
 
-  // Helper function to map Spanish population trends to English
   const mapPopulationTrend = (trend: string): Species['populationTrend'] => {
     const lowerTrend = trend?.toLowerCase().trim();
     switch (lowerTrend) {
-      case 'creciente':
-        return 'increasing';
-      case 'decreciente':
-        return 'decreasing';
-      case 'estable':
-        return 'stable';
-      default:
-        return 'unknown';
+      case 'creciente': return 'increasing';
+      case 'decreciente': return 'decreasing';
+      case 'estable': return 'stable';
+      default: return 'unknown';
     }
+  };
+  
+  const splitScientificName = (name: string): { genus: string; specificEpithet: string } => {
+    if (!name) return { genus: '', specificEpithet: '' };
+    const parts = name.split(' ');
+    return {
+      genus: parts[0] || '',
+      specificEpithet: parts.slice(1).join(' ') || '',
+    };
   };
 
   try {
@@ -339,29 +304,28 @@ export async function importSpeciesDataAction(
     for (const row of data) {
       try {
         const nameString = String(row.nombre || '');
+        if (!nameString) {
+          failedCount++;
+          continue;
+        }
+
+        const scientific = splitScientificName(String(row.cientifico || ''));
         const hintString = nameString.split(' ').slice(0, 2).join(' ').toLowerCase();
 
-        const newSpecies: Omit<Species, 'id'> = {
-            name: nameString,
-            scientificName: String(row.cientifico || ''),
-            description: `Descripción breve para ${nameString || 'esta especie'}.`,
-            longDescription: `Descripción larga y detallada para ${nameString || 'esta especie'}.`,
+        const newSpecies: Partial<Species> = {
+            spanishCommonName: nameString,
+            genus: scientific.genus,
+            specificEpithet: scientific.specificEpithet,
+            spanishDescription: `Descripción breve para ${nameString || 'esta especie'}.`,
+            englishDescription: `A short description for ${nameString || 'this species'}.`,
             imageUrl: 'https://placehold.co/600x400.png',
             dataAiHint: hintString,
-            icon: 'Footprints', // A generic default icon
+            icon: 'Footprints',
             populationTrend: mapPopulationTrend(String(row.poblacion || 'unknown')),
-            conservationStatus: (String(row.conservacion || 'Datos Insuficientes')) as Species['conservationStatus'],
+            iucnStatus: (String(row.conservacion || 'Datos Insuficientes')) as Species['iucnStatus'],
             habitat: String(row.habitat || ''),
             threats: (row.amenazas || '').toString().split(',').map((t: string) => t.trim()).filter((t: string) => t),
-            islands: [], // Default to empty array
-            keyStats: [], // Default to empty array
-            historicalData: [], // Default to empty array
         };
-
-        if (!newSpecies.name) {
-          failedCount++;
-          continue; // Skip rows without a name
-        }
 
         await addSpeciesToStore(newSpecies);
         addedCount++;
@@ -400,25 +364,22 @@ export async function enrichSpeciesDataAction(prevState: any, formData: FormData
   }
 
   try {
-    // Call the Genkit flow
-    const enrichedData: EnrichedData = await enrichSpeciesData(species.name);
+    const enrichedData: EnrichedData = await enrichSpeciesData(species.spanishCommonName);
 
-    // Prepare the data for updating
     const updatedData: Partial<Species> = {
       habitat: enrichedData.habitat,
-      conservationStatus: enrichedData.conservationStatus,
+      iucnStatus: enrichedData.conservationStatus,
       populationTrend: enrichedData.populationTrend,
       threats: enrichedData.threats,
       keyStats: enrichedData.keyStats,
     };
 
-    // Update the species in our JSON DB
     const success = await updateSpeciesData(speciesId, updatedData);
 
     if (success) {
       revalidatePath('/dashboard');
       revalidatePath(`/species/${speciesId}`);
-      return { success: true, message: `¡Datos de ${species.name} enriquecidos con IA!`, speciesId };
+      return { success: true, message: `¡Datos de ${species.spanishCommonName} enriquecidos con IA!`, speciesId };
     } else {
       return { success: false, message: "Error al guardar los datos enriquecidos." };
     }

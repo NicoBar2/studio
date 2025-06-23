@@ -16,8 +16,8 @@ export async function generateMetadata({ params }: SpeciesDetailPageProps) {
     return { title: 'Especie No Encontrada' };
   }
   return {
-    title: `${species.name} | Galapagos DataLens`,
-    description: species.description,
+    title: `${species.spanishCommonName} | Galapagos DataLens`,
+    description: species.spanishDescription,
   };
 }
 

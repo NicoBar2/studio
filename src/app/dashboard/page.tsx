@@ -73,7 +73,6 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent>
             <p className="mb-4">Selecciona una especie abajo para editar su información.</p>
-            {/* List species with edit links */}
           </CardContent>
         </Card>
 
@@ -87,7 +86,6 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent>
             <p className="mb-4">Selecciona una especie abajo para visualizar sus datos.</p>
-            {/* List species with visualize links */}
           </CardContent>
         </Card>
       </div>
@@ -104,14 +102,15 @@ export default function DashboardPage() {
           ) : (
             speciesList.map(species => {
               const IconComponent = iconMap[species.icon] || iconMap.Default;
+              const scientificName = `${species.genus || ''} ${species.specificEpithet || ''}`.trim();
               return (
                 <Card key={species.id} className="shadow-sm hover:shadow-md transition-shadow">
                   <CardHeader>
                     <CardTitle className="flex items-center justify-between">
-                      {species.name}
+                      {species.spanishCommonName}
                       <IconComponent className="h-6 w-6 text-muted-foreground" />
                     </CardTitle>
-                    <CardDescription>{species.scientificName}</CardDescription>
+                    <CardDescription>{scientificName}</CardDescription>
                   </CardHeader>
                   <CardContent className="flex flex-wrap items-center gap-2">
                     <Button asChild variant="outline" size="sm">

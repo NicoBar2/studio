@@ -34,28 +34,27 @@ export default function HomePage() {
 
 
   const handleIslandClick = (islandName: string) => {
-    setSelectedIsland(islandName); // Map click sets the selected island
+    setSelectedIsland(islandName);
   };
 
   const clearSelection = () => {
-    setSelectedIsland(null); // Clears island selection from map and dropdown
+    setSelectedIsland(null);
   };
 
   const displayedSpecies = useMemo(() => {
     let filteredSpecies = speciesList;
 
-    if (selectedIsland) { // Filters if an island is selected from map or dropdown
-      filteredSpecies = filteredSpecies.filter(species => 
-        species.islands && species.islands.includes(selectedIsland)
-      );
+    if (selectedIsland) {
+        const islandKey = `is_${selectedIsland.toLowerCase().replace(/ /g, '_').normalize("NFD").replace(/[\u0300-\u036f]/g, "")}` as keyof Species;
+        filteredSpecies = filteredSpecies.filter(species => species[islandKey]);
     }
 
     if (searchTerm) {
       const lowercasedTerm = searchTerm.toLowerCase();
       filteredSpecies = filteredSpecies.filter(species =>
-        species.name.toLowerCase().includes(lowercasedTerm) ||
-        species.scientificName.toLowerCase().includes(lowercasedTerm) ||
-        species.description.toLowerCase().includes(lowercasedTerm) ||
+        species.spanishCommonName.toLowerCase().includes(lowercasedTerm) ||
+        (species.genus && species.specificEpithet && `${species.genus} ${species.specificEpithet}`.toLowerCase().includes(lowercasedTerm)) ||
+        species.spanishDescription.toLowerCase().includes(lowercasedTerm) ||
         species.habitat.toLowerCase().includes(lowercasedTerm)
       );
     }
@@ -106,7 +105,7 @@ export default function HomePage() {
             <div className="flex flex-col sm:flex-row w-full sm:w-auto gap-4 items-center">
               <div className="w-full sm:w-auto">
                 <Select
-                  value={selectedIsland || ''} // Shows placeholder if selectedIsland is null
+                  value={selectedIsland || ''}
                   onValueChange={(value) => {
                     setSelectedIsland(value === 'all-islands' ? null : value);
                   }}

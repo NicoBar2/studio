@@ -61,13 +61,14 @@ export default function ImportDataPage() {
               Importación de Datos de Especies
             </CardTitle>
             <CardDescription>
-              Sube un archivo Excel (.xlsx) con datos de especies para agregarlos a la base de datos.
-              La primera fila debe contener los encabezados de columna. Los demás campos se completarán con valores predeterminados.
+              Sube un archivo Excel (.xlsx) para agregar nuevas especies a la base de datos.
+              El sistema mapeará las columnas del Excel a nuestro modelo de datos detallado.
               <br />
               <strong className="text-destructive mt-2 block">Columnas requeridas:</strong> 
-              <code className="text-xs">nombre, cientifico, conservacion, poblacion, habitat, amenazas</code>
-              <br />
-              <strong className="text-destructive mt-1 block">Nota:</strong> La columna 'amenazas' debe ser una lista de valores separados por comas. La columna 'poblacion' debe ser 'Creciente', 'Decreciente', 'Estable' o 'Desconocida'.
+              <code className="text-xs">nombre, cientifico, conservacion, poblacion, habitat, amenazas</code>.
+              <br/>
+              <strong className="mt-1 block">Nota:</strong> 
+              La columna 'amenazas' debe ser una lista de valores separados por comas. La columna 'poblacion' debe ser 'Creciente', 'Decreciente', 'Estable' o 'Desconocida'. Los campos no proporcionados usarán valores predeterminados.
             </CardDescription>
           </CardHeader>
           <CardContent>

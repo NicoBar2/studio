@@ -1,6 +1,6 @@
 
 "use client";
-import { getSpeciesImageUrl } from '@/lib/utils'; 
+import { getSpeciesImageUrl, GALAPAGOS_ISLANDS_NAMES } from '@/lib/utils'; 
 import type { Species, ConservationStatus } from '@/lib/species';
 import { useActionState, useState, useEffect, type ChangeEvent, useRef } from 'react';
 import { useFormStatus } from 'react-dom';
@@ -11,10 +11,12 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/contexts/AuthContext'; // Import useAuth
+import { useAuth } from '@/contexts/AuthContext';
 
 const initialState = {
   success: false,
@@ -51,12 +53,16 @@ const conservationStatusOptions: { value: ConservationStatus; label: string }[] 
     { value: 'Datos Insuficientes', label: 'Datos Insuficientes' },
 ];
 
+const islandKeys: { id: keyof Species; label: string }[] = GALAPAGOS_ISLANDS_NAMES.map(name => ({
+    id: `is_${name.toLowerCase().replace(/ /g, '_').normalize("NFD").replace(/[\u0300-\u036f]/g, "")}` as keyof Species,
+    label: name,
+}));
 
 export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
   const [state, formAction] = useActionState(saveSpeciesData, initialState);
   const { toast } = useToast();
   const router = useRouter();
-  const { role, userEmail } = useAuth(); // Get role and userEmail from AuthContext
+  const { role, userEmail } = useAuth();
 
   const [imagePreview, setImagePreview] = useState<string | null>(getSpeciesImageUrl(species));
   const [imageFileValue, setImageFileValue] = useState<string>(getSpeciesImageUrl(species));
@@ -83,8 +89,7 @@ export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
       setImagePreview(currentImageUrl);
       setImageFileValue(currentImageUrl);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [species.imageUrl]); 
+  }, [species.imageUrl, imagePreview]);
 
   const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -105,7 +110,7 @@ export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
   return (
     <Card className="shadow-xl">
       <CardHeader>
-        <CardTitle className="text-3xl font-headline text-primary">Editar: {species.name}</CardTitle>
+        <CardTitle className="text-3xl font-headline text-primary">Editar: {species.spanishCommonName}</CardTitle>
         <CardDescription>Modifica los detalles de esta especie. Asegúrate de que toda la información sea precisa.</CardDescription>
       </CardHeader>
       <CardContent>
@@ -114,135 +119,142 @@ export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
           <input type="hidden" name="userRole" value={role || ''} />
           <input type="hidden" name="userEmail" value={userEmail || ''} />
 
-          <div>
-            <Label htmlFor="name" className="font-semibold">Nombre de la Especie</Label>
-            <Input id="name" name="name" defaultValue={species.name} className="mt-1" />
-          </div>
-
-          <div>
-            <Label htmlFor="scientificName" className="font-semibold">Nombre Científico</Label>
-            <Input id="scientificName" name="scientificName" defaultValue={species.scientificName} className="mt-1" />
-          </div>
-
-          <div>
-            <Label htmlFor="description" className="font-semibold">Descripción Corta</Label>
-            <Textarea id="description" name="description" defaultValue={species.description} rows={3} className="mt-1" />
-          </div>
-
-          <div>
-            <Label htmlFor="longDescription" className="font-semibold">Descripción Larga</Label>
-            <Textarea id="longDescription" name="longDescription" defaultValue={species.longDescription} rows={6} className="mt-1" />
-          </div>
-
-          <div>
-            <Label htmlFor="imageUpload" className="font-semibold">Imagen de la Especie</Label>
-            <div className="mt-1 flex items-center gap-4">
-              {imagePreview && (
-                <Image 
-                  src={imagePreview} 
-                  alt="Previsualización" 
-                  width={100} 
-                  height={100} 
-                  className="rounded-md object-cover aspect-square"
-                  key={imagePreview} 
-                />
-              )}
-              <Input 
-                id="imageUpload" 
-                name="imageUpload" 
-                type="file" 
-                accept="image/*" 
-                onChange={handleImageChange}
-                className="block w-full text-sm text-slate-500
-                           file:mr-4 file:py-2 file:px-4
-                           file:rounded-full file:border-0
-                           file:text-sm file:font-semibold
-                           file:bg-primary/10 file:text-primary
-                           hover:file:bg-primary/20"
-              />
-            </div>
-            <input type="hidden" name="imageUrl" value={imageFileValue} />
-            <p className="mt-1 text-xs text-muted-foreground">
-              Sube una nueva imagen para reemplazar la actual. Si no seleccionas una nueva, se mantendrá la imagen existente.
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <Label htmlFor="conservationStatus" className="font-semibold">Estado de Conservación</Label>
-              <Select name="conservationStatus" defaultValue={species.conservationStatus}>
-                <SelectTrigger id="conservationStatus" className="mt-1">
-                  <SelectValue placeholder="Seleccionar estado" />
-                </SelectTrigger>
-                <SelectContent>
-                  {conservationStatusOptions.map(status => (
-                    <SelectItem key={status.value} value={status.value}>{status.label}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div>
-              <Label htmlFor="populationTrend" className="font-semibold">Tendencia Poblacional</Label>
-              <Select name="populationTrend" defaultValue={species.populationTrend}>
-                <SelectTrigger id="populationTrend" className="mt-1">
-                  <SelectValue placeholder="Seleccionar tendencia" />
-                </SelectTrigger>
-                <SelectContent>
-                  {populationTrendOptions.map(opt => (
-                    <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          <div>
-            <Label htmlFor="habitat" className="font-semibold">Hábitat</Label>
-            <Input id="habitat" name="habitat" defaultValue={species.habitat} className="mt-1" />
-          </div>
-
-          <div>
-            <Label htmlFor="threats" className="font-semibold">Amenazas (separadas por coma)</Label>
-            <Input id="threats" name="threats" defaultValue={species.threats.join(', ')} className="mt-1" />
-          </div>
-
-          {species.keyStats.length > 0 && (
-            <Card className="bg-muted/50 p-4">
-              <h4 className="font-semibold text-lg mb-2">Estadísticas Clave (Primer Elemento)</h4>
-              <input type="hidden" name="keyStat0_label" defaultValue={species.keyStats[0].label} />
-              <div className="space-y-2">
+          <Accordion type="multiple" defaultValue={['item-1', 'item-2']} className="w-full">
+            
+            <AccordionItem value="item-1">
+              <AccordionTrigger className="text-xl font-headline">Nombres e Identificación</AccordionTrigger>
+              <AccordionContent className="space-y-4 pt-4">
                 <div>
-                  <Label htmlFor="keyStat0_value">{species.keyStats[0].label} - Valor</Label>
-                  <Input id="keyStat0_value" name="keyStat0_value" defaultValue={String(species.keyStats[0].value)} className="mt-1" />
+                  <Label htmlFor="spanishCommonName" className="font-semibold">Nombre Común en Español</Label>
+                  <Input id="spanishCommonName" name="spanishCommonName" defaultValue={species.spanishCommonName} className="mt-1" />
                 </div>
                 <div>
-                  <Label htmlFor="keyStat0_unit">{species.keyStats[0].label} - Unidad (opcional)</Label>
-                  <Input id="keyStat0_unit" name="keyStat0_unit" defaultValue={species.keyStats[0].unit || ''} className="mt-1" />
+                  <Label htmlFor="englishCommonName" className="font-semibold">Nombre Común en Inglés</Label>
+                  <Input id="englishCommonName" name="englishCommonName" defaultValue={species.englishCommonName || ''} className="mt-1" />
                 </div>
-              </div>
-            </Card>
-          )}
+                 <div>
+                    <Label htmlFor="genus" className="font-semibold">Género</Label>
+                    <Input id="genus" name="genus" defaultValue={species.genus || ''} className="mt-1" />
+                </div>
+                <div>
+                    <Label htmlFor="specificEpithet" className="font-semibold">Epíteto Específico</Label>
+                    <Input id="specificEpithet" name="specificEpithet" defaultValue={species.specificEpithet || ''} className="mt-1" />
+                </div>
+              </AccordionContent>
+            </AccordionItem>
 
-           {species.historicalData.length > 0 && (
-            <Card className="bg-muted/50 p-4">
-              <h4 className="font-semibold text-lg mb-2">Datos Históricos (Primer Punto)</h4>
-               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            <AccordionItem value="item-2">
+              <AccordionTrigger className="text-xl font-headline">Estado y Tendencia</AccordionTrigger>
+              <AccordionContent className="space-y-4 pt-4 grid grid-cols-1 md:grid-cols-2 gap-6">
+                 <div>
+                    <Label htmlFor="iucnStatus" className="font-semibold">Estado de Conservación (UICN)</Label>
+                    <Select name="iucnStatus" defaultValue={species.iucnStatus}>
+                        <SelectTrigger id="iucnStatus" className="mt-1">
+                        <SelectValue placeholder="Seleccionar estado" />
+                        </SelectTrigger>
+                        <SelectContent>
+                        {conservationStatusOptions.map(status => (
+                            <SelectItem key={status.value} value={status.value}>{status.label}</SelectItem>
+                        ))}
+                        </SelectContent>
+                    </Select>
+                    </div>
                 <div>
-                    <Label htmlFor="historicalData0_year">Año</Label>
-                    <Input id="historicalData0_year" name="historicalData0_year" type="number" defaultValue={String(species.historicalData[0].year)} className="mt-1"/>
+                  <Label htmlFor="populationTrend" className="font-semibold">Tendencia Poblacional</Label>
+                  <Select name="populationTrend" defaultValue={species.populationTrend}>
+                    <SelectTrigger id="populationTrend" className="mt-1">
+                      <SelectValue placeholder="Seleccionar tendencia" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {populationTrendOptions.map(opt => (
+                        <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
-                <div>
-                    <Label htmlFor="historicalData0_value">Valor</Label>
-                    <Input id="historicalData0_value" name="historicalData0_value" type="number" step="any" defaultValue={String(species.historicalData[0].value)} className="mt-1"/>
+              </AccordionContent>
+            </AccordionItem>
+            
+            <AccordionItem value="item-3">
+              <AccordionTrigger className="text-xl font-headline">Distribución</AccordionTrigger>
+              <AccordionContent className="space-y-4 pt-4">
+                 <div>
+                    <Label htmlFor="habitat" className="font-semibold">Hábitat</Label>
+                    <Input id="habitat" name="habitat" defaultValue={species.habitat} className="mt-1" />
+                  </div>
+                 <div>
+                  <Label className="font-semibold">Islas de Presencia</Label>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 mt-2 p-4 border rounded-md">
+                    {islandKeys.map(island => (
+                      <div key={island.id as string} className="flex items-center space-x-2">
+                        <Checkbox 
+                          id={island.id as string} 
+                          name={island.id as string} 
+                          defaultChecked={!!species[island.id]}
+                        />
+                        <Label htmlFor={island.id as string} className="text-sm font-normal">{island.label}</Label>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                <div>
-                    <Label htmlFor="historicalData0_unit">Unidad</Label>
-                    <Input id="historicalData0_unit" name="historicalData0_unit" defaultValue={species.historicalData[0].unit} className="mt-1"/>
-                </div>
-               </div>
-            </Card>
-          )}
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="item-4">
+                <AccordionTrigger className="text-xl font-headline">Descripciones y Amenazas</AccordionTrigger>
+                <AccordionContent className="space-y-4 pt-4">
+                     <div>
+                        <Label htmlFor="spanishDescription" className="font-semibold">Descripción (Español)</Label>
+                        <Textarea id="spanishDescription" name="spanishDescription" defaultValue={species.spanishDescription} rows={5} className="mt-1" />
+                    </div>
+                     <div>
+                        <Label htmlFor="englishDescription" className="font-semibold">Descripción (Inglés)</Label>
+                        <Textarea id="englishDescription" name="englishDescription" defaultValue={species.englishDescription || ''} rows={5} className="mt-1" />
+                    </div>
+                    <div>
+                        <Label htmlFor="threats" className="font-semibold">Amenazas (separadas por coma)</Label>
+                        <Input id="threats" name="threats" defaultValue={species.threats.join(', ')} className="mt-1" />
+                    </div>
+                </AccordionContent>
+            </AccordionItem>
+
+
+             <AccordionItem value="item-5">
+                <AccordionTrigger className="text-xl font-headline">Imagen de la Especie</AccordionTrigger>
+                <AccordionContent className="space-y-2 pt-4">
+                     <Label htmlFor="imageUpload" className="font-semibold">Subir Nueva Imagen</Label>
+                    <div className="mt-1 flex items-center gap-4">
+                    {imagePreview && (
+                        <Image 
+                        src={imagePreview} 
+                        alt="Previsualización" 
+                        width={100} 
+                        height={100} 
+                        className="rounded-md object-cover aspect-square"
+                        key={imagePreview} 
+                        />
+                    )}
+                    <Input 
+                        id="imageUpload" 
+                        name="imageUpload" 
+                        type="file" 
+                        accept="image/*" 
+                        onChange={handleImageChange}
+                        className="block w-full text-sm text-slate-500
+                                file:mr-4 file:py-2 file:px-4
+                                file:rounded-full file:border-0
+                                file:text-sm file:font-semibold
+                                file:bg-primary/10 file:text-primary
+                                hover:file:bg-primary/20"
+                    />
+                    </div>
+                    <input type="hidden" name="imageUrl" value={imageFileValue} />
+                    <p className="mt-1 text-xs text-muted-foreground">
+                    Sube una nueva imagen para reemplazar la actual. Si no seleccionas una nueva, se mantendrá la imagen existente.
+                    </p>
+                </AccordionContent>
+            </AccordionItem>
+          </Accordion>
 
           <div className="flex justify-end pt-4">
             <SubmitButton />
@@ -252,6 +264,3 @@ export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
     </Card>
   );
 }
-    
-
-    
