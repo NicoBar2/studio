@@ -10,7 +10,8 @@ import {
   type HistoricalDataPoint, 
   type SpeciesStat, 
   getSpeciesById,
-  getSpeciesList
+  getSpeciesList,
+  type ConservationStatus
 } from '@/lib/species';
 import { 
   addResearcher as addResearcherToStore, 
@@ -270,23 +271,22 @@ export async function importSpeciesDataAction(
     return { success: false, message: "No se ha seleccionado ningún archivo." };
   }
 
-  const mapPopulationTrend = (trend: string): Species['populationTrend'] => {
-    const lowerTrend = trend?.toLowerCase().trim();
+  const toBoolean = (value: any): boolean => {
+    if (typeof value === 'string') {
+      const lowerVal = value.toLowerCase().trim();
+      return lowerVal === 'true' || lowerVal === 'x' || lowerVal === '1';
+    }
+    return !!value;
+  };
+
+  const mapPopulationTrend = (trend: any): Species['populationTrend'] => {
+    const lowerTrend = String(trend || '').toLowerCase().trim();
     switch (lowerTrend) {
-      case 'creciente': return 'increasing';
-      case 'decreciente': return 'decreasing';
-      case 'estable': return 'stable';
+      case 'increasing': case 'creciente': return 'increasing';
+      case 'decreasing': case 'decreciente': return 'decreasing';
+      case 'stable': case 'estable': return 'stable';
       default: return 'unknown';
     }
-  };
-  
-  const splitScientificName = (name: string): { genus: string; specificEpithet: string } => {
-    if (!name) return { genus: '', specificEpithet: '' };
-    const parts = name.split(' ');
-    return {
-      genus: parts[0] || '',
-      specificEpithet: parts.slice(1).join(' ') || '',
-    };
   };
 
   try {
@@ -296,40 +296,55 @@ export async function importSpeciesDataAction(
     const workbook = xlsx.read(buffer, { type: 'buffer' });
     const sheetName = workbook.SheetNames[0];
     const sheet = workbook.Sheets[sheetName];
-    const data = xlsx.utils.sheet_to_json(sheet) as any[];
+    const data = xlsx.utils.sheet_to_json(sheet, { defval: "" }) as any[];
 
     let addedCount = 0;
+    let updatedCount = 0;
     let failedCount = 0;
 
     for (const row of data) {
       try {
-        const nameString = String(row.nombre || '');
-        if (!nameString) {
+        const spanishName = String(row['nombre'] || '');
+        if (!spanishName) {
           failedCount++;
           continue;
         }
 
-        const scientific = splitScientificName(String(row.cientifico || ''));
-        const hintString = nameString.split(' ').slice(0, 2).join(' ').toLowerCase();
+        const id = spanishName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+        const existingSpecies = await getSpeciesById(id);
 
-        const newSpecies: Partial<Species> = {
-            spanishCommonName: nameString,
-            genus: scientific.genus,
-            specificEpithet: scientific.specificEpithet,
-            spanishDescription: `Descripción breve para ${nameString || 'esta especie'}.`,
-            englishDescription: `A short description for ${nameString || 'this species'}.`,
-            imageUrl: 'https://placehold.co/600x400.png',
-            dataAiHint: hintString,
-            icon: 'Footprints',
-            populationTrend: mapPopulationTrend(String(row.poblacion || 'unknown')),
-            iucnStatus: (String(row.conservacion || 'Datos Insuficientes')) as Species['iucnStatus'],
-            habitat: String(row.habitat || ''),
-            threats: (row.amenazas || '').toString().split(',').map((t: string) => t.trim()).filter((t: string) => t),
+        const hintString = spanishName.split(' ').slice(0, 2).join(' ').toLowerCase();
+        const scientificName = String(row['cientifico'] || '');
+        const scientificParts = scientificName.split(' ');
+        
+        const speciesData: Partial<Species> = {
+          id: id,
+          spanishCommonName: spanishName,
+          genus: scientificParts[0] || '',
+          specificEpithet: scientificParts.slice(1).join(' ') || '',
+          iucnStatus: (String(row['conservacion'] || (existingSpecies ? existingSpecies.iucnStatus : 'Datos Insuficientes'))) as ConservationStatus,
+          populationTrend: mapPopulationTrend(row['poblacion'] || (existingSpecies ? existingSpecies.populationTrend : 'unknown')),
+          habitat: String(row['habitat'] || (existingSpecies ? existingSpecies.habitat : '')),
+          threats: (row.amenazas || (existingSpecies ? existingSpecies.threats.join(',') : '')).toString().split(',').map((t: string) => t.trim()).filter((t: string) => t),
         };
 
-        await addSpeciesToStore(newSpecies);
-        addedCount++;
-
+        if (existingSpecies) {
+          await updateSpeciesData(id, speciesData);
+          updatedCount++;
+        } else {
+          // Set defaults for new species only
+          const newSpeciesDefaults: Partial<Species> = {
+              spanishDescription: `Descripción breve para ${spanishName}.`,
+              englishDescription: `A short description for ${spanishName}.`,
+              imageUrl: 'https://placehold.co/600x400.png',
+              dataAiHint: hintString,
+              icon: 'Footprints',
+              keyStats: [],
+              historicalData: [],
+          };
+          await addSpeciesToStore({ ...newSpeciesDefaults, ...speciesData });
+          addedCount++;
+        }
       } catch (e) {
         console.error("Error procesando fila:", row, e);
         failedCount++;
@@ -339,7 +354,7 @@ export async function importSpeciesDataAction(
     revalidatePath('/');
     revalidatePath('/dashboard');
     
-    let message = `Importación completada. Especies añadidas: ${addedCount}.`;
+    let message = `Importación completada. Especies añadidas: ${addedCount}, actualizadas: ${updatedCount}.`;
     if (failedCount > 0) {
       message += ` Filas fallidas: ${failedCount}. Revisa la consola del servidor para más detalles.`;
     }

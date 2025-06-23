@@ -61,10 +61,9 @@ export default function ImportDataPage() {
               Importación de Datos de Especies
             </CardTitle>
             <CardDescription>
-              Sube un archivo Excel (.xlsx) para agregar nuevas especies a la base de datos.
-              El sistema mapeará las columnas del Excel a nuestro modelo de datos detallado.
+              Sube un archivo Excel (.xlsx) para agregar o actualizar especies. El sistema utiliza el <strong>nombre</strong> para identificar cada especie. Si una especie con ese nombre ya existe, se actualizará; de lo contrario, se creará una nueva.
               <br />
-              <strong className="text-destructive mt-2 block">Columnas requeridas:</strong> 
+              <strong className="text-destructive mt-2 block">Columnas Requeridas:</strong> 
               <code className="text-xs">nombre, cientifico, conservacion, poblacion, habitat, amenazas</code>.
               <br/>
               <strong className="mt-1 block">Nota:</strong> 
