@@ -2,6 +2,7 @@
 "use server";
 
 import { revalidatePath } from 'next/cache';
+import * as xlsx from 'xlsx';
 import { 
   updateSpeciesData, 
   addSpecies as addSpeciesToStore,
@@ -303,42 +304,68 @@ export async function importSpeciesDataAction(
   prevState: any,
   formData: FormData
 ): Promise<{ success: boolean; message: string }> {
-  // SIMULATION: In a real app, you would parse the file from formData.
-  // For now, we'll add a predefined "mock" species to show the flow works.
-  
-  try {
-    const mockSpecies: Omit<Species, 'id'> = {
-      name: "Cangrejo Fantasma de Galápagos",
-      scientificName: "Ocypode gaudichaudii",
-      description: "Un cangrejo de colores brillantes conocido por sus rápidos movimientos y sus madrigueras en playas arenosas.",
-      longDescription: "El Cangrejo Fantasma de Galápagos es un carroñero y depredador vital en el ecosistema de la playa. Sus vibrantes colores naranja y amarillo lo hacen destacar. Son conocidos por su capacidad para cambiar de color para camuflarse y por su comportamiento de construcción de madrigueras.",
-      imageUrl: "https://placehold.co/600x400.png",
-      dataAiHint: "ghost crab sand",
-      icon: "Bug",
-      populationTrend: 'stable',
-      conservationStatus: 'Preocupación Menor',
-      habitat: "Playas de arena y zonas intermareales a lo largo de las costas.",
-      threats: ["Contaminación plástica", "Perturbación humana en las playas de anidación de tortugas", "Depredación por especies introducidas cuando son jóvenes"],
-      keyStats: [
-        { label: "Velocidad Máxima", value: "Hasta 16 km/h" },
-        { label: "Dieta", value: "Carroñero y omnívoro" },
-        { label: "Profundidad de la Madriguera", value: "Hasta 1 metro" }
-      ],
-      historicalData: [],
-      islands: ["Santa Cruz", "Isabela", "San Cristobal", "Floreana"]
-    };
+  const file = formData.get('speciesFile') as File;
+  if (!file || file.size === 0) {
+    return { success: false, message: "No se ha seleccionado ningún archivo." };
+  }
 
-    await addSpeciesToStore(mockSpecies);
-    
-    // Revalidate paths to reflect the new data
+  try {
+    const bytes = await file.arrayBuffer();
+    const buffer = Buffer.from(bytes);
+
+    const workbook = xlsx.read(buffer, { type: 'buffer' });
+    const sheetName = workbook.SheetNames[0];
+    const sheet = workbook.Sheets[sheetName];
+    const data = xlsx.utils.sheet_to_json(sheet) as any[];
+
+    let addedCount = 0;
+    let failedCount = 0;
+
+    for (const row of data) {
+      try {
+        const newSpecies: Omit<Species, 'id'> = {
+            name: String(row.name || ''),
+            scientificName: String(row.scientificName || ''),
+            description: String(row.description || ''),
+            longDescription: String(row.longDescription || ''),
+            imageUrl: String(row.imageUrl || 'https://placehold.co/600x400.png'),
+            dataAiHint: String(row.dataAiHint || ''),
+            icon: String(row.icon || 'HelpCircle'),
+            populationTrend: (row.populationTrend || 'unknown') as Species['populationTrend'],
+            conservationStatus: (row.conservationStatus || 'Datos Insuficientes') as Species['conservationStatus'],
+            habitat: String(row.habitat || ''),
+            threats: (row.threats || '').toString().split(',').map((t: string) => t.trim()).filter((t: string) => t),
+            islands: (row.islands || '').toString().split(',').map((i: string) => i.trim()).filter((i: string) => i),
+            keyStats: row.keyStats ? JSON.parse(row.keyStats) : [],
+            historicalData: row.historicalData ? JSON.parse(row.historicalData) : [],
+        };
+
+        if (!newSpecies.name) {
+          failedCount++;
+          continue; // Skip rows without a name
+        }
+
+        await addSpeciesToStore(newSpecies);
+        addedCount++;
+
+      } catch (e) {
+        console.error("Error procesando fila:", row, e);
+        failedCount++;
+      }
+    }
+
     revalidatePath('/');
     revalidatePath('/dashboard');
-
-    return { success: true, message: "¡Simulación exitosa! Se ha añadido el 'Cangrejo Fantasma de Galápagos' a la base de datos." };
+    
+    let message = `Importación completada. Especies añadidas: ${addedCount}.`;
+    if (failedCount > 0) {
+      message += ` Filas fallidas: ${failedCount}. Revisa la consola del servidor para más detalles.`;
+    }
+    return { success: true, message };
 
   } catch (error) {
-    console.error("Error en la importación simulada:", error);
+    console.error("Error en la importación de datos:", error);
     const errorMessage = error instanceof Error ? error.message : "Ocurrió un error desconocido durante la importación.";
-    return { success: false, message: errorMessage };
+    return { success: false, message: `Error al procesar el archivo: ${errorMessage}` };
   }
 }

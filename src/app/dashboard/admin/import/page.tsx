@@ -22,7 +22,7 @@ function SubmitButton() {
   const { pending } = useFormStatus();
   return (
     <Button type="submit" disabled={pending} className="w-full sm:w-auto">
-      {pending ? 'Procesando...' : 'Procesar Archivo (Simulación)'}
+      {pending ? 'Procesando...' : 'Procesar Archivo'}
     </Button>
   );
 }
@@ -58,12 +58,16 @@ export default function ImportDataPage() {
           <CardHeader>
             <CardTitle className="flex items-center text-2xl font-headline text-primary">
               <UploadCloud className="mr-3 h-7 w-7" />
-              Importación de Datos de Especies (Simulación)
+              Importación de Datos de Especies
             </CardTitle>
             <CardDescription>
-              Sube un archivo Excel con datos de especies para agregarlos a la base de datos.
+              Sube un archivo Excel (.xlsx) con datos de especies para agregarlos a la base de datos.
+              La primera fila debe contener los encabezados de columna.
               <br />
-              <strong className="text-destructive">Nota:</strong> Esta es una demostración. El procesamiento real de archivos Excel no está implementado. Al hacer clic en "Procesar", se añadirá una especie de ejemplo para simular una importación exitosa.
+              <strong className="text-destructive mt-2 block">Columnas requeridas:</strong> 
+              <code className="text-xs">name, scientificName, description, longDescription, imageUrl, dataAiHint, icon, populationTrend, conservationStatus, habitat, threats, islands, keyStats, historicalData</code>
+              <br />
+              <strong className="text-destructive mt-1 block">Nota:</strong> Las columnas 'threats' y 'islands' deben ser valores separados por comas. Las columnas 'keyStats' y 'historicalData' deben ser una cadena de texto JSON válida.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -75,9 +79,10 @@ export default function ImportDataPage() {
                   name="speciesFile" 
                   type="file" 
                   className="mt-1 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20"
-                  accept=".xlsx, .xls, .csv"
+                  accept=".xlsx"
+                  required
                 />
-                <p className="text-xs text-muted-foreground mt-1">Sube un archivo en formato .xlsx o .csv.</p>
+                <p className="text-xs text-muted-foreground mt-1">Sube un archivo en formato .xlsx.</p>
               </div>
               <SubmitButton />
             </form>
