@@ -62,12 +62,12 @@ export default function ImportDataPage() {
             </CardTitle>
             <CardDescription>
               Sube un archivo Excel (.xlsx) con datos de especies para agregarlos a la base de datos.
-              La primera fila debe contener los encabezados de columna.
+              La primera fila debe contener los encabezados de columna. Los demás campos se completarán con valores predeterminados.
               <br />
               <strong className="text-destructive mt-2 block">Columnas requeridas:</strong> 
-              <code className="text-xs">name, scientificName, description, longDescription, imageUrl, dataAiHint, icon, populationTrend, conservationStatus, habitat, threats, islands, keyStats, historicalData</code>
+              <code className="text-xs">nombre, cientifico, conservacion, poblacion, habitat, amenazas</code>
               <br />
-              <strong className="text-destructive mt-1 block">Nota:</strong> Las columnas 'threats' y 'islands' deben ser valores separados por comas. Las columnas 'keyStats' y 'historicalData' deben ser una cadena de texto JSON válida.
+              <strong className="text-destructive mt-1 block">Nota:</strong> La columna 'amenazas' debe ser una lista de valores separados por comas. La columna 'poblacion' debe ser 'Creciente', 'Decreciente', 'Estable' o 'Desconocida'.
             </CardDescription>
           </CardHeader>
           <CardContent>

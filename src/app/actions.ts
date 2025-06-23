@@ -309,6 +309,21 @@ export async function importSpeciesDataAction(
     return { success: false, message: "No se ha seleccionado ningún archivo." };
   }
 
+  // Helper function to map Spanish population trends to English
+  const mapPopulationTrend = (trend: string): Species['populationTrend'] => {
+    const lowerTrend = trend?.toLowerCase().trim();
+    switch (lowerTrend) {
+      case 'creciente':
+        return 'increasing';
+      case 'decreciente':
+        return 'decreasing';
+      case 'estable':
+        return 'stable';
+      default:
+        return 'unknown';
+    }
+  };
+
   try {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
@@ -323,21 +338,24 @@ export async function importSpeciesDataAction(
 
     for (const row of data) {
       try {
+        const nameString = String(row.nombre || '');
+        const hintString = nameString.split(' ').slice(0, 2).join(' ').toLowerCase();
+
         const newSpecies: Omit<Species, 'id'> = {
-            name: String(row.name || ''),
-            scientificName: String(row.scientificName || ''),
-            description: String(row.description || ''),
-            longDescription: String(row.longDescription || ''),
-            imageUrl: String(row.imageUrl || 'https://placehold.co/600x400.png'),
-            dataAiHint: String(row.dataAiHint || ''),
-            icon: String(row.icon || 'HelpCircle'),
-            populationTrend: (row.populationTrend || 'unknown') as Species['populationTrend'],
-            conservationStatus: (row.conservationStatus || 'Datos Insuficientes') as Species['conservationStatus'],
+            name: nameString,
+            scientificName: String(row.cientifico || ''),
+            description: `Descripción breve para ${nameString || 'esta especie'}.`,
+            longDescription: `Descripción larga y detallada para ${nameString || 'esta especie'}.`,
+            imageUrl: 'https://placehold.co/600x400.png',
+            dataAiHint: hintString,
+            icon: 'Footprints', // A generic default icon
+            populationTrend: mapPopulationTrend(String(row.poblacion || 'unknown')),
+            conservationStatus: (String(row.conservacion || 'Datos Insuficientes')) as Species['conservationStatus'],
             habitat: String(row.habitat || ''),
-            threats: (row.threats || '').toString().split(',').map((t: string) => t.trim()).filter((t: string) => t),
-            islands: (row.islands || '').toString().split(',').map((i: string) => i.trim()).filter((i: string) => i),
-            keyStats: row.keyStats ? JSON.parse(row.keyStats) : [],
-            historicalData: row.historicalData ? JSON.parse(row.historicalData) : [],
+            threats: (row.amenazas || '').toString().split(',').map((t: string) => t.trim()).filter((t: string) => t),
+            islands: [], // Default to empty array
+            keyStats: [], // Default to empty array
+            historicalData: [], // Default to empty array
         };
 
         if (!newSpecies.name) {
