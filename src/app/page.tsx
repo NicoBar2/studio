@@ -51,9 +51,12 @@ export default function HomePage() {
     }
 
     if (searchTerm) {
+      const lowercasedTerm = searchTerm.toLowerCase();
       filteredSpecies = filteredSpecies.filter(species =>
-        species.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        species.scientificName.toLowerCase().includes(searchTerm.toLowerCase())
+        species.name.toLowerCase().includes(lowercasedTerm) ||
+        species.scientificName.toLowerCase().includes(lowercasedTerm) ||
+        species.description.toLowerCase().includes(lowercasedTerm) ||
+        species.habitat.toLowerCase().includes(lowercasedTerm)
       );
     }
     return filteredSpecies;
@@ -125,7 +128,7 @@ export default function HomePage() {
                   <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                   <Input 
                       type="search"
-                      placeholder="Buscar por nombre..."
+                      placeholder="Buscar por nombre, hábitat..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                       className="pl-10 bg-input"
