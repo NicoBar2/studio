@@ -2,7 +2,7 @@
 "use client"; 
 import RoleBasedGuard from '@/components/auth/RoleBasedGuard';
 import { Sidebar, SidebarProvider, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarHeader, SidebarInset } from '@/components/ui/sidebar';
-import { LayoutDashboard, Users, HomeIcon } from 'lucide-react';
+import { LayoutDashboard, Users, HomeIcon, FileUp } from 'lucide-react';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -35,14 +35,24 @@ export default function DashboardLayout({
               </SidebarMenuItem>
               
               {role === 'admin' && (
-                <SidebarMenuItem>
-                  <SidebarMenuButton asChild variant="ghost" className="justify-start w-full">
-                    <Link href="/dashboard/admin/researchers">
-                      <Users />
-                      <span className="group-data-[state=collapsed]:hidden">Gestionar Investigadores</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
+                <>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton asChild variant="ghost" className="justify-start w-full">
+                      <Link href="/dashboard/admin/researchers">
+                        <Users />
+                        <span className="group-data-[state=collapsed]:hidden">Gestionar Investigadores</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton asChild variant="ghost" className="justify-start w-full">
+                      <Link href="/dashboard/admin/import">
+                        <FileUp />
+                        <span className="group-data-[state=collapsed]:hidden">Importar Datos</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                </>
               )}
 
               <SidebarMenuItem>

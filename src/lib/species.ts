@@ -95,3 +95,22 @@ export const updateSpeciesData = async (id: string, updatedData: Partial<Species
   await writeSpecies(speciesList);
   return true;
 };
+
+export const addSpecies = async (newSpecies: Omit<Species, 'id'>): Promise<Species> => {
+  const speciesList = await readSpecies();
+  const newId = newSpecies.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+  
+  if (speciesList.some(s => s.id === newId)) {
+    // In a real app, handle ID collision better, maybe append a number
+    throw new Error(`Ya existe una especie con el id: ${newId}`);
+  }
+
+  const speciesToAdd: Species = {
+    ...newSpecies,
+    id: newId,
+  };
+
+  speciesList.push(speciesToAdd);
+  await writeSpecies(speciesList);
+  return speciesToAdd;
+}

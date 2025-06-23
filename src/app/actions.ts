@@ -4,6 +4,7 @@
 import { revalidatePath } from 'next/cache';
 import { 
   updateSpeciesData, 
+  addSpecies as addSpeciesToStore,
   type Species, 
   type HistoricalDataPoint, 
   type SpeciesStat, 
@@ -295,4 +296,49 @@ export async function getResearcherByEmailFromStore(email: string): Promise<Rese
 
 export async function setResearcherPasswordAction(email: string, passwordToSet: string): Promise<Researcher | null> {
   return setResearcherPasswordInternal(email, passwordToSet);
+}
+
+
+export async function importSpeciesDataAction(
+  prevState: any,
+  formData: FormData
+): Promise<{ success: boolean; message: string }> {
+  // SIMULATION: In a real app, you would parse the file from formData.
+  // For now, we'll add a predefined "mock" species to show the flow works.
+  
+  try {
+    const mockSpecies: Omit<Species, 'id'> = {
+      name: "Cangrejo Fantasma de Galápagos",
+      scientificName: "Ocypode gaudichaudii",
+      description: "Un cangrejo de colores brillantes conocido por sus rápidos movimientos y sus madrigueras en playas arenosas.",
+      longDescription: "El Cangrejo Fantasma de Galápagos es un carroñero y depredador vital en el ecosistema de la playa. Sus vibrantes colores naranja y amarillo lo hacen destacar. Son conocidos por su capacidad para cambiar de color para camuflarse y por su comportamiento de construcción de madrigueras.",
+      imageUrl: "https://placehold.co/600x400.png",
+      dataAiHint: "ghost crab sand",
+      icon: "Bug",
+      populationTrend: 'stable',
+      conservationStatus: 'Preocupación Menor',
+      habitat: "Playas de arena y zonas intermareales a lo largo de las costas.",
+      threats: ["Contaminación plástica", "Perturbación humana en las playas de anidación de tortugas", "Depredación por especies introducidas cuando son jóvenes"],
+      keyStats: [
+        { label: "Velocidad Máxima", value: "Hasta 16 km/h" },
+        { label: "Dieta", value: "Carroñero y omnívoro" },
+        { label: "Profundidad de la Madriguera", value: "Hasta 1 metro" }
+      ],
+      historicalData: [],
+      islands: ["Santa Cruz", "Isabela", "San Cristobal", "Floreana"]
+    };
+
+    await addSpeciesToStore(mockSpecies);
+    
+    // Revalidate paths to reflect the new data
+    revalidatePath('/');
+    revalidatePath('/dashboard');
+
+    return { success: true, message: "¡Simulación exitosa! Se ha añadido el 'Cangrejo Fantasma de Galápagos' a la base de datos." };
+
+  } catch (error) {
+    console.error("Error en la importación simulada:", error);
+    const errorMessage = error instanceof Error ? error.message : "Ocurrió un error desconocido durante la importación.";
+    return { success: false, message: errorMessage };
+  }
 }
