@@ -84,12 +84,7 @@
     "populationTrend": "stable",
     "iucnStatus": "Vulnerable",
     "habitat": "Costas rocosas, orillas de lava y zonas intermareales.",
-    "threats": [
-      "Eventos de El Niño (reduciendo algas)",
-      "Depredadores introducidos (gatos, perros)",
-      "Contaminación marina",
-      "Cambio climático que afecta el crecimiento de algas"
-    ],
+    "threats": [],
     "keyStats": [
       {
         "label": "Profundidad de Buceo",
@@ -131,13 +126,20 @@
         "unit": "individuos"
       }
     ],
-    "is_isabela": true,
-    "is_fernandina": true,
-    "is_santaCruz": true,
-    "is_sanCristóbal": true,
-    "is_española": true,
-    "is_floreana": true,
-    "is_genovesa": true
+    "is_isabela": false,
+    "is_fernandina": false,
+    "is_santaCruz": false,
+    "is_sanCristóbal": false,
+    "is_española": false,
+    "is_floreana": false,
+    "is_genovesa": false,
+    "is_darwin": false,
+    "is_marchena": false,
+    "is_pinta": false,
+    "is_pinzón": false,
+    "is_santaFé": false,
+    "is_santiago": false,
+    "is_wolf": false
   },
   {
     "id": "darwins-finches",

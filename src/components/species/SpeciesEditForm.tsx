@@ -84,12 +84,14 @@ export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
   }, [state, toast, router]);
 
   useEffect(() => {
+    // This effect ensures that if the species prop changes from the outside
+    // (e.g., after a save and re-fetch), the image preview and hidden input value are updated.
+    // It will NOT run when the user selects a new image, which fixes the bug.
     const currentImageUrl = getSpeciesImageUrl(species);
-    if (currentImageUrl !== imagePreview) {
-      setImagePreview(currentImageUrl);
-      setImageFileValue(currentImageUrl);
-    }
-  }, [species.imageUrl, imagePreview]);
+    setImagePreview(currentImageUrl);
+    setImageFileValue(currentImageUrl);
+  }, [species.imageUrl]);
+
 
   const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -102,8 +104,10 @@ export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
       };
       reader.readAsDataURL(file);
     } else {
-      setImagePreview(getSpeciesImageUrl(species));
-      setImageFileValue(species.imageUrl);
+      // User cancelled the file dialog, reset to the original image for this species
+      const originalImageUrl = getSpeciesImageUrl(species);
+      setImagePreview(originalImageUrl);
+      setImageFileValue(originalImageUrl);
     }
   };
 
