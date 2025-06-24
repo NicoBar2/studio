@@ -56,7 +56,7 @@
         "unit": "individuos (total estimado)"
       }
     ],
-    "is_isabela": false,
+    "is_isabela": true,
     "is_santaCruz": false,
     "is_sanCristóbal": false,
     "is_española": false,
