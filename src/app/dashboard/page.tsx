@@ -1,4 +1,3 @@
-
 "use client";
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,6 +9,7 @@ import { Edit3, BarChart3, Turtle, Bird, Footprints, ShieldQuestion, Waves, Bug,
 import { useEffect, useState } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import EnrichButton from '@/components/dashboard/EnrichButton';
+import { Badge } from '@/components/ui/badge';
 
 const iconMap: Record<string, LucideIcon> = {
   Turtle,
@@ -91,7 +91,12 @@ export default function DashboardPage() {
       </div>
 
       <section>
-        <h2 className="text-2xl font-headline font-semibold text-primary mb-4">Resumen de Especies</h2>
+        <div className="flex items-center justify-between mb-4">
+            <h2 className="text-2xl font-headline font-semibold text-primary">Resumen de Especies</h2>
+            {!isLoading && (
+              <Badge variant="secondary">{speciesList.length} Especies Totales</Badge>
+            )}
+        </div>
         <div className="space-y-4">
           {isLoading ? (
             <>
