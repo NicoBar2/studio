@@ -5,6 +5,7 @@ import type { UserRole } from '@/lib/species';
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast'; // Import useToast
 import { getResearcherByEmailFromStore, setResearcherPasswordAction } from '@/app/actions'; // Import actions
+import bcrypt from 'bcryptjs';
 
 type AuthContextType = {
   role: UserRole | null;
@@ -108,7 +109,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
     } else {
       // Researcher has an existing password, normal login
-      if (researcher.password === password) {
+      const passwordMatch = await bcrypt.compare(password, researcher.password);
+      if (passwordMatch) {
         setRoleState('researcher');
         setUserEmailState(lowerEmail);
         localStorage.setItem('galapagos-auth-role', 'researcher');

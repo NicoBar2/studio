@@ -1,6 +1,7 @@
 
 import { promises as fs } from 'fs';
 import path from 'path';
+import bcrypt from 'bcryptjs';
 
 export type Researcher = {
   id: string;
@@ -9,7 +10,7 @@ export type Researcher = {
   institution?: string;
   specialization?: string;
   isVerified: boolean;
-  password?: string; // Added password field
+  password?: string; // Can be a hashed password
 };
 
 // Path to the JSON file database
@@ -122,8 +123,12 @@ export async function setResearcherPassword(email: string, passwordToSet: string
   if (index === -1) {
     return null; // Researcher not found
   }
-  // In a real app, hash the password here before saving
-  researchers[index].password = passwordToSet;
+  
+  // Hash the password before saving
+  const saltRounds = 10;
+  const hashedPassword = await bcrypt.hash(passwordToSet, saltRounds);
+  researchers[index].password = hashedPassword;
+  
   await writeResearchers(researchers);
   return researchers[index];
 }
