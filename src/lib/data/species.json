@@ -1,3 +1,4 @@
+
 [
   {
     "id": "tortuga-gigante",
@@ -164,7 +165,23 @@
         "value": "Diversidad de picos"
       }
     ],
-    "historicalData": [],
+    "historicalData": [
+      {
+        "year": 1995,
+        "value": 300000,
+        "unit": "individuos"
+      },
+      {
+        "year": 2005,
+        "value": 320000,
+        "unit": "individuos"
+      },
+      {
+        "year": 2015,
+        "value": 310000,
+        "unit": "individuos"
+      }
+    ],
     "is_isabela": true,
     "is_santaCruz": true,
     "is_sanCristóbal": true,
@@ -280,7 +297,23 @@
         "value": "Peces, sardinas, calamares"
       }
     ],
-    "historicalData": [],
+    "historicalData": [
+      {
+        "year": 1980,
+        "value": 60000,
+        "unit": "individuos"
+      },
+      {
+        "year": 2000,
+        "value": 50000,
+        "unit": "individuos"
+      },
+      {
+        "year": 2020,
+        "value": 45000,
+        "unit": "individuos"
+      }
+    ],
     "is_isabela": true,
     "is_santaCruz": true,
     "is_sanCristóbal": true,
@@ -402,7 +435,23 @@
         "value": "~1,600 individuos"
       }
     ],
-    "historicalData": [],
+    "historicalData": [
+      {
+        "year": 2000,
+        "value": 1500,
+        "unit": "individuos"
+      },
+      {
+        "year": 2010,
+        "value": 1600,
+        "unit": "individuos"
+      },
+      {
+        "year": 2020,
+        "value": 1650,
+        "unit": "individuos"
+      }
+    ],
     "is_isabela": true,
     "is_fernandina": true,
     "is_santaCruz": false,
@@ -456,7 +505,23 @@
         "value": "40-45 años"
       }
     ],
-    "historicalData": [],
+    "historicalData": [
+      {
+        "year": 1994,
+        "value": 15000,
+        "unit": "parejas reproductoras"
+      },
+      {
+        "year": 2007,
+        "value": 12000,
+        "unit": "parejas reproductoras"
+      },
+      {
+        "year": 2020,
+        "value": 10000,
+        "unit": "parejas reproductoras"
+      }
+    ],
     "is_española": true,
     "is_isabela": false,
     "is_santaCruz": false,
@@ -508,7 +573,23 @@
         "value": "Poliandria cooperativa (una hembra se aparea con varios machos)"
       }
     ],
-    "historicalData": [],
+    "historicalData": [
+      {
+        "year": 1990,
+        "value": 150,
+        "unit": "parejas reproductoras"
+      },
+      {
+        "year": 2005,
+        "value": 160,
+        "unit": "parejas reproductoras"
+      },
+      {
+        "year": 2018,
+        "value": 155,
+        "unit": "parejas reproductoras"
+      }
+    ],
     "is_isabela": true,
     "is_fernandina": true,
     "is_santiago": true,
@@ -559,7 +640,23 @@
         "value": "Insectos, arañas, escorpiones, y a veces materia vegetal"
       }
     ],
-    "historicalData": [],
+    "historicalData": [
+      {
+        "year": 2000,
+        "value": 500000,
+        "unit": "individuos"
+      },
+      {
+        "year": 2010,
+        "value": 550000,
+        "unit": "individuos"
+      },
+      {
+        "year": 2020,
+        "value": 530000,
+        "unit": "individuos"
+      }
+    ],
     "is_isabela": true,
     "is_santaCruz": true,
     "is_sanCristóbal": true,
