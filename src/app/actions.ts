@@ -11,7 +11,8 @@ import {
   type SpeciesStat, 
   getSpeciesById,
   getSpeciesList,
-  type ConservationStatus
+  type ConservationStatus,
+  type UserRole
 } from '@/lib/species';
 import { 
   addResearcher as addResearcherToStore, 
@@ -19,11 +20,14 @@ import {
   deleteResearcherById as deleteResearcherByIdFromStore, 
   updateResearcher as updateResearcherInStore,
   getResearcherById as getResearcherByIdFromStore,
-  getResearcherByEmail as getResearcherByEmailFromStoreInternal,
-  setResearcherPassword as setResearcherPasswordInternal,
+  getResearcherByEmail,
+  setResearcherPassword,
   type Researcher 
 } from '@/lib/researchers';
 import { enrichSpeciesData, type EnrichedData } from '@/ai/flows/enrichSpeciesData';
+import { z } from 'zod';
+import { redirect } from 'next/navigation';
+import bcrypt from 'bcryptjs';
 
 // Placeholder for AI insight generation
 async function generateSpeciesInsight(speciesName: string, speciesData: string): Promise<string> {
@@ -80,7 +84,7 @@ export async function saveSpeciesData(prevState: any, formData: FormData): Promi
     if (!userEmail) {
       return { success: false, message: "No se pudo identificar al investigador." };
     }
-    const researcher = await getResearcherByEmailFromStoreInternal(userEmail);
+    const researcher = await getResearcherByEmail(userEmail);
     if (!researcher || !researcher.isVerified) {
       return { success: false, message: "Acción no permitida." };
     }
@@ -255,12 +259,77 @@ export async function toggleResearcherVerificationAction(
   }
 }
 
-export async function getResearcherByEmailFromStore(email: string): Promise<Researcher | undefined> {
-  return getResearcherByEmailFromStoreInternal(email);
+export async function requestPasswordResetAction(
+  prevState: any,
+  formData: FormData
+): Promise<{ success: boolean; message: string }> {
+    const email = formData.get('email') as string;
+    if (!email || !email.trim().match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g)) {
+        return { success: false, message: "Por favor, introduce un correo electrónico válido." };
+    }
+
+    const researcher = await getResearcherByEmail(email);
+
+    // For security, we don't reveal if the email exists.
+    // In a real app, you would generate a token and send an email only if the user exists.
+    if (researcher) {
+      console.log(`Password reset requested for ${email}. In a real app, an email would be sent.`);
+    }
+
+    return { 
+      success: true, 
+      message: "Si existe una cuenta con ese correo, se ha enviado un enlace de recuperación (simulado)." 
+    };
 }
 
-export async function setResearcherPasswordAction(email: string, passwordToSet: string): Promise<Researcher | null> {
-  return setResearcherPasswordInternal(email, passwordToSet);
+
+const MIN_PASSWORD_LENGTH = 6;
+
+const resetPasswordSchema = z.object({
+  email: z.string().email({ message: "Por favor, introduce un correo electrónico válido." }),
+  password: z.string().min(MIN_PASSWORD_LENGTH, { message: `La contraseña debe tener al menos ${MIN_PASSWORD_LENGTH} caracteres.` }),
+  confirmPassword: z.string(),
+}).refine(data => data.password === data.confirmPassword, {
+  message: "Las contraseñas no coinciden.",
+  path: ["confirmPassword"], // path of error
+});
+
+
+export async function resetPasswordAction(
+  prevState: any,
+  formData: FormData
+): Promise<{ success: boolean; message: string }> {
+  
+  const parsed = resetPasswordSchema.safeParse({
+    email: formData.get('email'),
+    password: formData.get('password'),
+    confirmPassword: formData.get('confirmPassword'),
+  });
+
+  if (!parsed.success) {
+    // Flatten errors to a simple message string
+    const errorMessage = parsed.error.issues.map(issue => issue.message).join(' ');
+    return { success: false, message: errorMessage };
+  }
+
+  const { email, password } = parsed.data;
+
+  try {
+    const researcher = await getResearcherByEmail(email);
+    if (!researcher) {
+        // We check again here just in case, but the primary check is in AuthContext/request
+        return { success: false, message: "No se encontró ningún investigador con ese correo electrónico." };
+    }
+    
+    await setResearcherPassword(email, password);
+
+  } catch(error) {
+    console.error("Error reseteando la contraseña:", error);
+    return { success: false, message: "Ocurrió un error al actualizar la contraseña." };
+  }
+  
+  // On success, redirect to login page. The page itself will show the toast.
+  redirect('/login?reset=success');
 }
 
 
@@ -430,3 +499,55 @@ export async function enrichSpeciesDataAction(prevState: any, formData: FormData
   }
 }
 
+const ADMIN_CREDENTIALS = { 
+  email: 'admin@galapagos.com', 
+  pass: 'admin123', 
+  role: 'admin' as UserRole 
+};
+
+export async function loginAction(email: string, password: string): Promise<{ success: boolean; error?: string; role?: UserRole; userEmail?: string, message?: string }> {
+  const lowerEmail = email.toLowerCase();
+
+  // Admin Login
+  if (lowerEmail === ADMIN_CREDENTIALS.email) {
+    if (password === ADMIN_CREDENTIALS.pass) {
+      return { success: true, role: ADMIN_CREDENTIALS.role, userEmail: lowerEmail, message: 'Inicio de sesión como administrador/a exitoso.' };
+    } else {
+      return { success: false, error: 'Contraseña de administrador incorrecta.' };
+    }
+  }
+
+  // Researcher Login / Password Setup
+  const researcher = await getResearcherByEmail(lowerEmail);
+
+  if (!researcher) {
+    return { success: false, error: 'Investigador no encontrado con este correo electrónico.' };
+  }
+
+  if (!researcher.isVerified) {
+    return { success: false, error: 'Cuenta de investigador no verificada. Por favor, contacta a un administrador.' };
+  }
+
+  // Researcher is verified
+  if (!researcher.password) {
+    // First-time password setup for a verified researcher
+    if (!password || password.length < MIN_PASSWORD_LENGTH) {
+      return { success: false, error: `La contraseña debe tener al menos ${MIN_PASSWORD_LENGTH} caracteres para la configuración inicial.` };
+    }
+    
+    const updatedResearcher = await setResearcherPassword(lowerEmail, password);
+    if (updatedResearcher) {
+      return { success: true, role: 'researcher', userEmail: lowerEmail, message: 'Contraseña creada. Has iniciado sesión.' };
+    } else {
+      return { success: false, error: 'No se pudo configurar la contraseña. Inténtalo de nuevo.' };
+    }
+  } else {
+    // Researcher has an existing password, normal login
+    const passwordMatch = await bcrypt.compare(password, researcher.password);
+    if (passwordMatch) {
+      return { success: true, role: 'researcher', userEmail: lowerEmail, message: 'Inicio de sesión como investigador/a exitoso.' };
+    } else {
+      return { success: false, error: 'Contraseña incorrecta para el investigador.' };
+    }
+  }
+}

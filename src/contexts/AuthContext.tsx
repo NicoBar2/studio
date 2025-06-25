@@ -3,9 +3,8 @@
 
 import type { UserRole } from '@/lib/species';
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
-import { useToast } from '@/hooks/use-toast'; // Import useToast
-import { getResearcherByEmailFromStore, setResearcherPasswordAction } from '@/app/actions'; // Import actions
-import bcrypt from 'bcryptjs';
+import { useToast } from '@/hooks/use-toast'; 
+import { loginAction } from '@/app/actions';
 
 type AuthContextType = {
   role: UserRole | null;
@@ -18,14 +17,7 @@ type AuthContextType = {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Admin credentials remain, researcher credentials will be dynamic
-const ADMIN_CREDENTIALS = { 
-  email: 'admin@galapagos.com', 
-  pass: 'admin123', 
-  role: 'admin' as UserRole 
-};
-
-const MIN_PASSWORD_LENGTH = 6;
+const ADMIN_EMAIL_FOR_SIMULATOR = 'admin@galapagos.com';
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [role, setRoleState] = useState<UserRole | null>(null);
@@ -55,73 +47,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setIsLoading(true);
     await new Promise(resolve => setTimeout(resolve, 500)); // Simulate network delay
 
-    const lowerEmail = email.toLowerCase();
+    const result = await loginAction(email, password);
+    setIsLoading(false);
 
-    // Admin Login
-    if (lowerEmail === ADMIN_CREDENTIALS.email) {
-      if (password === ADMIN_CREDENTIALS.pass) {
-        setRoleState(ADMIN_CREDENTIALS.role);
-        setUserEmailState(lowerEmail);
-        localStorage.setItem('galapagos-auth-role', ADMIN_CREDENTIALS.role);
-        localStorage.setItem('galapagos-auth-email', lowerEmail);
-        setIsLoading(false);
-        toast({ title: '¡Éxito!', description: 'Inicio de sesión como administrador/a exitoso.' });
-        return { success: true };
-      } else {
-        setIsLoading(false);
-        return { success: false, error: 'Contraseña de administrador incorrecta.' };
-      }
-    }
-
-    // Researcher Login / Password Setup
-    const researcher = await getResearcherByEmailFromStore(lowerEmail);
-
-    if (!researcher) {
-      setIsLoading(false);
-      return { success: false, error: 'Investigador no encontrado con este correo electrónico.' };
-    }
-
-    if (!researcher.isVerified) {
-      setIsLoading(false);
-      return { success: false, error: 'Cuenta de investigador no verificada. Por favor, contacta a un administrador.' };
-    }
-
-    // Researcher is verified
-    if (!researcher.password) {
-      // First-time password setup for a verified researcher
-      if (!password || password.length < MIN_PASSWORD_LENGTH) {
-        setIsLoading(false);
-        return { success: false, error: `La contraseña debe tener al menos ${MIN_PASSWORD_LENGTH} caracteres para la configuración inicial.` };
-      }
-      
-      const updatedResearcher = await setResearcherPasswordAction(lowerEmail, password);
-      if (updatedResearcher) {
-        setRoleState('researcher');
-        setUserEmailState(lowerEmail);
-        localStorage.setItem('galapagos-auth-role', 'researcher');
-        localStorage.setItem('galapagos-auth-email', lowerEmail);
-        setIsLoading(false);
-        toast({ title: '¡Éxito!', description: 'Contraseña creada. Has iniciado sesión.' });
-        return { success: true };
-      } else {
-        setIsLoading(false);
-        return { success: false, error: 'No se pudo configurar la contraseña. Inténtalo de nuevo.' };
-      }
+    if (result.success && result.role && result.userEmail) {
+      setRoleState(result.role);
+      setUserEmailState(result.userEmail);
+      localStorage.setItem('galapagos-auth-role', result.role);
+      localStorage.setItem('galapagos-auth-email', result.userEmail);
+      toast({ title: '¡Éxito!', description: result.message });
+      return { success: true };
     } else {
-      // Researcher has an existing password, normal login
-      const passwordMatch = await bcrypt.compare(password, researcher.password);
-      if (passwordMatch) {
-        setRoleState('researcher');
-        setUserEmailState(lowerEmail);
-        localStorage.setItem('galapagos-auth-role', 'researcher');
-        localStorage.setItem('galapagos-auth-email', lowerEmail);
-        setIsLoading(false);
-        toast({ title: '¡Éxito!', description: 'Inicio de sesión como investigador/a exitoso.' });
-        return { success: true };
-      } else {
-        setIsLoading(false);
-        return { success: false, error: 'Contraseña incorrecta para el investigador.' };
-      }
+      return { success: false, error: result.error };
     }
   };
 
@@ -139,8 +76,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem('galapagos-auth-role', roleToSet);
     
     if (roleToSet === 'admin' && !userEmail) { // If simulating admin without prior login
-      setUserEmailState(ADMIN_CREDENTIALS.email);
-      localStorage.setItem('galapagos-auth-email', ADMIN_CREDENTIALS.email);
+      setUserEmailState(ADMIN_EMAIL_FOR_SIMULATOR);
+      localStorage.setItem('galapagos-auth-email', ADMIN_EMAIL_FOR_SIMULATOR);
     } else if (roleToSet === 'researcher' && !userEmail) { // If simulating researcher without prior login, this is tricky.
         // For simplicity, if switching TO researcher and no email, clear it. Actual researcher login sets email.
         setUserEmailState(null); // Or a placeholder email if needed for some flows

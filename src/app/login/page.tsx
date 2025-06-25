@@ -1,19 +1,73 @@
 
 "use client";
 
-import { useState, type FormEvent, useActionState, useRef, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, type FormEvent, useActionState, useRef, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { AlertTriangle, UserPlus } from 'lucide-react';
+import { AlertTriangle, UserPlus, KeyRound } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { createResearcherAction } from '@/app/actions';
 import type { Researcher } from '@/lib/researchers';
 import { useToast } from '@/hooks/use-toast';
+import Link from 'next/link';
+
+function LoginContent() {
+  const { toast } = useToast();
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    if (searchParams.get('reset') === 'success') {
+      toast({
+        title: 'Éxito',
+        description: 'Tu contraseña ha sido restablecida. Por favor, inicia sesión con tus nuevas credenciales.',
+        variant: 'default',
+      });
+    }
+  }, [searchParams, toast]);
+  
+  return (
+    <Tabs defaultValue="login" className="w-full max-w-md">
+      <TabsList className="grid w-full grid-cols-2">
+        <TabsTrigger value="login">Iniciar Sesión</TabsTrigger>
+        <TabsTrigger value="register">Registrarse</TabsTrigger>
+      </TabsList>
+      <TabsContent value="login">
+         <Card className="shadow-xl border-t-0 rounded-t-none">
+          <CardHeader>
+            <CardTitle className="text-2xl font-headline text-primary">Acceder</CardTitle>
+            <CardDescription>
+              Investigadores verificados, si es su primer acceso, la contraseña que ingresen se establecerá como su nueva contraseña.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <LoginForm />
+          </CardContent>
+        </Card>
+      </TabsContent>
+      <TabsContent value="register">
+         <Card className="shadow-xl border-t-0 rounded-t-none">
+          <CardHeader>
+            <CardTitle className="flex items-center text-2xl font-headline text-primary">
+              <UserPlus className="mr-2 h-6 w-6" />
+              Registro de Investigador
+            </CardTitle>
+            <CardDescription>
+              Crea una cuenta. Un administrador deberá verificarla antes de que puedas iniciar sesión.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <RegisterForm />
+          </CardContent>
+        </Card>
+      </TabsContent>
+    </Tabs>
+  );
+}
 
 function LoginForm() {
   const router = useRouter();
@@ -32,7 +86,7 @@ function LoginForm() {
     setIsLoading(false);
 
     if (result.success) {
-      router.push('/');
+      router.push('/dashboard');
     } else {
       setError(result.error || 'Error desconocido durante el inicio de sesión.');
     }
@@ -70,6 +124,11 @@ function LoginForm() {
           className="bg-input"
         />
       </div>
+       <div className="text-sm">
+          <Link href="/forgot-password" className="font-medium text-primary hover:underline flex items-center gap-1">
+             <KeyRound className="h-4 w-4"/> ¿Olvidaste tu contraseña?
+          </Link>
+        </div>
       <Button type="submit" className="w-full bg-primary hover:bg-primary/90" disabled={isLoading}>
         {isLoading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
       </Button>
@@ -130,41 +189,9 @@ function RegisterForm() {
 export default function LoginPage() {
   return (
     <div className="flex items-center justify-center min-h-[calc(100vh-10rem)]">
-      <Tabs defaultValue="login" className="w-full max-w-md">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="login">Iniciar Sesión</TabsTrigger>
-          <TabsTrigger value="register">Registrarse</TabsTrigger>
-        </TabsList>
-        <TabsContent value="login">
-           <Card className="shadow-xl border-t-0 rounded-t-none">
-            <CardHeader>
-              <CardTitle className="text-2xl font-headline text-primary">Acceder</CardTitle>
-              <CardDescription>
-                Investigadores verificados, si es su primer acceso, la contraseña que ingresen se establecerá como su nueva contraseña.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <LoginForm />
-            </CardContent>
-          </Card>
-        </TabsContent>
-        <TabsContent value="register">
-           <Card className="shadow-xl border-t-0 rounded-t-none">
-            <CardHeader>
-              <CardTitle className="flex items-center text-2xl font-headline text-primary">
-                <UserPlus className="mr-2 h-6 w-6" />
-                Registro de Investigador
-              </CardTitle>
-              <CardDescription>
-                Crea una cuenta. Un administrador deberá verificarla antes de que puedas iniciar sesión.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <RegisterForm />
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+      <Suspense fallback={<div>Cargando...</div>}>
+        <LoginContent />
+      </Suspense>
     </div>
   );
 }
