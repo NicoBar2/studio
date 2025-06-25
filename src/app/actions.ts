@@ -122,6 +122,8 @@ export async function saveSpeciesData(prevState: any, formData: FormData): Promi
       is_santaFé: formData.get('is_santaFé') === 'on',
       is_santiago: formData.get('is_santiago') === 'on',
       is_wolf: formData.get('is_wolf') === 'on',
+
+      showHistoricalDataToPublic: formData.get('showHistoricalDataToPublic') === 'on',
     };
 
     if (!updatedData.spanishCommonName || updatedData.spanishCommonName.length < 3) {
@@ -271,24 +273,6 @@ export async function importSpeciesDataAction(
     return { success: false, message: "No se ha seleccionado ningún archivo." };
   }
 
-  const toBoolean = (value: any): boolean => {
-    if (typeof value === 'string') {
-      const lowerVal = value.toLowerCase().trim();
-      return lowerVal === 'true' || lowerVal === 'x' || lowerVal === '1';
-    }
-    return !!value;
-  };
-
-  const mapPopulationTrend = (trend: any): Species['populationTrend'] => {
-    const lowerTrend = String(trend || '').toLowerCase().trim();
-    switch (lowerTrend) {
-      case 'increasing': case 'creciente': return 'increasing';
-      case 'decreasing': case 'decreciente': return 'decreasing';
-      case 'stable': case 'estable': return 'stable';
-      default: return 'unknown';
-    }
-  };
-
   try {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
@@ -304,7 +288,7 @@ export async function importSpeciesDataAction(
 
     for (const row of data) {
       try {
-        const spanishName = String(row['nombre'] || '');
+        const spanishName = String(row['Spanish Common Name'] || '');
         if (!spanishName) {
           failedCount++;
           continue;
@@ -312,20 +296,58 @@ export async function importSpeciesDataAction(
 
         const id = spanishName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
         const existingSpecies = await getSpeciesById(id);
-
-        const hintString = spanishName.split(' ').slice(0, 2).join(' ').toLowerCase();
-        const scientificName = String(row['cientifico'] || '');
-        const scientificParts = scientificName.split(' ');
         
         const speciesData: Partial<Species> = {
-          id: id,
+          id,
           spanishCommonName: spanishName,
-          genus: scientificParts[0] || '',
-          specificEpithet: scientificParts.slice(1).join(' ') || '',
-          iucnStatus: (String(row['conservacion'] || (existingSpecies ? existingSpecies.iucnStatus : 'Datos Insuficientes'))) as ConservationStatus,
-          populationTrend: mapPopulationTrend(row['poblacion'] || (existingSpecies ? existingSpecies.populationTrend : 'unknown')),
-          habitat: String(row['habitat'] || (existingSpecies ? existingSpecies.habitat : '')),
-          threats: (row.amenazas || (existingSpecies ? existingSpecies.threats.join(',') : '')).toString().split(',').map((t: string) => t.trim()).filter((t: string) => t),
+          englishCommonName: row['English Common Name'] || '',
+          localName: row['Local Name'] || '',
+          domain: row['Domain'] || '',
+          kingdom: row['Kingdom'] || '',
+          phylum: row['Phylum or Division'] || '',
+          class: row['Class'] || '',
+          order: row['Order'] || '',
+          suborder: row['Suborder'] || '',
+          superfamily: row['Superfamily'] || '',
+          family: row['Family'] || '',
+          subfamily: row['Subfamily'] || '',
+          tribe: row['Tribe or Section'] || '',
+          genus: row['Genus'] || '',
+          specificEpithet: row['Specific Epithtet'] || '',
+          infraspecificEpithet: row['Infraspecific Epithet'] || '',
+          author: row['Author'] || '',
+          origin: row['Origin'] || '',
+          suborigin: row['Suborigin'] || '',
+          iucnStatus: row['IUCN Status'] as ConservationStatus || 'Datos Insuficientes',
+          taxonStatus: row['Taxon Status'] || '',
+          taxonomicComments: row['Taxonomic Comments'] || '',
+          distributionComments: row['Distribution Comments'] || '',
+          spanishDistributionComments: row['Spanish Distribution Comments'] || '',
+          englishComments: row['English Comments'] || '',
+          spanishComments: row['Spanish Comments'] || '',
+          englishDescription: row['English Description'] || '',
+          spanishDescription: row['Spanish Description'] || '',
+          is_darwin: String(row['Darwin']).toLowerCase() === 'x',
+          is_española: String(row['Española']).toLowerCase() === 'x',
+          is_fernandina: String(row['Fernandina']).toLowerCase() === 'x',
+          is_floreana: String(row['Floreana']).toLowerCase() === 'x',
+          is_genovesa: String(row['Genovesa']).toLowerCase() === 'x',
+          is_isabela: String(row['Isabela']).toLowerCase() === 'x',
+          is_marchena: String(row['Marchena']).toLowerCase() === 'x',
+          is_pinta: String(row['Pinta']).toLowerCase() === 'x',
+          is_pinzón: String(row['Pinzón']).toLowerCase() === 'x',
+          is_sanCristóbal: String(row['San Cristóbal']).toLowerCase() === 'x',
+          is_santaCruz: String(row['Santa Cruz']).toLowerCase() === 'x',
+          is_santaFé: String(row['Santa Fé']).toLowerCase() === 'x',
+          is_santiago: String(row['Santiago']).toLowerCase() === 'x',
+          is_unknownIsland: String(row['Unknown Island']).toLowerCase() === 'x',
+          is_wolf: String(row['Wolf']).toLowerCase() === 'x',
+          is_elizabethBay: String(row['Elizabeth Bay/Bahía Elizabeth']).toLowerCase() === 'x',
+          is_farNorthern: String(row['Far-northern/Lejano Norte']).toLowerCase() === 'x',
+          is_northern: String(row['Northern/Norte']).toLowerCase() === 'x',
+          is_southEastern: String(row['South-eastern/Centro Sur']).toLowerCase() === 'x',
+          is_unknownBioregion: String(row['Unknown Bioregion']).toLowerCase() === 'x',
+          is_western: String(row['Western/Oeste']).toLowerCase() === 'x',
         };
 
         if (existingSpecies) {
@@ -333,14 +355,17 @@ export async function importSpeciesDataAction(
           updatedCount++;
         } else {
           // Set defaults for new species only
+           const hintString = spanishName.split(' ').slice(0, 2).join(' ').toLowerCase();
           const newSpeciesDefaults: Partial<Species> = {
-              spanishDescription: `Descripción breve para ${spanishName}.`,
-              englishDescription: `A short description for ${spanishName}.`,
               imageUrl: 'https://placehold.co/600x400.png',
               dataAiHint: hintString,
               icon: 'Footprints',
               keyStats: [],
               historicalData: [],
+              populationTrend: 'unknown',
+              habitat: '',
+              threats: [],
+              showHistoricalDataToPublic: false
           };
           await addSpeciesToStore({ ...newSpeciesDefaults, ...speciesData });
           addedCount++;
@@ -404,3 +429,4 @@ export async function enrichSpeciesDataAction(prevState: any, formData: FormData
     return { success: false, message: "Ocurrió un error al contactar al servicio de IA." };
   }
 }
+

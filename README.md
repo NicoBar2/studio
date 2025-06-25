@@ -12,6 +12,17 @@ La plataforma va más allá de ser una simple base de datos; es una herramienta 
 
 ## Tipo de Investigación y Base Conceptual
 
+La investigación fundamental soportada por Galapagos DataLens es de carácter **descriptivo**. Este enfoque metodológico es ideal para la ecología de conservación, ya que permite:
+
+| Aspecto | Justificación |
+|---|---|
+| **Identificación y Caracterización** | Documentar las características clave de las especies, incluyendo taxonomía, descripciones físicas, comportamiento y necesidades de hábitat. |
+| **Distribución y Abundancia** | Registrar la localización geográfica de las especies y estimar el tamaño de sus poblaciones, información crucial para entender su estado actual y patrones espaciales. |
+| **Tendencias Temporales** | Monitorear los cambios en el tamaño de las poblaciones o en la distribución a lo largo del tiempo, proporcionando datos esenciales para evaluar el éxito de las medidas de conservación o detectar amenazas emergentes. |
+| **Descripción de Ecosistemas y Hábitats** | Almacenar información detallada sobre los entornos donde viven las especies, lo que ayuda a comprender las interacciones ecológicas y los requisitos ambientales. |
+| **Evaluación del Estado de Conservación** | Recopilar y presentar datos que justifican las clasificaciones de estado de conservación (como las de la UICN), basándose en criterios como el tamaño poblacional, el área de distribución y las amenazas. |
+
+
 La plataforma está diseñada para apoyar la **investigación ecológica y de conservación**. Facilita la recopilación, gestión y análisis de datos fundamentales para entender y proteger la biodiversidad, tales como:
 
 - **Dinámica de Poblaciones**: A través de sus capacidades de visualización de datos históricos, permite a los investigadores analizar tendencias poblacionales a lo largo del tiempo.

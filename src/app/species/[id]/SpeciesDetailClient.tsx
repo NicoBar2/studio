@@ -226,7 +226,7 @@ export default function SpeciesDetailClient({ species }: SpeciesDetailClientProp
               </CardContent>
             </Card>
 
-            {(role === 'researcher' || role === 'admin') && (
+            {(role === 'researcher' || role === 'admin' || species.showHistoricalDataToPublic) && (
                <Card>
                   <CardHeader>
                       <CardTitle className="flex items-center text-xl text-primary"><BarChart2 className="mr-2 h-5 w-5" /> Visualización de Datos Históricos</CardTitle>

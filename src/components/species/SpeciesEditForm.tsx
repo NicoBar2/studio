@@ -84,9 +84,6 @@ export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
   }, [state, toast, router]);
 
   useEffect(() => {
-    // This effect ensures that if the species prop changes from the outside
-    // (e.g., after a save and re-fetch), the image preview and hidden input value are updated.
-    // It will NOT run when the user selects a new image, which fixes the bug.
     const currentImageUrl = getSpeciesImageUrl(species);
     setImagePreview(currentImageUrl);
     setImageFileValue(currentImageUrl);
@@ -104,7 +101,6 @@ export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
       };
       reader.readAsDataURL(file);
     } else {
-      // User cancelled the file dialog, reset to the original image for this species
       const originalImageUrl = getSpeciesImageUrl(species);
       setImagePreview(originalImageUrl);
       setImageFileValue(originalImageUrl);
@@ -257,6 +253,22 @@ export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
                     Sube una nueva imagen para reemplazar la actual. Si no seleccionas una nueva, se mantendrá la imagen existente.
                     </p>
                 </AccordionContent>
+            </AccordionItem>
+            
+            <AccordionItem value="item-6">
+              <AccordionTrigger className="text-xl font-headline">Configuración de Visibilidad</AccordionTrigger>
+              <AccordionContent className="space-y-4 pt-4">
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="showHistoricalDataToPublic"
+                    name="showHistoricalDataToPublic"
+                    defaultChecked={species.showHistoricalDataToPublic}
+                  />
+                  <Label htmlFor="showHistoricalDataToPublic" className="text-sm font-normal">
+                    Permitir que el público vea el gráfico de datos históricos de esta especie.
+                  </Label>
+                </div>
+              </AccordionContent>
             </AccordionItem>
           </Accordion>
 

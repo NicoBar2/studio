@@ -99,6 +99,7 @@ export type Species = {
   historicalData: HistoricalDataPoint[];
   threats: string[];
   habitat: string; 
+  showHistoricalDataToPublic?: boolean;
 };
 
 
@@ -182,6 +183,7 @@ export const addSpecies = async (newSpeciesData: Partial<Species>): Promise<Spec
         icon: newSpeciesData.icon || 'Footprints',
         keyStats: newSpeciesData.keyStats || [],
         historicalData: newSpeciesData.historicalData || [],
+        showHistoricalDataToPublic: newSpeciesData.showHistoricalDataToPublic || false,
 
         // Initialize all boolean distribution flags to false
         is_darwin: false, is_española: false, is_fernandina: false, is_floreana: false,
