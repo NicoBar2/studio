@@ -334,14 +334,14 @@ export default function VisualizeSpeciesPage({ params }: VisualizeSpeciesPagePro
         )}
 
         {/* New Comparison Chart Section */}
-        {species?.historicalData && species.historicalData.length > 0 && (
+        {allSpecies.length > 1 && (
             <Card className="shadow-lg">
                 <CardHeader>
                     <CardTitle className="text-2xl font-headline text-primary flex items-center">
                     <BarChart className="mr-2 h-6 w-6" /> Comparar Datos Históricos entre Especies
                     </CardTitle>
                     <CardDescription>
-                    Selecciona dos o más especies para comparar sus datos históricos. Solo se muestran especies con la misma unidad de medida ({species.historicalData[0]?.unit || 'N/A'}) que la especie principal.
+                    Selecciona dos o más especies para comparar sus datos históricos. Solo se muestran especies con la misma unidad de medida ({species?.historicalData?.[0]?.unit || 'N/A'}) que la especie principal.
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="grid grid-cols-1 md:grid-cols-4 gap-6">
