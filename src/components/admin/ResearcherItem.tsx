@@ -1,7 +1,7 @@
 
 "use client";
 
-import type { Researcher } from '@/lib/researchers';
+import type { Researcher } from '@/lib/types';
 import { useActionState, useEffect, useRef } from 'react';
 import { deleteResearcherAction, toggleResearcherVerificationAction } from '@/app/actions';
 import { Button } from '@/components/ui/button';

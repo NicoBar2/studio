@@ -1,7 +1,7 @@
 
 "use client";
 
-import { type Species } from '@/lib/species';
+import { type Species } from '@/lib/types';
 import { getSpeciesImageUrl } from '@/lib/utils';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';

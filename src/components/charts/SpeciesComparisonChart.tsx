@@ -3,7 +3,7 @@
 
 import { useMemo } from 'react';
 import { Line, LineChart, CartesianGrid, Tooltip, XAxis, YAxis, Legend } from 'recharts';
-import type { Species } from '@/lib/species';
+import type { Species } from '@/lib/types';
 import { ChartContainer, ChartTooltipContent, ChartLegend, ChartLegendContent } from '@/components/ui/chart';
 
 type SpeciesComparisonChartProps = {

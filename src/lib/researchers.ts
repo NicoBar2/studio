@@ -2,16 +2,8 @@
 import { promises as fs } from 'fs';
 import path from 'path';
 import bcrypt from 'bcryptjs';
+import type { Researcher } from './types';
 
-export type Researcher = {
-  id: string;
-  name: string;
-  email: string;
-  institution?: string;
-  specialization?: string;
-  isVerified: boolean;
-  password?: string; // Can be a hashed password
-};
 
 // Path to the JSON file database
 const researchersDbPath = path.join(process.cwd(), 'src', 'lib', 'data', 'researchers.json');

@@ -6,14 +6,10 @@ import * as xlsx from 'xlsx';
 import { 
   updateSpeciesData, 
   addSpecies as addSpeciesToStore,
-  type Species, 
-  type HistoricalDataPoint, 
-  type SpeciesStat, 
   getSpeciesById,
   getSpeciesList,
-  type ConservationStatus,
-  type UserRole
 } from '@/lib/species';
+import type { Species, HistoricalDataPoint, SpeciesStat, ConservationStatus, UserRole, Researcher } from '@/lib/types';
 import { 
   addResearcher as addResearcherToStore, 
   getAllResearchers as getAllResearchersFromStore, 
@@ -21,8 +17,7 @@ import {
   updateResearcher as updateResearcherInStore,
   getResearcherById as getResearcherByIdFromStore,
   getResearcherByEmail,
-  setResearcherPassword,
-  type Researcher 
+  setResearcherPassword
 } from '@/lib/researchers';
 import { enrichSpeciesData, type EnrichedData } from '@/ai/flows/enrichSpeciesData';
 import { z } from 'zod';
@@ -271,9 +266,12 @@ export async function requestPasswordResetAction(
     const researcher = await getResearcherByEmail(email);
 
     if (researcher) {
-      console.log(`Password reset requested for ${email}. In a real app, an email would be sent.`);
+      // In a real app, this is where you'd generate a secure token,
+      // save it with an expiration date, and send an email with a reset link.
+      console.log(`Password reset requested for ${email}. In a real app, an email would be sent with a reset link.`);
     }
 
+    // Always return a generic success message to prevent user enumeration.
     return { 
       success: true, 
       message: "Si existe una cuenta asociada a este correo, recibirás un enlace para restablecer tu contraseña. Por favor, revisa tu bandeja de entrada." 
@@ -549,5 +547,3 @@ export async function loginAction(email: string, password: string): Promise<{ su
     }
   }
 }
-
-    

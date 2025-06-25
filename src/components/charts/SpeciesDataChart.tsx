@@ -3,7 +3,7 @@
 
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis, Legend, LineChart, Line } from 'recharts';
 import { ChartContainer, ChartTooltipContent, ChartLegend, ChartLegendContent } from '@/components/ui/chart';
-import type { HistoricalDataPoint } from '@/lib/species';
+import type { HistoricalDataPoint } from '@/lib/types';
 import { useTheme } from 'next-themes'; // Assuming next-themes is or could be used for dark mode
 
 type SpeciesDataChartProps = {

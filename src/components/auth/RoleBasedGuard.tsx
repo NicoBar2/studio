@@ -2,7 +2,7 @@
 "use client";
 
 import { useAuth } from '@/contexts/AuthContext';
-import type { UserRole } from '@/lib/species';
+import type { UserRole } from '@/lib/types';
 import type { ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';

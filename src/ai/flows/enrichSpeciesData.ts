@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview A Genkit flow to enrich species data using AI.
@@ -5,7 +6,7 @@
 
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
-import type { ConservationStatus } from '@/lib/species';
+import type { ConservationStatus } from '@/lib/types';
 
 // Define the schema for the data we want the AI to find.
 const EnrichedDataSchema = z.object({

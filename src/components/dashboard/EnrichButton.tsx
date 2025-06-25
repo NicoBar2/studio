@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useActionState, useEffect, useRef } from "react";
@@ -6,7 +7,7 @@ import { enrichSpeciesDataAction } from "@/app/actions";
 import { Button } from "@/components/ui/button";
 import { BrainCircuit } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import type { Species } from "@/lib/species";
+import type { Species } from "@/lib/types";
 
 function SubmitButton() {
   const { pending } = useFormStatus();

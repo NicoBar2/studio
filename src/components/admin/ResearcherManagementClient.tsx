@@ -3,7 +3,7 @@
 
 import { useEffect, useState, useActionState, useRef } from 'react';
 import { createResearcherAction, getResearchersAction } from '@/app/actions';
-import type { Researcher } from '@/lib/researchers';
+import type { Researcher } from '@/lib/types';
 import ResearcherItem from './ResearcherItem'; 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';

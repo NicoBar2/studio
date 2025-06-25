@@ -1,7 +1,7 @@
 
 "use client"; 
 
-import { type Species, type HistoricalDataPoint } from '@/lib/species';
+import { type Species, type HistoricalDataPoint } from '@/lib/types';
 import { getSpeciesByIdAction } from '@/app/actions';
 import RoleBasedGuard from '@/components/auth/RoleBasedGuard';
 import { notFound } from 'next/navigation';

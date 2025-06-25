@@ -1,7 +1,7 @@
 
 "use client";
 
-import type { UserRole } from '@/lib/species';
+import type { UserRole } from '@/lib/types';
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast'; 
 import { loginAction } from '@/app/actions';

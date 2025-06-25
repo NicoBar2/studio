@@ -1,7 +1,7 @@
 
 "use client";
 import { getSpeciesImageUrl, GALAPAGOS_ISLANDS_NAMES } from '@/lib/utils'; 
-import type { Species, ConservationStatus } from '@/lib/species';
+import type { Species, ConservationStatus } from '@/lib/types';
 import { useActionState, useState, useEffect, type ChangeEvent, useRef } from 'react';
 import { useFormStatus } from 'react-dom';
 import { saveSpeciesData } from '@/app/actions';
