@@ -2,7 +2,7 @@
 "use client"; 
 import RoleBasedGuard from '@/components/auth/RoleBasedGuard';
 import { Sidebar, SidebarProvider, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarHeader, SidebarInset } from '@/components/ui/sidebar';
-import { LayoutDashboard, Users, HomeIcon, FileUp } from 'lucide-react';
+import { LayoutDashboard, Users, HomeIcon, FileUp, GitCompareArrows } from 'lucide-react';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -30,6 +30,15 @@ export default function DashboardLayout({
                   <Link href="/dashboard">
                     <LayoutDashboard />
                     <span className="group-data-[state=collapsed]:hidden">Resumen</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild variant="ghost" className="justify-start w-full">
+                  <Link href="/dashboard/compare">
+                    <GitCompareArrows />
+                    <span className="group-data-[state=collapsed]:hidden">Análisis Comparativo</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>

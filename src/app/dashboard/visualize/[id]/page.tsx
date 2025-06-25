@@ -2,7 +2,7 @@
 "use client"; 
 
 import { type Species, type HistoricalDataPoint } from '@/lib/species';
-import { getSpeciesByIdAction, getSpeciesListAction } from '@/app/actions';
+import { getSpeciesByIdAction } from '@/app/actions';
 import RoleBasedGuard from '@/components/auth/RoleBasedGuard';
 import { notFound } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,14 +10,12 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import Link from 'next/link';
-import { ArrowLeft, AlertTriangle, TrendingUp, TrendingDown, MinusSquare, Filter, FilterX, TableIcon, BarChart } from 'lucide-react';
+import { ArrowLeft, AlertTriangle, TrendingUp, TrendingDown, MinusSquare, Filter, FilterX, TableIcon } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useEffect, useState, useMemo } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import dynamic from 'next/dynamic';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Checkbox } from '@/components/ui/checkbox';
-import { ScrollArea } from '@/components/ui/scroll-area';
 
 const SpeciesDataChart = dynamic(() => import('@/components/charts/SpeciesDataChart'), {
   loading: () => (
@@ -28,16 +26,6 @@ const SpeciesDataChart = dynamic(() => import('@/components/charts/SpeciesDataCh
   ssr: false
 });
 
-const SpeciesComparisonChart = dynamic(() => import('@/components/charts/SpeciesComparisonChart'), {
-    loading: () => (
-      <div className="min-h-[400px] flex items-center justify-center">
-        <Skeleton className="h-full w-full" />
-      </div>
-    ),
-    ssr: false
-});
-
-
 type VisualizeSpeciesPageProps = {
   params: { id: string };
 };
@@ -45,13 +33,11 @@ type VisualizeSpeciesPageProps = {
 
 export default function VisualizeSpeciesPage({ params }: VisualizeSpeciesPageProps) {
   const [species, setSpecies] = useState<Species | null | undefined>(undefined);
-  const { role, isLoading: authLoading } = useAuth();
+  const { isLoading: authLoading } = useAuth();
 
   const [yearFilter, setYearFilter] = useState<{ min: string; max: string }>({ min: '', max: '' });
   const [valueFilter, setValueFilter] = useState<{ min: string; max: string }>({ min: '', max: '' });
   
-  const [allSpecies, setAllSpecies] = useState<Species[]>([]);
-  const [selectedSpeciesIds, setSelectedSpeciesIds] = useState<string[]>([]);
 
   useEffect(() => {
     const fetchSpeciesData = async () => {
@@ -59,20 +45,6 @@ export default function VisualizeSpeciesPage({ params }: VisualizeSpeciesPagePro
         setSpecies(foundSpecies);
         if (foundSpecies) {
           document.title = `Visualizar ${foundSpecies.spanishCommonName} | Galapagos DataLens`;
-
-          const all = await getSpeciesListAction();
-          const mainUnit = foundSpecies.historicalData?.[0]?.unit;
-          
-          const comparableSpecies = mainUnit 
-            ? all.filter(s => s.historicalData?.length > 0 && s.historicalData[0].unit === mainUnit)
-            : [];
-          
-          setAllSpecies(comparableSpecies);
-
-          if (comparableSpecies.some(s => s.id === foundSpecies.id)) {
-            setSelectedSpeciesIds([foundSpecies.id]);
-          }
-
         } else if (foundSpecies === null) {
           document.title = `Especie No Encontrada | Galapagos DataLens`;
         }
@@ -136,18 +108,6 @@ export default function VisualizeSpeciesPage({ params }: VisualizeSpeciesPagePro
     setYearFilter({ min: '', max: '' });
     setValueFilter({ min: '', max: '' });
   };
-
-  const handleSpeciesSelection = (speciesId: string) => {
-    setSelectedSpeciesIds(prev =>
-      prev.includes(speciesId)
-        ? prev.filter(id => id !== speciesId)
-        : [...prev, speciesId]
-    );
-  };
-  
-  const selectedSpeciesForComparison = useMemo(() => {
-    return allSpecies.filter(s => selectedSpeciesIds.includes(s.id));
-  }, [selectedSpeciesIds, allSpecies]);
 
 
   if (authLoading || species === undefined) {
@@ -331,51 +291,6 @@ export default function VisualizeSpeciesPage({ params }: VisualizeSpeciesPagePro
               </Table>
             </CardContent>
           </Card>
-        )}
-
-        {/* New Comparison Chart Section */}
-        {allSpecies.length > 1 && (
-            <Card className="shadow-lg">
-                <CardHeader>
-                    <CardTitle className="text-2xl font-headline text-primary flex items-center">
-                    <BarChart className="mr-2 h-6 w-6" /> Comparar Datos Históricos entre Especies
-                    </CardTitle>
-                    <CardDescription>
-                    Selecciona dos o más especies para comparar sus datos históricos. Solo se muestran especies con la misma unidad de medida ({species?.historicalData?.[0]?.unit || 'N/A'}) que la especie principal.
-                    </CardDescription>
-                </CardHeader>
-                <CardContent className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                    <div className="md:col-span-1">
-                      <h4 className="font-semibold mb-2">Seleccionar Especies</h4>
-                      <ScrollArea className="h-72 rounded-md border p-4">
-                          <div className="space-y-2">
-                          {allSpecies.map(s => (
-                              <div key={s.id} className="flex items-center space-x-2">
-                              <Checkbox
-                                  id={`compare-${s.id}`}
-                                  checked={selectedSpeciesIds.includes(s.id)}
-                                  onCheckedChange={() => handleSpeciesSelection(s.id)}
-                              />
-                              <Label htmlFor={`compare-${s.id}`} className="text-sm font-normal cursor-pointer">
-                                  {s.spanishCommonName}
-                              </Label>
-                              </div>
-                          ))}
-                          </div>
-                      </ScrollArea>
-                    </div>
-                    <div className="md:col-span-3">
-                        {selectedSpeciesForComparison.length > 0 ? (
-                            <SpeciesComparisonChart species={selectedSpeciesForComparison} />
-                        ) : (
-                            <div className="flex flex-col items-center justify-center h-full min-h-[400px] p-8 border border-dashed rounded-lg">
-                                <AlertTriangle className="h-12 w-12 text-muted-foreground mb-4" />
-                                <p className="text-lg font-medium text-muted-foreground">Selecciona al menos una especie.</p>
-                            </div>
-                        )}
-                    </div>
-                </CardContent>
-            </Card>
         )}
       </div>
     </RoleBasedGuard>
