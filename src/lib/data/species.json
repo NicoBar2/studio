@@ -1,4 +1,3 @@
-
 [
   {
     "id": "tortuga-gigante",
@@ -14,11 +13,7 @@
     "populationTrend": "decreasing",
     "iucnStatus": "Vulnerable",
     "habitat": "Zonas altas y húmedas con vegetación densa, y zonas bajas y áridas con cactus.",
-    "threats": [
-      "Especies invasoras (ratas, cerdos)",
-      "Pérdida de hábitat por agricultura",
-      "Cambio climático"
-    ],
+    "threats": [],
     "keyStats": [
       {
         "label": "Peso",
@@ -48,21 +43,21 @@
         "unit": "individuos"
       }
     ],
-    "is_isabela": true,
-    "is_santaCruz": true,
-    "is_sanCristóbal": true,
-    "is_española": true,
-    "is_fernandina": true,
-    "is_santiago": true,
-    "is_floreana": true,
-    "is_pinta": true,
-    "is_pinzón": true,
+    "is_isabela": false,
+    "is_santaCruz": false,
+    "is_sanCristóbal": false,
+    "is_española": false,
+    "is_fernandina": false,
+    "is_santiago": false,
+    "is_floreana": false,
+    "is_pinta": false,
+    "is_pinzón": false,
     "is_darwin": false,
     "is_genovesa": false,
     "is_marchena": false,
     "is_santaFé": false,
     "is_wolf": false,
-    "showHistoricalDataToPublic": true,
+    "showHistoricalDataToPublic": false,
     "localName": "",
     "domain": "Eukaryota",
     "kingdom": "Animalia",
@@ -589,5 +584,3 @@
     "family": "Tropiduridae"
   }
 ]
-
-    

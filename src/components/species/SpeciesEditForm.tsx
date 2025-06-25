@@ -66,6 +66,7 @@ export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
 
   const [imagePreview, setImagePreview] = useState<string | null>(getSpeciesImageUrl(species));
   const [imageFileValue, setImageFileValue] = useState<string>(getSpeciesImageUrl(species));
+  const [showPublicDataChecked, setShowPublicDataChecked] = useState(!!species.showHistoricalDataToPublic);
 
   const prevMessageRef = useRef<string | undefined>();
 
@@ -87,7 +88,8 @@ export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
     const currentImageUrl = getSpeciesImageUrl(species);
     setImagePreview(currentImageUrl);
     setImageFileValue(currentImageUrl);
-  }, [species.imageUrl]);
+    setShowPublicDataChecked(!!species.showHistoricalDataToPublic);
+  }, [species]);
 
 
   const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -262,7 +264,8 @@ export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
                   <Checkbox
                     id="showHistoricalDataToPublic"
                     name="showHistoricalDataToPublic"
-                    defaultChecked={species.showHistoricalDataToPublic}
+                    checked={showPublicDataChecked}
+                    onCheckedChange={(checked) => setShowPublicDataChecked(Boolean(checked))}
                   />
                   <Label htmlFor="showHistoricalDataToPublic" className="text-sm font-normal">
                     Permitir que el público vea el gráfico de datos históricos de esta especie.
