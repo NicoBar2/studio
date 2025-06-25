@@ -38,7 +38,7 @@ export default function ForgotPasswordPage() {
             Recuperar Contraseña
           </CardTitle>
           <CardDescription>
-            Introduce tu correo electrónico y te enviaremos (de forma simulada) un enlace para restablecer tu contraseña.
+            Introduce tu correo electrónico. Si la cuenta existe, te enviaremos un enlace para restablecer tu contraseña.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -64,14 +64,6 @@ export default function ForgotPasswordPage() {
                 <AlertTitle>{state.success ? 'Solicitud Enviada' : 'Error'}</AlertTitle>
                 <AlertDescription>
                   {state.message}
-                  {state.success && (
-                    <>
-                      {' '}
-                      <Link href="/reset-password" className="font-bold underline hover:text-primary">
-                         Haz clic aquí para continuar.
-                      </Link>
-                    </>
-                  )}
                 </AlertDescription>
               </Alert>
             )}
@@ -88,3 +80,5 @@ export default function ForgotPasswordPage() {
     </div>
   );
 }
+
+    

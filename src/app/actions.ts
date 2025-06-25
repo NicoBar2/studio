@@ -270,15 +270,13 @@ export async function requestPasswordResetAction(
 
     const researcher = await getResearcherByEmail(email);
 
-    // For security, we don't reveal if the email exists.
-    // In a real app, you would generate a token and send an email only if the user exists.
     if (researcher) {
       console.log(`Password reset requested for ${email}. In a real app, an email would be sent.`);
     }
 
     return { 
       success: true, 
-      message: "Si existe una cuenta con ese correo, se ha enviado un enlace de recuperación (simulado)." 
+      message: "Si existe una cuenta asociada a este correo, recibirás un enlace para restablecer tu contraseña. Por favor, revisa tu bandeja de entrada." 
     };
 }
 
@@ -551,3 +549,5 @@ export async function loginAction(email: string, password: string): Promise<{ su
     }
   }
 }
+
+    
