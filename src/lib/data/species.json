@@ -57,7 +57,7 @@
     "is_marchena": false,
     "is_santaFé": false,
     "is_wolf": false,
-    "showHistoricalDataToPublic": false,
+    "showHistoricalDataToPublic": true,
     "localName": "",
     "domain": "Eukaryota",
     "kingdom": "Animalia",
