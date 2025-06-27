@@ -1,7 +1,6 @@
-
 "use client"; 
 import RoleBasedGuard from '@/components/auth/RoleBasedGuard';
-import { Sidebar, SidebarProvider, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarHeader, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
+import { Sidebar, SidebarProvider, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarHeader, SidebarInset, SidebarTrigger, SidebarFooter } from '@/components/ui/sidebar';
 import { LayoutDashboard, Users, HomeIcon, FileUp, GitCompareArrows } from 'lucide-react';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
@@ -23,57 +22,64 @@ export default function DashboardLayout({
                 <LayoutDashboard className="h-6 w-6" />
                 <span className="group-data-[state=collapsed]:hidden">Panel</span>
               </Link>
-              <SidebarTrigger className="hidden md:flex" />
+              <SidebarTrigger className="hidden md:flex group-data-[state=collapsed]:hidden" />
             </SidebarHeader>
-            <SidebarMenu className="p-2">
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild variant="ghost" className="justify-start w-full" tooltip="Resumen">
-                  <Link href="/dashboard">
-                    <LayoutDashboard />
-                    <span className="group-data-[state=collapsed]:hidden">Resumen</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild variant="ghost" className="justify-start w-full" tooltip="Análisis Comparativo">
-                  <Link href="/dashboard/compare">
-                    <GitCompareArrows />
-                    <span className="group-data-[state=collapsed]:hidden">Análisis Comparativo</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              
-              {role === 'admin' && (
-                <>
-                  <SidebarMenuItem>
-                    <SidebarMenuButton asChild variant="ghost" className="justify-start w-full" tooltip="Gestionar Investigadores">
-                      <Link href="/dashboard/admin/researchers">
-                        <Users />
-                        <span className="group-data-[state=collapsed]:hidden">Gestionar Investigadores</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                  <SidebarMenuItem>
-                    <SidebarMenuButton asChild variant="ghost" className="justify-start w-full" tooltip="Importar Datos">
-                      <Link href="/dashboard/admin/import">
-                        <FileUp />
-                        <span className="group-data-[state=collapsed]:hidden">Importar Datos</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                </>
-              )}
 
-              <SidebarMenuItem>
-                 <SidebarMenuButton asChild variant="ghost" className="justify-start w-full" tooltip="Sitio Público">
-                  <Link href="/">
-                    <HomeIcon />
-                    <span className="group-data-[state=collapsed]:hidden">Sitio Público</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
+            <div className="flex-1 overflow-y-auto">
+              <SidebarMenu className="p-2">
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild variant="ghost" className="justify-start w-full" tooltip="Resumen">
+                    <Link href="/dashboard">
+                      <LayoutDashboard />
+                      <span className="group-data-[state=collapsed]:hidden">Resumen</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild variant="ghost" className="justify-start w-full" tooltip="Análisis Comparativo">
+                    <Link href="/dashboard/compare">
+                      <GitCompareArrows />
+                      <span className="group-data-[state=collapsed]:hidden">Análisis Comparativo</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                
+                {role === 'admin' && (
+                  <>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton asChild variant="ghost" className="justify-start w-full" tooltip="Gestionar Investigadores">
+                        <Link href="/dashboard/admin/researchers">
+                          <Users />
+                          <span className="group-data-[state=collapsed]:hidden">Gestionar Investigadores</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton asChild variant="ghost" className="justify-start w-full" tooltip="Importar Datos">
+                        <Link href="/dashboard/admin/import">
+                          <FileUp />
+                          <span className="group-data-[state=collapsed]:hidden">Importar Datos</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  </>
+                )}
+
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild variant="ghost" className="justify-start w-full" tooltip="Sitio Público">
+                    <Link href="/">
+                      <HomeIcon />
+                      <span className="group-data-[state=collapsed]:hidden">Sitio Público</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              </SidebarMenu>
+            </div>
+
+            <SidebarFooter className="p-2 border-t">
+              <SidebarTrigger className="hidden md:flex group-data-[state=expanded]:hidden mx-auto" />
+            </SidebarFooter>
           </Sidebar>
           <SidebarInset className="flex-1 p-6 bg-background">
             {children}
