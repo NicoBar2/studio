@@ -1,20 +1,21 @@
 
 "use client";
 
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useTransition } from 'react';
 import type { Species } from '@/lib/types';
-import { getSpeciesListAction } from '@/app/actions';
+import { getSpeciesListAction, generateComparisonAnalysisAction } from '@/app/actions';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import dynamic from 'next/dynamic';
 import { Skeleton } from '@/components/ui/skeleton';
-import { AlertTriangle, BarChart, FileSearch } from 'lucide-react';
+import { AlertTriangle, BarChart, FileSearch, BrainCircuit, Info } from 'lucide-react';
 import RoleBasedGuard from '@/components/auth/RoleBasedGuard';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 
 const SpeciesComparisonChart = dynamic(() => import('@/components/charts/SpeciesComparisonChart'), {
     loading: () => (
@@ -33,6 +34,12 @@ export default function ComparePage() {
     const [allSpecies, setAllSpecies] = useState<Species[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [selectedSpeciesIds, setSelectedSpeciesIds] = useState<{[unit: string]: string[]}>({});
+    
+    // State for AI Analysis
+    const [analysis, setAnalysis] = useState<{[unit: string]: string | null}>({});
+    const [analysisError, setAnalysisError] = useState<{[unit: string]: string | null}>({});
+    const [isAnalysisPending, startAnalysisTransition] = useTransition();
+
 
     useEffect(() => {
         const fetchSpecies = async () => {
@@ -64,9 +71,30 @@ export default function ComparePage() {
             const newSelection = currentSelection.includes(speciesId)
                 ? currentSelection.filter(id => id !== speciesId)
                 : [...currentSelection, speciesId];
+            
+            // Reset analysis if selection changes
+            setAnalysis(prevAnalysis => ({ ...prevAnalysis, [unit]: null }));
+            setAnalysisError(prevError => ({ ...prevError, [unit]: null }));
+
             return { ...prev, [unit]: newSelection };
         });
     };
+    
+    const handleGenerateAnalysis = (unit: string) => {
+        const ids = selectedSpeciesIds[unit];
+        if (!ids || ids.length < 2) return;
+
+        startAnalysisTransition(async () => {
+            setAnalysis(prev => ({...prev, [unit]: null}));
+            setAnalysisError(prev => ({...prev, [unit]: null}));
+            const result = await generateComparisonAnalysisAction(ids);
+            if (result.analysis) {
+                setAnalysis(prev => ({...prev, [unit]: result.analysis}));
+            } else {
+                setAnalysisError(prev => ({...prev, [unit]: result.error || "Ocurrió un error desconocido."}));
+            }
+        });
+    }
 
     return (
         <RoleBasedGuard allowedRoles={['admin', 'researcher']}>
@@ -84,7 +112,7 @@ export default function ComparePage() {
                             Análisis Comparativo de Especies
                         </CardTitle>
                         <CardDescription>
-                            Selecciona especies con la misma unidad de medida para comparar sus datos históricos en un solo gráfico.
+                            Selecciona especies con la misma unidad de medida para comparar sus datos históricos. Luego, genera un análisis con IA para obtener una interpretación de los datos.
                         </CardDescription>
                     </CardHeader>
                 </Card>
@@ -92,7 +120,12 @@ export default function ComparePage() {
                 {isLoading ? (
                     <Card><CardContent className="p-6"><Skeleton className="h-64 w-full" /></CardContent></Card>
                 ) : Object.keys(groupedSpecies).length > 0 ? (
-                    Object.entries(groupedSpecies).map(([unit, speciesInGroup]) => (
+                    Object.entries(groupedSpecies).map(([unit, speciesInGroup]) => {
+                        const selectedIds = selectedSpeciesIds[unit] || [];
+                        const currentAnalysis = analysis[unit];
+                        const currentError = analysisError[unit];
+                        
+                        return (
                         <Card key={unit} className="shadow-lg">
                             <CardHeader>
                                 <CardTitle className="text-xl font-headline text-primary flex items-center">
@@ -111,7 +144,7 @@ export default function ComparePage() {
                                                 <div key={s.id} className="flex items-center space-x-2">
                                                     <Checkbox
                                                         id={`compare-${unit}-${s.id}`}
-                                                        checked={(selectedSpeciesIds[unit] || []).includes(s.id)}
+                                                        checked={selectedIds.includes(s.id)}
                                                         onCheckedChange={() => handleSpeciesSelection(unit, s.id)}
                                                     />
                                                     <Label htmlFor={`compare-${unit}-${s.id}`} className="text-sm font-normal cursor-pointer">
@@ -123,9 +156,9 @@ export default function ComparePage() {
                                     </ScrollArea>
                                 </div>
                                 <div className="lg:col-span-3">
-                                    {(selectedSpeciesIds[unit] || []).length > 0 ? (
+                                    {selectedIds.length > 0 ? (
                                         <SpeciesComparisonChart 
-                                            species={speciesInGroup.filter(s => (selectedSpeciesIds[unit] || []).includes(s.id))} 
+                                            species={speciesInGroup.filter(s => selectedIds.includes(s.id))} 
                                         />
                                     ) : (
                                         <div className="flex flex-col items-center justify-center h-full min-h-[400px] p-8 border border-dashed rounded-lg bg-muted/50">
@@ -135,8 +168,57 @@ export default function ComparePage() {
                                     )}
                                 </div>
                             </CardContent>
+                            
+                            <CardContent>
+                                <div className="space-y-4 pt-4 border-t">
+                                     <h3 className="text-lg font-semibold flex items-center text-primary">
+                                        <BrainCircuit className="mr-2 h-5 w-5" /> Análisis Comparativo con IA
+                                    </h3>
+                                    <Button
+                                        onClick={() => handleGenerateAnalysis(unit)}
+                                        disabled={selectedIds.length < 2 || isAnalysisPending}
+                                    >
+                                        {isAnalysisPending ? 'Generando...' : 'Generar Análisis'}
+                                    </Button>
+
+                                    {isAnalysisPending && (
+                                        <div className="space-y-2">
+                                            <Skeleton className="h-4 w-full" />
+                                            <Skeleton className="h-4 w-full" />
+                                            <Skeleton className="h-4 w-4/5" />
+                                        </div>
+                                    )}
+
+                                    {currentError && (
+                                        <Alert variant="destructive">
+                                            <AlertTriangle className="h-4 w-4" />
+                                            <AlertTitle>Error</AlertTitle>
+                                            <AlertDescription>{currentError}</AlertDescription>
+                                        </Alert>
+                                    )}
+
+                                    {currentAnalysis && (
+                                        <Alert>
+                                            <Info className="h-4 w-4"/>
+                                            <AlertTitle>Análisis Comparativo Generado</AlertTitle>
+                                            <AlertDescription className="prose prose-sm max-w-none text-foreground leading-relaxed">
+                                                {currentAnalysis.split('\n').map((paragraph, index) => (
+                                                    <p key={index}>{paragraph}</p>
+                                                ))}
+                                            </AlertDescription>
+                                        </Alert>
+                                    )}
+                                    
+                                    {selectedIds.length < 2 && !currentAnalysis && !isAnalysisPending && (
+                                        <p className="text-sm text-muted-foreground">
+                                            Por favor, selecciona al menos dos especies para generar un análisis comparativo.
+                                        </p>
+                                    )}
+                                </div>
+                            </CardContent>
                         </Card>
-                    ))
+                    )
+                })
                 ) : (
                     <Card>
                         <CardContent className="p-10 text-center">

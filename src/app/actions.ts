@@ -20,6 +20,7 @@ import {
   setResearcherPassword
 } from '@/lib/researchers';
 import { enrichSpeciesData, type EnrichedData } from '@/ai/flows/enrichSpeciesData';
+import { getComparisonAnalysis, type CompareSpeciesInput } from '@/ai/flows/compareSpeciesFlow';
 import { z } from 'zod';
 import { redirect } from 'next/navigation';
 import bcrypt from 'bcryptjs';
@@ -545,5 +546,37 @@ export async function loginAction(email: string, password: string): Promise<{ su
     } else {
       return { success: false, error: 'Contraseña incorrecta para el investigador.' };
     }
+  }
+}
+
+export async function generateComparisonAnalysisAction(
+  speciesIds: string[]
+): Promise<{ analysis?: string; error?: string }> {
+  if (!speciesIds || speciesIds.length < 2) {
+    return { error: 'Se necesitan al menos dos especies para la comparación.' };
+  }
+
+  try {
+    const speciesDataPromises = speciesIds.map(id => getSpeciesById(id));
+    const speciesList = await Promise.all(speciesDataPromises);
+
+    const validSpecies = speciesList.filter((s): s is Species => !!s);
+    if (validSpecies.length !== speciesIds.length) {
+      return { error: 'Una o más especies seleccionadas no pudieron ser encontradas.' };
+    }
+    
+    const flowInput: CompareSpeciesInput = validSpecies.map(s => ({
+      spanishCommonName: s.spanishCommonName,
+      iucnStatus: s.iucnStatus,
+      populationTrend: s.populationTrend,
+      historicalData: s.historicalData,
+    }));
+    
+    const analysis = await getComparisonAnalysis(flowInput);
+    return { analysis };
+
+  } catch (error) {
+    console.error("Error generando análisis comparativo:", error);
+    return { error: "Ocurrió un error al contactar al servicio de IA para el análisis." };
   }
 }
