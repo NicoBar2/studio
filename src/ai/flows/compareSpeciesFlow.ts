@@ -28,7 +28,7 @@ const SpeciesComparisonDataSchema = z.object({
 const CompareSpeciesInputSchema = z.array(SpeciesComparisonDataSchema);
 export type CompareSpeciesInput = z.infer<typeof CompareSpeciesInputSchema>;
 
-const CompareSpeciesOutputSchema = z.string().describe("A detailed comparative analysis in Spanish, formatted as a single block of text with paragraphs. Use markdown for bolding key terms, but do not use headers or lists.");
+const CompareSpeciesOutputSchema = z.string().describe("A detailed comparative analysis in Spanish, formatted in Markdown. Use paragraphs and **bold** text for emphasis. Do not use Markdown headers (e.g., #, ##).");
 export type CompareSpeciesOutput = z.infer<typeof CompareSpeciesOutputSchema>;
 
 
@@ -44,10 +44,12 @@ const comparisonPrompt = ai.definePrompt({
     - **Especie:** {{{this.spanishCommonName}}}
       - **Estado de Conservación (UICN):** {{{this.iucnStatus}}}
       - **Tendencia Poblacional:** {{{this.populationTrend}}}
-      - **Datos Históricos ({{this.historicalData.0.unit}}):**
+      {{#if this.historicalData}}
+      - **Datos Históricos ({{this.historicalData.[0].unit}}):**
         {{#each this.historicalData}}
         - Año: {{this.year}}, Valor: {{this.value}}
         {{/each}}
+      {{/if}}
     {{/each}}
 
     Your analysis should:
@@ -56,7 +58,10 @@ const comparisonPrompt = ai.definePrompt({
     3.  Analyze the historical data. Look for significant changes, periods of sharp decline or growth, and compare the magnitudes.
     4.  Synthesize the information to provide a concluding insight about the overall health of this group of species.
 
-    Provide the final analysis as a well-written text in Spanish. Use markdown for **bolding** key terms, but do not use lists or headers.
+    Provide the final analysis as a well-written text in Spanish, formatted using Markdown.
+    - Use paragraphs for structure.
+    - Use **bold** markdown for emphasis on key terms and species names.
+    - Do NOT use any Markdown headers (like #, ##, ###).
     `,
 });
 
