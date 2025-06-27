@@ -1,6 +1,6 @@
 "use client"; 
 import RoleBasedGuard from '@/components/auth/RoleBasedGuard';
-import { Sidebar, SidebarProvider, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarHeader, SidebarInset, SidebarTrigger, SidebarFooter } from '@/components/ui/sidebar';
+import { Sidebar, SidebarProvider, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarHeader, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
 import { LayoutDashboard, Users, HomeIcon, FileUp, GitCompareArrows } from 'lucide-react';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
@@ -22,7 +22,6 @@ export default function DashboardLayout({
                 <LayoutDashboard className="h-6 w-6" />
                 <span className="group-data-[state=collapsed]:hidden">Panel</span>
               </Link>
-              <SidebarTrigger className="hidden md:flex group-data-[state=collapsed]:hidden" />
             </SidebarHeader>
 
             <div className="flex-1 overflow-y-auto">
@@ -77,9 +76,10 @@ export default function DashboardLayout({
               </SidebarMenu>
             </div>
 
-            <SidebarFooter className="p-2 border-t">
-              <SidebarTrigger className="hidden md:flex group-data-[state=expanded]:hidden mx-auto" />
-            </SidebarFooter>
+            <div className="p-2 border-t mt-auto">
+              <SidebarTrigger className="hidden md:flex" />
+            </div>
+            
           </Sidebar>
           <SidebarInset className="flex-1 p-6 bg-background">
             {children}
