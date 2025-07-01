@@ -94,6 +94,29 @@ export async function saveSpeciesData(prevState: any, formData: FormData): Promi
   }
 
   try {
+     const historicalDataJSON = formData.get('historicalData') as string;
+    let historicalData: HistoricalDataPoint[] = [];
+
+    if (historicalDataJSON) {
+      try {
+        const parsed = JSON.parse(historicalDataJSON);
+        if (Array.isArray(parsed)) {
+          historicalData = parsed
+            .map(p => ({
+              year: Number(p.year),
+              value: Number(p.value),
+              unit: String(p.unit || '').trim(),
+            }))
+            .filter(p => p.year && !isNaN(p.value) && p.unit) 
+            .sort((a, b) => a.year - b.year);
+        }
+      } catch (e) {
+        console.error("Error parsing historical data:", e);
+        return { success: false, message: "Los datos históricos tienen un formato inválido." };
+      }
+    }
+
+
     const updatedData: Partial<Species> = {
       spanishCommonName: formData.get('spanishCommonName') as string || currentSpecies.spanishCommonName,
       englishCommonName: formData.get('englishCommonName') as string || currentSpecies.englishCommonName,
@@ -106,7 +129,8 @@ export async function saveSpeciesData(prevState: any, formData: FormData): Promi
       populationTrend: formData.get('populationTrend') as Species['populationTrend'] || currentSpecies.populationTrend,
       habitat: formData.get('habitat') as string || currentSpecies.habitat,
       threats: (formData.get('threats') as string || '').split(',').map(t => t.trim()).filter(Boolean),
-      
+      historicalData: historicalData,
+
       // Update island booleans
       is_darwin: formData.get('is_darwin') === 'on',
       is_española: formData.get('is_española') === 'on',
@@ -137,6 +161,8 @@ export async function saveSpeciesData(prevState: any, formData: FormData): Promi
       revalidatePath(`/species/${speciesId}`); 
       revalidatePath(`/dashboard/edit/${speciesId}`); 
       revalidatePath('/dashboard');
+      revalidatePath(`/dashboard/visualize/${speciesId}`);
+      revalidatePath('/dashboard/compare');
       return { success: true, message: `Datos de ${updatedData.spanishCommonName || currentSpecies.spanishCommonName} actualizados correctamente.`, speciesId };
     } else {
       return { success: false, message: `Error al actualizar los datos de ${updatedData.spanishCommonName || currentSpecies.spanishCommonName}.` };

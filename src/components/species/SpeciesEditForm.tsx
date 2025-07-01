@@ -1,7 +1,7 @@
 
 "use client";
 import { getSpeciesImageUrl, GALAPAGOS_ISLANDS_NAMES } from '@/lib/utils'; 
-import type { Species, ConservationStatus } from '@/lib/types';
+import type { Species, ConservationStatus, HistoricalDataPoint } from '@/lib/types';
 import { useActionState, useState, useEffect, type ChangeEvent, useRef } from 'react';
 import { useFormStatus } from 'react-dom';
 import { saveSpeciesData } from '@/app/actions';
@@ -17,6 +17,7 @@ import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
+import { PlusCircle, Trash2 } from 'lucide-react';
 
 const initialState = {
   success: false,
@@ -67,6 +68,7 @@ export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
   const [imagePreview, setImagePreview] = useState<string | null>(getSpeciesImageUrl(species));
   const [imageFileValue, setImageFileValue] = useState<string>(getSpeciesImageUrl(species));
   const [showPublicDataChecked, setShowPublicDataChecked] = useState(!!species.showHistoricalDataToPublic);
+  const [historicalData, setHistoricalData] = useState<HistoricalDataPoint[]>(species.historicalData || []);
 
   const prevMessageRef = useRef<string | undefined>();
 
@@ -89,6 +91,7 @@ export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
     setImagePreview(currentImageUrl);
     setImageFileValue(currentImageUrl);
     setShowPublicDataChecked(!!species.showHistoricalDataToPublic);
+    setHistoricalData(species.historicalData || []);
   }, [species]);
 
 
@@ -109,6 +112,29 @@ export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
     }
   };
 
+  const handleHistoricalDataChange = (index: number, field: keyof HistoricalDataPoint, value: string | number) => {
+      const newData = [...historicalData];
+      const point = { ...newData[index] };
+      
+      if (field === 'year' || field === 'value') {
+          point[field] = Number(value) || 0;
+      } else {
+          point[field] = String(value);
+      }
+      newData[index] = point;
+      setHistoricalData(newData);
+  };
+
+  const addHistoricalDataPoint = () => {
+      const lastUnit = historicalData.length > 0 ? historicalData[historicalData.length - 1].unit : '';
+      setHistoricalData([...historicalData, { year: new Date().getFullYear(), value: 0, unit: lastUnit }]);
+  };
+
+  const removeHistoricalDataPoint = (index: number) => {
+      setHistoricalData(historicalData.filter((_, i) => i !== index));
+  };
+
+
   return (
     <Card className="shadow-xl">
       <CardHeader>
@@ -120,6 +146,8 @@ export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
           <input type="hidden" name="id" defaultValue={species.id} />
           <input type="hidden" name="userRole" value={role || ''} />
           <input type="hidden" name="userEmail" value={userEmail || ''} />
+          <input type="hidden" name="historicalData" value={JSON.stringify(historicalData)} />
+
 
           <Accordion type="multiple" defaultValue={['item-1', 'item-2']} className="w-full">
             
@@ -220,7 +248,6 @@ export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
                 </AccordionContent>
             </AccordionItem>
 
-
              <AccordionItem value="item-5">
                 <AccordionTrigger className="text-xl font-headline">Imagen de la Especie</AccordionTrigger>
                 <AccordionContent className="space-y-2 pt-4">
@@ -273,6 +300,65 @@ export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
                 </div>
               </AccordionContent>
             </AccordionItem>
+
+            <AccordionItem value="item-7">
+                <AccordionTrigger className="text-xl font-headline">Datos Históricos</AccordionTrigger>
+                <AccordionContent className="space-y-4 pt-4">
+                    <div className="space-y-2">
+                    {historicalData.map((point, index) => (
+                        <div key={index} className="grid grid-cols-[1fr_1fr_1fr_auto] gap-2 items-center p-2 border rounded-md">
+                            <div>
+                                <Label htmlFor={`year-${index}`} className="text-xs">Año</Label>
+                                <Input
+                                    id={`year-${index}`}
+                                    type="number"
+                                    value={point.year}
+                                    onChange={(e) => handleHistoricalDataChange(index, 'year', e.target.value)}
+                                    placeholder="Año"
+                                />
+                            </div>
+                            <div>
+                                <Label htmlFor={`value-${index}`} className="text-xs">Valor</Label>
+                                <Input
+                                    id={`value-${index}`}
+                                    type="number"
+                                    value={point.value}
+                                    onChange={(e) => handleHistoricalDataChange(index, 'value', e.target.value)}
+                                    placeholder="Valor"
+                                />
+                            </div>
+                             <div>
+                                <Label htmlFor={`unit-${index}`} className="text-xs">Unidad</Label>
+                                <Input
+                                    id={`unit-${index}`}
+                                    value={point.unit}
+                                    onChange={(e) => handleHistoricalDataChange(index, 'unit', e.target.value)}
+                                    placeholder="Unidad"
+                                />
+                            </div>
+                            <Button
+                                type="button"
+                                variant="destructive"
+                                size="sm"
+                                onClick={() => removeHistoricalDataPoint(index)}
+                                className="self-end"
+                            >
+                                <Trash2 className="h-4 w-4" />
+                            </Button>
+                        </div>
+                    ))}
+                    </div>
+                    <Button
+                        type="button"
+                        variant="outline"
+                        onClick={addHistoricalDataPoint}
+                    >
+                        <PlusCircle className="mr-2 h-4 w-4" />
+                        Añadir Punto de Dato
+                    </Button>
+                </AccordionContent>
+            </AccordionItem>
+
           </Accordion>
 
           <div className="flex justify-end pt-4">
