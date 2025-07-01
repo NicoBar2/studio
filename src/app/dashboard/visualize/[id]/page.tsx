@@ -231,15 +231,17 @@ export default function VisualizeSpeciesPage({ params }: VisualizeSpeciesPagePro
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="w-[150px]">Año</TableHead>
-                    <TableHead className="text-right">Valor</TableHead>
-                    <TableHead>Unidad</TableHead>
+                    <TableHead className="w-[100px]">Año</TableHead>
+                    <TableHead>Descripción</TableHead>
+                    <TableHead className="w-[150px] text-right">Valor</TableHead>
+                    <TableHead className="w-[150px]">Unidad</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {filteredHistoricalData.map((point) => (
                     <TableRow key={point.year}>
                       <TableCell className="font-medium">{point.year}</TableCell>
+                      <TableCell>{point.description || <span className="text-muted-foreground">N/A</span>}</TableCell>
                       <TableCell className="text-right">{point.value.toLocaleString()}</TableCell>
                       <TableCell>{point.unit}</TableCell>
                     </TableRow>

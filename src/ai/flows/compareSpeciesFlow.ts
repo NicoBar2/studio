@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview A Genkit flow to generate a comparative analysis of species data.
@@ -22,6 +23,7 @@ const SpeciesComparisonDataSchema = z.object({
     year: z.number(),
     value: z.number(),
     unit: z.string(),
+    description: z.string().optional(),
   })),
 });
 
@@ -47,7 +49,7 @@ const comparisonPrompt = ai.definePrompt({
       {{#if this.historicalData}}
       - **Datos Históricos ({{this.historicalData.[0].unit}}):**
         {{#each this.historicalData}}
-        - Año: {{this.year}}, Valor: {{this.value}}
+        - Año: {{this.year}}, Valor: {{this.value}}{{#if this.description}} (Nota: {{this.description}}){{/if}}
         {{/each}}
       {{/if}}
     {{/each}}
@@ -55,7 +57,7 @@ const comparisonPrompt = ai.definePrompt({
     Your analysis should:
     1.  Compare the population trends. Which species are recovering, which are declining, and which are stable?
     2.  Contrast their conservation statuses. Are there species in more critical danger than others?
-    3.  Analyze the historical data. Look for significant changes, periods of sharp decline or growth, and compare the magnitudes.
+    3.  Analyze the historical data. Look for significant changes, periods of sharp decline or growth, and compare the magnitudes. If notes are provided for certain years, incorporate that context into your analysis.
     4.  Synthesize the information to provide a concluding insight about the overall health of this group of species.
 
     Provide the final analysis as a well-written text in Spanish, formatted using Markdown.

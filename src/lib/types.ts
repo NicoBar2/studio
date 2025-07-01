@@ -18,7 +18,8 @@ export type SpeciesStat = {
 export type HistoricalDataPoint = {
   year: number;
   value: number;
-  unit: string
+  unit: string;
+  description?: string;
 };
 
 // Expanded Species type based on detailed column list

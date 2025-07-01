@@ -119,7 +119,7 @@ export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
       if (field === 'year' || field === 'value') {
           point[field] = Number(value) || 0;
       } else {
-          point[field] = String(value);
+          (point as any)[field] = String(value);
       }
       newData[index] = point;
       setHistoricalData(newData);
@@ -127,7 +127,7 @@ export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
 
   const addHistoricalDataPoint = () => {
       const lastUnit = historicalData.length > 0 ? historicalData[historicalData.length - 1].unit : '';
-      setHistoricalData([...historicalData, { year: new Date().getFullYear(), value: 0, unit: lastUnit }]);
+      setHistoricalData([...historicalData, { year: new Date().getFullYear(), value: 0, unit: lastUnit, description: '' }]);
   };
 
   const removeHistoricalDataPoint = (index: number) => {
@@ -302,61 +302,77 @@ export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
             </AccordionItem>
 
             <AccordionItem value="item-7">
-                <AccordionTrigger className="text-xl font-headline">Datos Históricos</AccordionTrigger>
-                <AccordionContent className="space-y-4 pt-4">
-                    <div className="space-y-2">
-                    {historicalData.map((point, index) => (
-                        <div key={index} className="grid grid-cols-[1fr_1fr_1fr_auto] gap-2 items-center p-2 border rounded-md">
-                            <div>
-                                <Label htmlFor={`year-${index}`} className="text-xs">Año</Label>
-                                <Input
-                                    id={`year-${index}`}
-                                    type="number"
-                                    value={point.year}
-                                    onChange={(e) => handleHistoricalDataChange(index, 'year', e.target.value)}
-                                    placeholder="Año"
-                                />
-                            </div>
-                            <div>
-                                <Label htmlFor={`value-${index}`} className="text-xs">Valor</Label>
-                                <Input
-                                    id={`value-${index}`}
-                                    type="number"
-                                    value={point.value}
-                                    onChange={(e) => handleHistoricalDataChange(index, 'value', e.target.value)}
-                                    placeholder="Valor"
-                                />
-                            </div>
-                             <div>
-                                <Label htmlFor={`unit-${index}`} className="text-xs">Unidad</Label>
-                                <Input
-                                    id={`unit-${index}`}
-                                    value={point.unit}
-                                    onChange={(e) => handleHistoricalDataChange(index, 'unit', e.target.value)}
-                                    placeholder="Unidad"
-                                />
-                            </div>
-                            <Button
-                                type="button"
-                                variant="destructive"
-                                size="sm"
-                                onClick={() => removeHistoricalDataPoint(index)}
-                                className="self-end"
-                            >
-                                <Trash2 className="h-4 w-4" />
-                            </Button>
+              <AccordionTrigger className="text-xl font-headline">Datos Históricos</AccordionTrigger>
+              <AccordionContent className="space-y-4 pt-4">
+                <div className="space-y-3">
+                  {historicalData.map((point, index) => (
+                    <div key={index} className="flex flex-col gap-2 p-3 border rounded-md bg-muted/50">
+                      <div className="grid grid-cols-[1fr_1fr_1fr_auto] gap-2 items-end">
+                        <div>
+                          <Label htmlFor={`year-${index}`} className="text-xs font-semibold">Año</Label>
+                          <Input
+                            id={`year-${index}`}
+                            type="number"
+                            value={point.year}
+                            onChange={(e) => handleHistoricalDataChange(index, 'year', e.target.value)}
+                            placeholder="Año"
+                            className="mt-1"
+                          />
                         </div>
-                    ))}
+                        <div>
+                          <Label htmlFor={`value-${index}`} className="text-xs font-semibold">Valor</Label>
+                          <Input
+                            id={`value-${index}`}
+                            type="number"
+                            value={point.value}
+                            onChange={(e) => handleHistoricalDataChange(index, 'value', e.target.value)}
+                            placeholder="Valor"
+                            className="mt-1"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor={`unit-${index}`} className="text-xs font-semibold">Unidad</Label>
+                          <Input
+                            id={`unit-${index}`}
+                            value={point.unit}
+                            onChange={(e) => handleHistoricalDataChange(index, 'unit', e.target.value)}
+                            placeholder="Unidad"
+                            className="mt-1"
+                          />
+                        </div>
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          size="icon"
+                          onClick={() => removeHistoricalDataPoint(index)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                          <span className="sr-only">Eliminar</span>
+                        </Button>
+                      </div>
+                      <div>
+                        <Label htmlFor={`description-${index}`} className="text-xs font-semibold">Descripción (Opcional)</Label>
+                        <Input
+                          id={`description-${index}`}
+                          value={point.description || ''}
+                          onChange={(e) => handleHistoricalDataChange(index, 'description', e.target.value)}
+                          placeholder="Ej: Censo post-evento El Niño"
+                          className="mt-1"
+                        />
+                      </div>
                     </div>
-                    <Button
-                        type="button"
-                        variant="outline"
-                        onClick={addHistoricalDataPoint}
-                    >
-                        <PlusCircle className="mr-2 h-4 w-4" />
-                        Añadir Punto de Dato
-                    </Button>
-                </AccordionContent>
+                  ))}
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={addHistoricalDataPoint}
+                  className="mt-4"
+                >
+                  <PlusCircle className="mr-2 h-4 w-4" />
+                  Añadir Punto de Dato
+                </Button>
+              </AccordionContent>
             </AccordionItem>
 
           </Accordion>

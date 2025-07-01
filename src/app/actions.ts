@@ -106,6 +106,7 @@ export async function saveSpeciesData(prevState: any, formData: FormData): Promi
               year: Number(p.year),
               value: Number(p.value),
               unit: String(p.unit || '').trim(),
+              description: String(p.description || '').trim(),
             }))
             .filter(p => p.year && !isNaN(p.value) && p.unit) 
             .sort((a, b) => a.year - b.year);
