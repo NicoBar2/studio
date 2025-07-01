@@ -42,14 +42,14 @@ const comparisonPrompt = ai.definePrompt({
     Based on the following data for multiple species, provide a comparative analysis.
 
     Data:
-    {{#each input}}
+    {{#each this}}
     - **Especie:** {{{this.spanishCommonName}}}
       - **Estado de Conservación (UICN):** {{{this.iucnStatus}}}
       - **Tendencia Poblacional:** {{{this.populationTrend}}}
       {{#if this.historicalData}}
-      - **Datos Históricos ({{this.historicalData.[0].unit}}):**
+      - **Datos Históricos ({{this.historicalData.0.unit}}):**
         {{#each this.historicalData}}
-        - Año: {{this.year}}, Valor: {{this.value}}{{#if this.description}} (Nota: {{this.description}}){{/if}}
+        - Año: {{year}}, Valor: {{value}}{{#if description}} (Nota: {{description}}){{/if}}
         {{/each}}
       {{/if}}
     {{/each}}
