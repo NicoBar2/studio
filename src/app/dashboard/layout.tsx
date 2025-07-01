@@ -1,7 +1,7 @@
 "use client"; 
 import RoleBasedGuard from '@/components/auth/RoleBasedGuard';
 import { Sidebar, SidebarProvider, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarHeader, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
-import { LayoutDashboard, Users, HomeIcon, FileUp, GitCompareArrows } from 'lucide-react';
+import { LayoutDashboard, Users, HomeIcon, FileUp, GitCompareArrows, PlusCircle } from 'lucide-react';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -44,6 +44,15 @@ export default function DashboardLayout({
                   </SidebarMenuButton>
                 </SidebarMenuItem>
                 
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild variant="ghost" className="justify-start w-full" tooltip="Añadir Especie">
+                    <Link href="/dashboard/add-species">
+                      <PlusCircle />
+                      <span className="group-data-[state=collapsed]:hidden">Añadir Especie</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+
                 {role === 'admin' && (
                   <>
                     <SidebarMenuItem>

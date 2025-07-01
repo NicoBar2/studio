@@ -174,6 +174,105 @@ export async function saveSpeciesData(prevState: any, formData: FormData): Promi
   }
 }
 
+export async function addSpeciesAction(prevState: any, formData: FormData): Promise<{ success: boolean; message: string; speciesId?: string }> {
+  const userRole = formData.get('userRole') as string;
+  const userEmail = formData.get('userEmail') as string;
+  
+  if (userRole === 'researcher') {
+    if (!userEmail) {
+      return { success: false, message: "No se pudo identificar al investigador." };
+    }
+    const researcher = await getResearcherByEmail(userEmail);
+    if (!researcher || !researcher.isVerified) {
+      return { success: false, message: "Acción no permitida." };
+    }
+  } else if (userRole !== 'admin') {
+    return { success: false, message: "Acción no permitida. Rol de usuario no autorizado." };
+  }
+  
+  const spanishCommonName = formData.get('spanishCommonName') as string;
+  if (!spanishCommonName || spanishCommonName.trim().length < 3) {
+      return { success: false, message: "El nombre común en español es obligatorio y debe tener al menos 3 caracteres." };
+  }
+
+  try {
+    const historicalDataJSON = formData.get('historicalData') as string;
+    let historicalData: HistoricalDataPoint[] = [];
+
+    if (historicalDataJSON) {
+      try {
+        const parsed = JSON.parse(historicalDataJSON);
+        if (Array.isArray(parsed)) {
+          historicalData = parsed
+            .map(p => ({
+              year: Number(p.year),
+              value: Number(p.value),
+              unit: String(p.unit || '').trim(),
+              description: String(p.description || '').trim(),
+            }))
+            .filter(p => p.year && !isNaN(p.value) && p.unit) 
+            .sort((a, b) => a.year - b.year);
+        }
+      } catch (e) {
+        console.error("Error parsing historical data:", e);
+        return { success: false, message: "Los datos históricos tienen un formato inválido." };
+      }
+    }
+
+    const newSpeciesData: Partial<Species> = {
+      spanishCommonName: spanishCommonName,
+      englishCommonName: formData.get('englishCommonName') as string,
+      genus: formData.get('genus') as string,
+      specificEpithet: formData.get('specificEpithet') as string,
+      spanishDescription: formData.get('spanishDescription') as string,
+      englishDescription: formData.get('englishDescription') as string,
+      imageUrl: formData.get('imageUrl') as string,
+      iucnStatus: formData.get('iucnStatus') as Species['iucnStatus'],
+      populationTrend: formData.get('populationTrend') as Species['populationTrend'],
+      habitat: formData.get('habitat') as string,
+      threats: (formData.get('threats') as string || '').split(',').map(t => t.trim()).filter(Boolean),
+      historicalData: historicalData,
+
+      is_darwin: formData.get('is_darwin') === 'on',
+      is_española: formData.get('is_española') === 'on',
+      is_fernandina: formData.get('is_fernandina') === 'on',
+      is_floreana: formData.get('is_floreana') === 'on',
+      is_genovesa: formData.get('is_genovesa') === 'on',
+      is_isabela: formData.get('is_isabela') === 'on',
+      is_marchena: formData.get('is_marchena') === 'on',
+      is_pinta: formData.get('is_pinta') === 'on',
+      is_pinzón: formData.get('is_pinzón') === 'on',
+      is_sanCristóbal: formData.get('is_sanCristóbal') === 'on',
+      is_santaCruz: formData.get('is_santaCruz') === 'on',
+      is_santaFé: formData.get('is_santaFé') === 'on',
+      is_santiago: formData.get('is_santiago') === 'on',
+      is_wolf: formData.get('is_wolf') === 'on',
+
+      showHistoricalDataToPublic: formData.get('showHistoricalDataToPublic') === 'on',
+    };
+    
+    // Add defaults for new species that are not on the form
+    const hintString = spanishCommonName.split(' ').slice(0, 2).join(' ').toLowerCase();
+    newSpeciesData.dataAiHint = hintString;
+    newSpeciesData.icon = 'Footprints'; // Default icon
+    if (!newSpeciesData.imageUrl) {
+        newSpeciesData.imageUrl = 'https://placehold.co/600x400.png';
+    }
+
+
+    const newSpecies = await addSpeciesToStore(newSpeciesData);
+
+    revalidatePath('/'); 
+    revalidatePath('/dashboard');
+    redirect(`/dashboard/edit/${newSpecies.id}`);
+    
+  } catch (error) {
+    console.error("Error creando especie:", error);
+    const message = error instanceof Error ? error.message : "Ocurrió un error inesperado al crear la especie.";
+    return { success: false, message: message };
+  }
+}
+
 
 export async function createResearcherAction(
   prevState: { success: boolean; message: string; researcher?: Researcher },
