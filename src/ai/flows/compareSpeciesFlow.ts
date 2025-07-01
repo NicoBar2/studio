@@ -47,7 +47,7 @@ const comparisonPrompt = ai.definePrompt({
       - **Estado de Conservación (UICN):** {{{this.iucnStatus}}}
       - **Tendencia Poblacional:** {{{this.populationTrend}}}
       {{#if this.historicalData}}
-      - **Datos Históricos ({{this.historicalData.0.unit}}):**
+      - **Datos Históricos ({{this.historicalData.[0].unit}}):**
         {{#each this.historicalData}}
         - Año: {{year}}, Valor: {{value}}{{#if description}} (Nota: {{description}}){{/if}}
         {{/each}}
