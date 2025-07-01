@@ -102,3 +102,16 @@ export const addSpecies = async (newSpeciesData: Partial<Species>): Promise<Spec
     await writeSpecies(speciesList);
     return speciesToAdd;
 }
+
+export const deleteSpeciesById = async (id: string): Promise<boolean> => {
+  let speciesList = await readSpecies();
+  const initialLength = speciesList.length;
+  speciesList = speciesList.filter(s => s.id !== id);
+
+  if (speciesList.length < initialLength) {
+    await writeSpecies(speciesList);
+    return true;
+  }
+
+  return false;
+};

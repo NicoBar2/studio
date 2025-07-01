@@ -8,6 +8,7 @@ import {
   addSpecies as addSpeciesToStore,
   getSpeciesById,
   getSpeciesList,
+  deleteSpeciesById as deleteSpeciesFromStore,
 } from '@/lib/species';
 import type { Species, HistoricalDataPoint, SpeciesStat, ConservationStatus, UserRole, Researcher } from '@/lib/types';
 import { 
@@ -273,6 +274,39 @@ export async function addSpeciesAction(prevState: any, formData: FormData): Prom
   }
 }
 
+export async function deleteSpeciesAction(prevState: any, formData: FormData): Promise<{ success: boolean; message: string }> {
+  const speciesId = formData.get('speciesId') as string;
+  const userRole = formData.get('userRole') as string;
+
+  if (userRole !== 'admin') {
+    return { success: false, message: "Acción no permitida. Solo los administradores pueden eliminar especies." };
+  }
+
+  if (!speciesId) {
+    return { success: false, message: "Falta el ID de la especie." };
+  }
+
+  try {
+    const species = await getSpeciesById(speciesId);
+    if (!species) {
+      return { success: false, message: "Especie no encontrada." };
+    }
+    
+    const success = await deleteSpeciesFromStore(speciesId);
+
+    if (success) {
+      revalidatePath('/');
+      revalidatePath('/dashboard');
+      revalidatePath('/dashboard/compare');
+      return { success: true, message: `Especie '${species.spanishCommonName}' eliminada correctamente.` };
+    } else {
+      return { success: false, message: "No se pudo eliminar la especie." };
+    }
+  } catch (error) {
+    console.error("Error deleting species:", error);
+    return { success: false, message: "Ocurrió un error inesperado al eliminar la especie." };
+  }
+}
 
 export async function createResearcherAction(
   prevState: { success: boolean; message: string; researcher?: Researcher },

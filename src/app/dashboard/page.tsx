@@ -13,6 +13,7 @@ import {
 import { useEffect, useState, useMemo } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import EnrichButton from '@/components/dashboard/EnrichButton';
+import DeleteSpeciesButton from '@/components/dashboard/DeleteSpeciesButton';
 import { Badge } from '@/components/ui/badge';
 import GalapagosMap from '@/components/map/GalapagosMap';
 import { Input } from '@/components/ui/input';
@@ -76,6 +77,10 @@ export default function DashboardPage() {
     }
     return filteredSpecies;
   }, [speciesList, selectedIsland, searchTerm]);
+
+  const handleSpeciesDeleted = (deletedId: string) => {
+    setSpeciesList(currentList => currentList.filter(s => s.id !== deletedId));
+  };
 
 
   return (
@@ -211,6 +216,11 @@ export default function DashboardPage() {
                     {role === 'admin' && (
                        <EnrichButton species={species} />
                     )}
+                     <DeleteSpeciesButton
+                        speciesId={species.id}
+                        speciesName={species.spanishCommonName}
+                        onDeleteSuccess={handleSpeciesDeleted}
+                      />
                     <Button asChild variant="ghost" size="sm" className="text-primary hover:text-primary/90 sm:ml-auto">
                       <Link href={`/species/${species.id}`}>
                         Ver Página Pública
