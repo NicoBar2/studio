@@ -2,7 +2,7 @@
 "use client";
 
 import { type Species } from '@/lib/types';
-import { getSpeciesImageUrl } from '@/lib/utils';
+import { getSpeciesImageUrl, GALAPAGOS_ISLANDS_NAMES } from '@/lib/utils';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,7 +11,7 @@ import { useState, useTransition, useRef } from 'react';
 import { getAISummary } from '@/app/actions';
 import { 
   AlertCircle, Brain, Edit, BarChart2, Tag, TrendingUp, ShieldAlert, Home, ListChecks, Download,
-  Turtle, Bird, Footprints, ShieldQuestion, Waves, Bug, type LucideIcon, HelpCircle, Sigma
+  Turtle, Bird, Footprints, ShieldQuestion, Waves, Bug, type LucideIcon, HelpCircle, Sigma, MapPin
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import Link from 'next/link';
@@ -100,6 +100,13 @@ export default function SpeciesDetailClient({ species }: SpeciesDetailClientProp
   };
 
   const displayPopulationTrend = populationTrendTranslations[species.populationTrend] || species.populationTrend;
+  
+  const presentOnIslands = GALAPAGOS_ISLANDS_NAMES
+      .map(islandName => {
+        const key = `is_${islandName.toLowerCase().replace(/ /g, '_').normalize("NFD").replace(/[\u0300-\u036f]/g, "")}` as keyof Species;
+        return { name: islandName, present: species[key] };
+      })
+      .filter(island => island.present);
 
   return (
     <div className="space-y-8">
@@ -198,6 +205,23 @@ export default function SpeciesDetailClient({ species }: SpeciesDetailClientProp
                     <li key={index}>{threat}</li>
                   ))}
                 </ul>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center text-xl text-primary"><MapPin className="mr-2 h-5 w-5" /> Distribución Geográfica</CardTitle>
+              </CardHeader>
+              <CardContent className="flex flex-wrap gap-2">
+                {presentOnIslands.length > 0 ? (
+                  presentOnIslands.map(island => (
+                    <Badge key={island.name} variant="secondary" className="text-base">
+                      {island.name}
+                    </Badge>
+                  ))
+                ) : (
+                  <p className="text-muted-foreground">No hay datos de distribución en islas específicas.</p>
+                )}
               </CardContent>
             </Card>
 

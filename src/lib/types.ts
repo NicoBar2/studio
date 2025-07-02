@@ -57,27 +57,28 @@ export type Species = {
 
   // Distribution - Islands (using boolean flags for easier management in forms)
   is_darwin?: boolean;
-  is_española?: boolean;
+  is_espanola?: boolean;
   is_fernandina?: boolean;
   is_floreana?: boolean;
   is_genovesa?: boolean;
   is_isabela?: boolean;
   is_marchena?: boolean;
   is_pinta?: boolean;
-  is_pinzón?: boolean;
-  is_sanCristóbal?: boolean;
-  is_santaCruz?: boolean;
-  is_santaFé?: boolean;
+  is_pinzon?: boolean;
+  is_san_cristobal?: boolean;
+  is_santa_cruz?: boolean;
+  is_santa_fe?: boolean;
   is_santiago?: boolean;
-  is_unknownIsland?: boolean;
+  is_north_seymour?: boolean;
   is_wolf?: boolean;
+  is_unknown_island?: boolean;
   
   // Distribution - Bioregions
-  is_elizabethBay?: boolean;
-  is_farNorthern?: boolean;
+  is_elizabeth_bay?: boolean;
+  is_far_northern?: boolean;
   is_northern?: boolean;
-  is_southEastern?: boolean;
-  is_unknownBioregion?: boolean;
+  is_south_eastern?: boolean;
+  is_unknown_bioregion?: boolean;
   is_western?: boolean;
   
   // Comments & Descriptions
