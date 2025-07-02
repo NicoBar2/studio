@@ -68,6 +68,10 @@ export const addSpecies = async (newSpeciesData: Partial<Species>): Promise<Spec
 
     // Setting default values for the extensive new model
     const speciesToAdd: Species = {
+        // Spread incoming data first, to capture all fields from import/forms
+        ...newSpeciesData,
+        
+        // Then define mandatory fields and defaults, which will overwrite if they were undefined in the spread
         id: newId,
         spanishCommonName: newSpeciesData.spanishCommonName,
         genus: newSpeciesData.genus || '',
@@ -78,24 +82,36 @@ export const addSpecies = async (newSpeciesData: Partial<Species>): Promise<Spec
         habitat: newSpeciesData.habitat || '',
         threats: newSpeciesData.threats || [],
         
-        // Defaulting other fields
         imageUrl: newSpeciesData.imageUrl || 'https://placehold.co/600x400.png',
         dataAiHint: newSpeciesData.dataAiHint || newSpeciesData.spanishCommonName.split(' ').slice(0, 2).join(' ').toLowerCase(),
         icon: newSpeciesData.icon || 'Footprints',
         keyStats: newSpeciesData.keyStats || [],
         historicalData: newSpeciesData.historicalData || [],
-        showHistoricalDataToPublic: newSpeciesData.showHistoricalDataToPublic || false,
+        showHistoricalDataToPublic: newSpeciesData.showHistoricalDataToPublic ?? false,
 
-        // Initialize all boolean distribution flags to false
-        is_darwin: false, is_española: false, is_fernandina: false, is_floreana: false,
-        is_genovesa: false, is_isabela: false, is_marchena: false, is_pinta: false,
-        is_pinzón: false, is_sanCristóbal: false, is_santaCruz: false, is_santaFé: false,
-        is_santiago: false, is_unknownIsland: false, is_wolf: false, is_elizabethBay: false,
-        is_farNorthern: false, is_northern: false, is_southEastern: false, is_unknownBioregion: false,
-        is_western: false,
-
-        // Spread the rest of the provided data
-        ...newSpeciesData,
+        // Initialize all island flags, overwriting undefined from the spread with a boolean value
+        is_darwin: newSpeciesData.is_darwin ?? false,
+        is_espanola: newSpeciesData.is_espanola ?? false,
+        is_fernandina: newSpeciesData.is_fernandina ?? false,
+        is_floreana: newSpeciesData.is_floreana ?? false,
+        is_genovesa: newSpeciesData.is_genovesa ?? false,
+        is_isabela: newSpeciesData.is_isabela ?? false,
+        is_marchena: newSpeciesData.is_marchena ?? false,
+        is_pinta: newSpeciesData.is_pinta ?? false,
+        is_pinzon: newSpeciesData.is_pinzon ?? false,
+        is_san_cristobal: newSpeciesData.is_san_cristobal ?? false,
+        is_santa_cruz: newSpeciesData.is_santa_cruz ?? false,
+        is_santa_fe: newSpeciesData.is_santa_fe ?? false,
+        is_santiago: newSpeciesData.is_santiago ?? false,
+        is_north_seymour: newSpeciesData.is_north_seymour ?? false,
+        is_wolf: newSpeciesData.is_wolf ?? false,
+        is_unknown_island: newSpeciesData.is_unknown_island ?? false,
+        is_elizabeth_bay: newSpeciesData.is_elizabeth_bay ?? false,
+        is_far_northern: newSpeciesData.is_far_northern ?? false,
+        is_northern: newSpeciesData.is_northern ?? false,
+        is_south_eastern: newSpeciesData.is_south_eastern ?? false,
+        is_unknown_bioregion: newSpeciesData.is_unknown_bioregion ?? false,
+        is_western: newSpeciesData.is_western ?? false,
     };
 
     speciesList.push(speciesToAdd);

@@ -1,3 +1,4 @@
+
 [
   {
     "id": "tortuga-gigante",
@@ -10,10 +11,13 @@
     "imageUrl": "https://placehold.co/600x400.png",
     "dataAiHint": "giant tortoise",
     "icon": "Turtle",
-    "populationTrend": "decreasing",
+    "populationTrend": "increasing",
     "iucnStatus": "Vulnerable",
     "habitat": "Zonas altas y húmedas con vegetación densa, y zonas bajas y áridas con cactus.",
-    "threats": [],
+    "threats": [
+      "Especies invasoras (ratas, cerdos)",
+      "Pérdida de hábitat histórico"
+    ],
     "keyStats": [
       {
         "label": "Peso",
@@ -31,7 +35,7 @@
         "year": 1970,
         "value": 15000,
         "unit": "individuos",
-        "description": ""
+        "description": "Inicio de programas de cría en cautiverio."
       },
       {
         "year": 2000,
@@ -43,25 +47,25 @@
         "year": 2020,
         "value": 20000,
         "unit": "individuos",
-        "description": ""
+        "description": "Censo post-erradicación de cabras en Pinta."
       }
     ],
-    "is_isabela": false,
-    "is_santa_cruz": false,
-    "is_san_cristobal": false,
-    "is_espanola": false,
+    "is_isabela": true,
+    "is_santa_cruz": true,
+    "is_san_cristobal": true,
+    "is_espanola": true,
     "is_fernandina": false,
-    "is_santiago": false,
+    "is_santiago": true,
     "is_floreana": false,
-    "is_pinta": false,
-    "is_pinzon": false,
+    "is_pinta": true,
+    "is_pinzon": true,
     "is_darwin": false,
     "is_genovesa": false,
     "is_marchena": false,
     "is_santa_fe": false,
     "is_wolf": false,
     "is_north_seymour": false,
-    "showHistoricalDataToPublic": false,
+    "showHistoricalDataToPublic": true,
     "localName": "",
     "domain": "Eukaryota",
     "kingdom": "Animalia",
