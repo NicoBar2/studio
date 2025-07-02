@@ -1,4 +1,3 @@
-
 [
   {
     "id": "tortuga-gigante",
@@ -31,35 +30,38 @@
       {
         "year": 1970,
         "value": 15000,
-        "unit": "individuos"
+        "unit": "individuos",
+        "description": ""
       },
       {
         "year": 2000,
         "value": 18000,
-        "unit": "individuos"
+        "unit": "individuos",
+        "description": ""
       },
       {
         "year": 2020,
         "value": 20000,
-        "unit": "individuos"
+        "unit": "individuos",
+        "description": ""
       }
     ],
-    "is_isabela": true,
-    "is_santa_cruz": true,
-    "is_san_cristobal": true,
-    "is_espanola": true,
-    "is_fernandina": true,
-    "is_santiago": true,
+    "is_isabela": false,
+    "is_santa_cruz": false,
+    "is_san_cristobal": false,
+    "is_espanola": false,
+    "is_fernandina": false,
+    "is_santiago": false,
     "is_floreana": false,
-    "is_pinta": true,
-    "is_pinzon": true,
+    "is_pinta": false,
+    "is_pinzon": false,
     "is_darwin": false,
     "is_genovesa": false,
     "is_marchena": false,
     "is_santa_fe": false,
     "is_wolf": false,
     "is_north_seymour": false,
-    "showHistoricalDataToPublic": true,
+    "showHistoricalDataToPublic": false,
     "localName": "",
     "domain": "Eukaryota",
     "kingdom": "Animalia",

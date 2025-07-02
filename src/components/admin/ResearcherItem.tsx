@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { Trash2, Users, Mail, Building, Award, CheckCircle, XCircle, ShieldCheck } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
 type ResearcherItemProps = {
   researcher: Researcher;
@@ -29,6 +30,7 @@ const initialVerifyState = {
 
 export default function ResearcherItem({ researcher, onDelete, onVerificationChange }: ResearcherItemProps) {
   const { toast } = useToast();
+  const { role } = useAuth();
   const [deleteState, deleteFormAction, isDeleting] = useActionState(
     deleteResearcherAction,
     initialDeleteState
@@ -100,6 +102,7 @@ export default function ResearcherItem({ researcher, onDelete, onVerificationCha
         <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto sm:ml-2 shrink-0">
           <form action={verifyFormAction} className="w-full sm:w-auto">
             <input type="hidden" name="researcherId" value={researcher.id} />
+            <input type="hidden" name="userRole" value={role || ''} />
             <Button
               type="submit"
               variant="outline"
@@ -113,6 +116,7 @@ export default function ResearcherItem({ researcher, onDelete, onVerificationCha
           </form>
           <form action={deleteFormAction} className="w-full sm:w-auto">
             <input type="hidden" name="researcherId" value={researcher.id} />
+            <input type="hidden" name="userRole" value={role || ''} />
             <Button
               type="submit"
               variant="destructive"

@@ -359,6 +359,11 @@ export async function deleteResearcherAction(
   formData: FormData
 ): Promise<{ success: boolean; message: string; deletedResearcherId?: string }> {
   const researcherId = formData.get('researcherId') as string;
+  const userRole = formData.get('userRole') as string;
+
+  if (userRole !== 'admin') {
+    return { success: false, message: "Acción no permitida. Solo los administradores pueden eliminar investigadores." };
+  }
 
   if (!researcherId) {
     return { success: false, message: "Falta el ID del investigador." };
@@ -384,6 +389,12 @@ export async function toggleResearcherVerificationAction(
   formData: FormData
 ): Promise<{ success: boolean; message: string; updatedResearcher?: Researcher }> {
   const researcherId = formData.get('researcherId') as string;
+  const userRole = formData.get('userRole') as string;
+
+  if (userRole !== 'admin') {
+    return { success: false, message: "Acción no permitida. Solo los administradores pueden gestionar la verificación." };
+  }
+  
   if (!researcherId) {
     return { success: false, message: "Falta el ID del investigador." };
   }
