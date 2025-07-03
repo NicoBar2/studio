@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useEffect, useState, useMemo, useTransition } from 'react';
@@ -109,10 +108,10 @@ export default function ComparePage() {
                     <CardHeader>
                         <CardTitle className="flex items-center text-2xl font-headline text-primary">
                             <FileSearch className="mr-3 h-7 w-7" />
-                            Análisis Comparativo de Especies
+                            Genera tu Consulta
                         </CardTitle>
                         <CardDescription>
-                            Selecciona especies con la misma unidad de medida para comparar sus datos históricos. Luego, genera un análisis con IA para obtener una interpretación de los datos.
+                            Selecciona especies con la misma unidad de medida para comparar sus datos históricos. Luego, genera una consulta con IA para obtener una interpretación de los datos.
                         </CardDescription>
                     </CardHeader>
                 </Card>
@@ -172,13 +171,13 @@ export default function ComparePage() {
                             <CardContent>
                                 <div className="space-y-4 pt-4 border-t">
                                      <h3 className="text-lg font-semibold flex items-center text-primary">
-                                        <BrainCircuit className="mr-2 h-5 w-5" /> Análisis Comparativo con IA
+                                        <BrainCircuit className="mr-2 h-5 w-5" /> Consulta Comparativa con IA
                                     </h3>
                                     <Button
                                         onClick={() => handleGenerateAnalysis(unit)}
                                         disabled={selectedIds.length < 2 || isAnalysisPending}
                                     >
-                                        {isAnalysisPending ? 'Generando...' : 'Generar Análisis'}
+                                        {isAnalysisPending ? 'Generando...' : 'Generar Consulta'}
                                     </Button>
 
                                     {isAnalysisPending && (
@@ -200,7 +199,7 @@ export default function ComparePage() {
                                     {currentAnalysis && (
                                         <Alert>
                                             <Info className="h-4 w-4"/>
-                                            <AlertTitle>Análisis Comparativo Generado</AlertTitle>
+                                            <AlertTitle>Consulta Generada</AlertTitle>
                                             <AlertDescription className="prose prose-sm max-w-none text-foreground leading-relaxed">
                                                 {currentAnalysis.split('\n').map((paragraph, index) => (
                                                     <p key={index}>{paragraph}</p>
@@ -211,7 +210,7 @@ export default function ComparePage() {
                                     
                                     {selectedIds.length < 2 && !currentAnalysis && !isAnalysisPending && (
                                         <p className="text-sm text-muted-foreground">
-                                            Por favor, selecciona al menos dos especies para generar un análisis comparativo.
+                                            Por favor, selecciona al menos dos especies para generar una consulta comparativa.
                                         </p>
                                     )}
                                 </div>

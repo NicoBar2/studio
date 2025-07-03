@@ -36,10 +36,10 @@ export default function DashboardLayout({
                 </SidebarMenuItem>
                 
                 <SidebarMenuItem>
-                  <SidebarMenuButton asChild variant="ghost" className="justify-start w-full" tooltip="Análisis Comparativo">
+                  <SidebarMenuButton asChild variant="ghost" className="justify-start w-full" tooltip="Generar Consulta">
                     <Link href="/dashboard/compare">
                       <GitCompareArrows />
-                      <span className="group-data-[state=collapsed]:hidden">Análisis Comparativo</span>
+                      <span className="group-data-[state=collapsed]:hidden">Generar Consulta</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
