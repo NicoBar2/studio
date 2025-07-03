@@ -1,9 +1,9 @@
 
 "use client";
 
-import { useEffect, useState, useMemo, useTransition } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import type { Species } from '@/lib/types';
-import { getSpeciesListAction, generateComparisonAnalysisAction } from '@/app/actions';
+import { getSpeciesListAction } from '@/app/actions';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
@@ -11,7 +11,7 @@ import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import dynamic from 'next/dynamic';
 import { Skeleton } from '@/components/ui/skeleton';
-import { AlertTriangle, BarChart, FileSearch, BrainCircuit, Info, ArrowLeft, Filter, FilterX } from 'lucide-react';
+import { AlertTriangle, BarChart, FileSearch, Info, ArrowLeft, Filter, FilterX } from 'lucide-react';
 import RoleBasedGuard from '@/components/auth/RoleBasedGuard';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
@@ -33,10 +33,6 @@ export default function ComparePage() {
     const [isLoading, setIsLoading] = useState(true);
     const [selectedSpeciesIds, setSelectedSpeciesIds] = useState<string[]>([]);
     
-    const [analysis, setAnalysis] = useState<string | null>(null);
-    const [analysisError, setAnalysisError] = useState<string | null>(null);
-    const [isAnalysisPending, startAnalysisTransition] = useTransition();
-
     const [genusFilter, setGenusFilter] = useState('');
     const [yearFilter, setYearFilter] = useState<{ min: string; max: string }>({ min: '', max: '' });
 
@@ -87,29 +83,10 @@ export default function ComparePage() {
             const newSelection = prev.includes(speciesId)
                 ? prev.filter(id => id !== speciesId)
                 : [...prev, speciesId];
-            
-            setAnalysis(null);
-            setAnalysisError(null);
-
             return newSelection;
         });
     };
     
-    const handleGenerateAnalysis = () => {
-        if (!selectedSpeciesIds || selectedSpeciesIds.length < 2) return;
-
-        startAnalysisTransition(async () => {
-            setAnalysis(null);
-            setAnalysisError(null);
-            const result = await generateComparisonAnalysisAction(selectedSpeciesIds);
-            if (result.analysis) {
-                setAnalysis(result.analysis);
-            } else {
-                setAnalysisError(result.error || "Ocurrió un error desconocido.");
-            }
-        });
-    }
-
     const clearFilters = () => {
         setGenusFilter('');
         setYearFilter({ min: '', max: '' });
@@ -131,7 +108,7 @@ export default function ComparePage() {
                             Genera tu Consulta
                         </CardTitle>
                         <CardDescription>
-                            Selecciona especies para comparar sus datos históricos. La comparación se agrupa por unidad de medida (como "individuos" y "parejas reproductoras"). Luego, genera una consulta con IA para obtener una interpretación de los datos.
+                            Selecciona especies para comparar sus datos históricos. La comparación se agrupa por unidad de medida (como "individuos" y "parejas reproductoras").
                         </CardDescription>
                     </CardHeader>
                 </Card>
@@ -251,59 +228,6 @@ export default function ComparePage() {
                         </CardContent>
                     </Card>
                 )}
-
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="flex items-center text-xl font-headline text-primary">
-                            <BrainCircuit className="mr-2 h-6 w-6" /> Consulta Comparativa con IA
-                        </CardTitle>
-                        <CardDescription>
-                            La consulta con IA se generará usando todas las especies que hayas seleccionado, sin importar su unidad de medida.
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <Button
-                            onClick={handleGenerateAnalysis}
-                            disabled={selectedSpeciesIds.length < 2 || isAnalysisPending}
-                        >
-                            {isAnalysisPending ? 'Generando...' : 'Generar Consulta'}
-                        </Button>
-
-                        {isAnalysisPending && (
-                            <div className="space-y-2 mt-4">
-                                <Skeleton className="h-4 w-full" />
-                                <Skeleton className="h-4 w-full" />
-                                <Skeleton className="h-4 w-4/5" />
-                            </div>
-                        )}
-
-                        {analysisError && (
-                            <Alert variant="destructive" className="mt-4">
-                                <AlertTriangle className="h-4 w-4" />
-                                <AlertTitle>Error</AlertTitle>
-                                <AlertDescription>{analysisError}</AlertDescription>
-                            </Alert>
-                        )}
-
-                        {analysis && (
-                            <Alert className="mt-4">
-                                <Info className="h-4 w-4"/>
-                                <AlertTitle>Consulta Generada</AlertTitle>
-                                <AlertDescription className="prose prose-sm max-w-none text-foreground leading-relaxed">
-                                    {analysis.split('\n').map((paragraph, index) => (
-                                        <p key={index}>{paragraph}</p>
-                                    ))}
-                                </AlertDescription>
-                            </Alert>
-                        )}
-                        
-                        {selectedSpeciesIds.length < 2 && !analysis && !isAnalysisPending && (
-                            <p className="text-sm text-muted-foreground mt-4">
-                                Por favor, selecciona al menos dos especies para generar una consulta comparativa.
-                            </p>
-                        )}
-                    </CardContent>
-                </Card>
             </div>
         </RoleBasedGuard>
     );

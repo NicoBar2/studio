@@ -1,7 +1,7 @@
 
 "use client"; 
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { type Species } from '@/lib/species';
 import { getSpeciesListAction } from '@/app/actions';
 import SpeciesCard from '@/components/species/SpeciesCard';
@@ -21,6 +21,7 @@ export default function HomePage() {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedIsland, setSelectedIsland] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>('');
+  const speciesListRef = useRef<HTMLElement>(null);
   
   useEffect(() => {
     const fetchSpecies = async () => {
@@ -35,6 +36,9 @@ export default function HomePage() {
 
   const handleIslandClick = (islandName: string) => {
     setSelectedIsland(islandName);
+    setTimeout(() => {
+      speciesListRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
   };
 
   const clearSelection = () => {
@@ -89,7 +93,7 @@ export default function HomePage() {
         </CardContent>
       </Card>
 
-      <section className="mt-8">
+      <section ref={speciesListRef} className="mt-8">
         <div className="flex flex-col sm:flex-row items-center justify-between mb-6 gap-4">
             <h2 className="text-2xl font-headline font-semibold text-primary flex items-center">
                 {selectedIsland ? (
@@ -107,7 +111,7 @@ export default function HomePage() {
                 <Select
                   value={selectedIsland || ''}
                   onValueChange={(value) => {
-                    setSelectedIsland(value === 'all-islands' ? null : value);
+                    handleIslandClick(value === 'all-islands' ? '' : value);
                   }}
                 >
                   <SelectTrigger className="w-full sm:w-[220px] bg-input">

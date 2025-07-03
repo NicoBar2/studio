@@ -11,7 +11,7 @@ import { useState, useTransition, useRef } from 'react';
 import { getAISummary } from '@/app/actions';
 import { 
   AlertCircle, Brain, Edit, BarChart2, Tag, TrendingUp, ShieldAlert, Home, ListChecks, Download,
-  Turtle, Bird, Footprints, ShieldQuestion, Waves, Bug, type LucideIcon, HelpCircle, Sigma, MapPin
+  Turtle, Bird, Footprints, ShieldQuestion, Waves, Bug, type LucideIcon, HelpCircle, Sigma, MapPin, LoaderCircle
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import Link from 'next/link';
@@ -279,8 +279,17 @@ export default function SpeciesDetailClient({ species }: SpeciesDetailClientProp
 
       <div className="mt-6 flex justify-center">
         <Button onClick={handleDownloadPdf} disabled={isPdfPending} variant="outline" size="lg">
-          <Download className="mr-2 h-5 w-5" />
-          {isPdfPending ? 'Generando PDF...' : 'Descargar Informe en PDF'}
+           {isPdfPending ? (
+              <>
+                <LoaderCircle className="mr-2 h-5 w-5 animate-spin" />
+                Generando PDF...
+              </>
+            ) : (
+              <>
+                <Download className="mr-2 h-5 w-5" />
+                Descargar Informe en PDF
+              </>
+            )}
         </Button>
       </div>
     </div>
