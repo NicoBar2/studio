@@ -6,14 +6,14 @@ import { getSpeciesListAction, generateComparisonAnalysisAction } from '@/app/ac
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import dynamic from 'next/dynamic';
 import { Skeleton } from '@/components/ui/skeleton';
-import { AlertTriangle, BarChart, FileSearch, BrainCircuit, Info } from 'lucide-react';
+import { AlertTriangle, BarChart, FileSearch, BrainCircuit, Info, ArrowLeft, Filter, FilterX } from 'lucide-react';
 import RoleBasedGuard from '@/components/auth/RoleBasedGuard';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { ArrowLeft } from 'lucide-react';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 
 const SpeciesComparisonChart = dynamic(() => import('@/components/charts/SpeciesComparisonChart'), {
@@ -39,6 +39,10 @@ export default function ComparePage() {
     const [analysisError, setAnalysisError] = useState<{[unit: string]: string | null}>({});
     const [isAnalysisPending, startAnalysisTransition] = useTransition();
 
+    // State for Filters
+    const [genusFilter, setGenusFilter] = useState('');
+    const [yearFilter, setYearFilter] = useState<{ min: string; max: string }>({ min: '', max: '' });
+
 
     useEffect(() => {
         const fetchSpecies = async () => {
@@ -50,9 +54,16 @@ export default function ComparePage() {
         fetchSpecies();
     }, []);
 
+    const filteredSpecies = useMemo(() => {
+        if (!genusFilter) return allSpecies;
+        return allSpecies.filter(s => 
+            s.genus && s.genus.toLowerCase().includes(genusFilter.toLowerCase())
+        );
+    }, [allSpecies, genusFilter]);
+
     const groupedSpecies = useMemo<GroupedSpecies>(() => {
         const groups: GroupedSpecies = {};
-        allSpecies.forEach(s => {
+        filteredSpecies.forEach(s => {
             if (s.historicalData && s.historicalData.length > 0) {
                 const unit = s.historicalData[0].unit || 'sin unidad';
                 if (!groups[unit]) {
@@ -62,7 +73,7 @@ export default function ComparePage() {
             }
         });
         return groups;
-    }, [allSpecies]);
+    }, [filteredSpecies]);
 
     const handleSpeciesSelection = (unit: string, speciesId: string) => {
         setSelectedSpeciesIds(prev => {
@@ -71,7 +82,6 @@ export default function ComparePage() {
                 ? currentSelection.filter(id => id !== speciesId)
                 : [...currentSelection, speciesId];
             
-            // Reset analysis if selection changes
             setAnalysis(prevAnalysis => ({ ...prevAnalysis, [unit]: null }));
             setAnalysisError(prevError => ({ ...prevError, [unit]: null }));
 
@@ -95,6 +105,11 @@ export default function ComparePage() {
         });
     }
 
+    const clearFilters = () => {
+        setGenusFilter('');
+        setYearFilter({ min: '', max: '' });
+    };
+
     return (
         <RoleBasedGuard allowedRoles={['admin', 'researcher']}>
             <div className="space-y-6">
@@ -114,6 +129,56 @@ export default function ComparePage() {
                             Selecciona especies con la misma unidad de medida para comparar sus datos históricos. Luego, genera una consulta con IA para obtener una interpretación de los datos.
                         </CardDescription>
                     </CardHeader>
+                </Card>
+                
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center text-xl font-headline text-primary">
+                            <Filter className="mr-2 h-6 w-6" /> Filtros de Búsqueda
+                        </CardTitle>
+                        <CardDescription>
+                            Refina la lista de especies o el rango de fechas para tu análisis.
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="genusFilter">Filtrar por Género</Label>
+                                <Input 
+                                    id="genusFilter" 
+                                    placeholder="Ej: Chelonoidis" 
+                                    value={genusFilter}
+                                    onChange={(e) => setGenusFilter(e.target.value)}
+                                    className="bg-input"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="minYear">Año Mínimo del Gráfico</Label>
+                                <Input 
+                                id="minYear" 
+                                type="number" 
+                                placeholder="Ej: 1990" 
+                                value={yearFilter.min}
+                                onChange={(e) => setYearFilter(prev => ({ ...prev, min: e.target.value }))}
+                                className="bg-input"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="maxYear">Año Máximo del Gráfico</Label>
+                                <Input 
+                                id="maxYear" 
+                                type="number" 
+                                placeholder="Ej: 2023" 
+                                value={yearFilter.max}
+                                onChange={(e) => setYearFilter(prev => ({ ...prev, max: e.target.value }))}
+                                className="bg-input"
+                                />
+                            </div>
+                        </div>
+                        <Button onClick={clearFilters} variant="outline">
+                            <FilterX className="mr-2 h-4 w-4" /> Limpiar Filtros
+                        </Button>
+                    </CardContent>
                 </Card>
 
                 {isLoading ? (
@@ -157,7 +222,8 @@ export default function ComparePage() {
                                 <div className="lg:col-span-3">
                                     {selectedIds.length > 0 ? (
                                         <SpeciesComparisonChart 
-                                            species={speciesInGroup.filter(s => selectedIds.includes(s.id))} 
+                                            species={speciesInGroup.filter(s => selectedIds.includes(s.id))}
+                                            yearFilter={yearFilter}
                                         />
                                     ) : (
                                         <div className="flex flex-col items-center justify-center h-full min-h-[400px] p-8 border border-dashed rounded-lg bg-muted/50">
@@ -221,7 +287,7 @@ export default function ComparePage() {
                 ) : (
                     <Card>
                         <CardContent className="p-10 text-center">
-                            <p className="text-muted-foreground">No hay suficientes datos históricos en las especies para realizar comparaciones.</p>
+                            <p className="text-muted-foreground">No hay especies que coincidan con los filtros aplicados.</p>
                         </CardContent>
                     </Card>
                 )}

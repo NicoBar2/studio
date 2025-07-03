@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useMemo } from 'react';
@@ -8,6 +7,7 @@ import { ChartContainer, ChartTooltipContent, ChartLegend, ChartLegendContent } 
 
 type SpeciesComparisonChartProps = {
   species: Species[];
+  yearFilter?: { min: string; max: string };
 };
 
 const CHART_COLORS = [
@@ -18,9 +18,12 @@ const CHART_COLORS = [
   "hsl(var(--chart-5))",
 ];
 
-export default function SpeciesComparisonChart({ species }: SpeciesComparisonChartProps) {
+export default function SpeciesComparisonChart({ species, yearFilter }: SpeciesComparisonChartProps) {
   const { chartData, chartConfig, unit } = useMemo(() => {
     if (species.length === 0) return { chartData: [], chartConfig: {}, unit: '' };
+    
+    const minYear = yearFilter?.min ? parseInt(yearFilter.min, 10) : -Infinity;
+    const maxYear = yearFilter?.max ? parseInt(yearFilter.max, 10) : Infinity;
 
     const firstSpecies = species[0];
     const unit = firstSpecies.historicalData?.[0]?.unit || 'valor';
@@ -28,7 +31,12 @@ export default function SpeciesComparisonChart({ species }: SpeciesComparisonCha
     const allYears = new Set<number>();
     species.forEach(s => {
       if (s.historicalData) {
-        s.historicalData.forEach(p => allYears.add(p.year));
+        s.historicalData.forEach(p => {
+          const year = p.year;
+          if (year >= minYear && year <= maxYear) {
+            allYears.add(year);
+          }
+        });
       }
     });
 
@@ -52,7 +60,7 @@ export default function SpeciesComparisonChart({ species }: SpeciesComparisonCha
     });
 
     return { chartData: data, chartConfig: config, unit };
-  }, [species]);
+  }, [species, yearFilter]);
 
   if (species.length === 0) {
     return null;
