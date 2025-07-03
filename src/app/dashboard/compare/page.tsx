@@ -15,6 +15,8 @@ import RoleBasedGuard from '@/components/auth/RoleBasedGuard';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
 
 const SpeciesComparisonChart = dynamic(() => import('@/components/charts/SpeciesComparisonChart'), {
     loading: () => (
@@ -53,6 +55,16 @@ export default function ComparePage() {
         };
         fetchSpecies();
     }, []);
+    
+    const uniqueGenera = useMemo(() => {
+        const genera = new Set<string>();
+        allSpecies.forEach(s => {
+            if (s.genus) {
+                genera.add(s.genus);
+            }
+        });
+        return Array.from(genera).sort();
+    }, [allSpecies]);
 
     const filteredSpecies = useMemo(() => {
         if (!genusFilter) return allSpecies;
@@ -144,13 +156,22 @@ export default function ComparePage() {
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div className="space-y-2">
                                 <Label htmlFor="genusFilter">Filtrar por Género</Label>
-                                <Input 
-                                    id="genusFilter" 
-                                    placeholder="Ej: Chelonoidis" 
+                                <Select
                                     value={genusFilter}
-                                    onChange={(e) => setGenusFilter(e.target.value)}
-                                    className="bg-input"
-                                />
+                                    onValueChange={(value) => setGenusFilter(value === 'all' ? '' : value)}
+                                >
+                                    <SelectTrigger id="genusFilter" className="bg-input">
+                                        <SelectValue placeholder="Seleccionar género..." />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="all">Todos los géneros</SelectItem>
+                                        {uniqueGenera.map(genus => (
+                                            <SelectItem key={genus} value={genus}>
+                                                {genus}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="minYear">Año Mínimo del Gráfico</Label>
