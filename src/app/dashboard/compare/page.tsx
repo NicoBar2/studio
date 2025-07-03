@@ -131,7 +131,7 @@ export default function ComparePage() {
                             Genera tu Consulta
                         </CardTitle>
                         <CardDescription>
-                            Selecciona especies para comparar sus datos históricos. Luego, genera una consulta con IA para obtener una interpretación de los datos.
+                            Selecciona especies para comparar sus datos históricos. La comparación se agrupa por unidad de medida (como "individuos" y "parejas reproductoras"). Luego, genera una consulta con IA para obtener una interpretación de los datos.
                         </CardDescription>
                     </CardHeader>
                 </Card>
