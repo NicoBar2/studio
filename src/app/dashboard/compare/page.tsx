@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useState, useMemo, useTransition } from 'react';
@@ -32,12 +33,10 @@ export default function ComparePage() {
     const [isLoading, setIsLoading] = useState(true);
     const [selectedSpeciesIds, setSelectedSpeciesIds] = useState<string[]>([]);
     
-    // State for AI Analysis
     const [analysis, setAnalysis] = useState<string | null>(null);
     const [analysisError, setAnalysisError] = useState<string | null>(null);
     const [isAnalysisPending, startAnalysisTransition] = useTransition();
 
-    // State for Filters
     const [genusFilter, setGenusFilter] = useState('');
     const [yearFilter, setYearFilter] = useState<{ min: string; max: string }>({ min: '', max: '' });
 
@@ -55,20 +54,31 @@ export default function ComparePage() {
     const uniqueGenera = useMemo(() => {
         const genera = new Set<string>();
         allSpecies.forEach(s => {
-            if (s.historicalData && s.historicalData.length > 0 && s.historicalData[0].unit === 'individuos' && s.genus) {
+            if (s.historicalData && s.historicalData.length > 0 && s.genus) {
                 genera.add(s.genus);
             }
         });
         return Array.from(genera).sort();
     }, [allSpecies]);
 
-    const filteredSpecies = useMemo(() => {
-        let species = allSpecies.filter(s => s.historicalData && s.historicalData.length > 0 && s.historicalData[0].unit === 'individuos');
+    const speciesByUnit = useMemo(() => {
+        const grouped: { [unit: string]: Species[] } = {};
+        let speciesToFilter = allSpecies;
         
         if (genusFilter) {
-            species = species.filter(s => s.genus && s.genus.toLowerCase().includes(genusFilter.toLowerCase()));
+            speciesToFilter = speciesToFilter.filter(s => s.genus && s.genus.toLowerCase().includes(genusFilter.toLowerCase()));
         }
-        return species;
+
+        speciesToFilter.forEach(s => {
+            if (s.historicalData && s.historicalData.length > 0) {
+                const unit = s.historicalData[0].unit || 'sin unidad';
+                if (!grouped[unit]) {
+                    grouped[unit] = [];
+                }
+                grouped[unit].push(s);
+            }
+        });
+        return grouped;
     }, [allSpecies, genusFilter]);
 
 
@@ -121,7 +131,7 @@ export default function ComparePage() {
                             Genera tu Consulta
                         </CardTitle>
                         <CardDescription>
-                            Selecciona especies para comparar sus datos históricos de población (individuos). Luego, genera una consulta con IA para obtener una interpretación de los datos.
+                            Selecciona especies para comparar sus datos históricos. Luego, genera una consulta con IA para obtener una interpretación de los datos.
                         </CardDescription>
                     </CardHeader>
                 </Card>
@@ -187,106 +197,113 @@ export default function ComparePage() {
 
                 {isLoading ? (
                     <Card><CardContent className="p-6"><Skeleton className="h-64 w-full" /></CardContent></Card>
-                ) : filteredSpecies.length > 0 ? (
-                    <Card className="shadow-lg">
-                        <CardHeader>
-                            <CardTitle className="text-xl font-headline text-primary flex items-center">
-                                <BarChart className="mr-2 h-6 w-6" /> Comparación por: individuos
-                            </CardTitle>
-                            <CardDescription>
-                                Selecciona dos o más especies para comparar sus datos.
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-                            <div className="lg:col-span-1">
-                                <h4 className="font-semibold mb-2 text-foreground">Seleccionar Especies</h4>
-                                <ScrollArea className="h-72 rounded-md border p-4 bg-input/50">
-                                    <div className="space-y-2">
-                                        {filteredSpecies.map(s => (
-                                            <div key={s.id} className="flex items-center space-x-2">
-                                                <Checkbox
-                                                    id={`compare-${s.id}`}
-                                                    checked={selectedSpeciesIds.includes(s.id)}
-                                                    onCheckedChange={() => handleSpeciesSelection(s.id)}
-                                                />
-                                                <Label htmlFor={`compare-${s.id}`} className="text-sm font-normal cursor-pointer">
-                                                    {s.spanishCommonName}
-                                                </Label>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </ScrollArea>
-                            </div>
-                            <div className="lg:col-span-3">
-                                {selectedSpeciesIds.length > 0 ? (
-                                    <SpeciesComparisonChart 
-                                        species={filteredSpecies.filter(s => selectedSpeciesIds.includes(s.id))}
-                                        yearFilter={yearFilter}
-                                    />
-                                ) : (
-                                    <div className="flex flex-col items-center justify-center h-full min-h-[400px] p-8 border border-dashed rounded-lg bg-muted/50">
-                                        <AlertTriangle className="h-12 w-12 text-muted-foreground mb-4" />
-                                        <p className="text-lg font-medium text-center text-muted-foreground">Selecciona al menos una especie de la lista para visualizar el gráfico.</p>
-                                    </div>
-                                )}
-                            </div>
-                        </CardContent>
-                        
-                        <CardContent>
-                            <div className="space-y-4 pt-4 border-t">
-                                 <h3 className="text-lg font-semibold flex items-center text-primary">
-                                    <BrainCircuit className="mr-2 h-5 w-5" /> Consulta Comparativa con IA
-                                </h3>
-                                <Button
-                                    onClick={handleGenerateAnalysis}
-                                    disabled={selectedSpeciesIds.length < 2 || isAnalysisPending}
-                                >
-                                    {isAnalysisPending ? 'Generando...' : 'Generar Consulta'}
-                                </Button>
-
-                                {isAnalysisPending && (
-                                    <div className="space-y-2">
-                                        <Skeleton className="h-4 w-full" />
-                                        <Skeleton className="h-4 w-full" />
-                                        <Skeleton className="h-4 w-4/5" />
-                                    </div>
-                                )}
-
-                                {analysisError && (
-                                    <Alert variant="destructive">
-                                        <AlertTriangle className="h-4 w-4" />
-                                        <AlertTitle>Error</AlertTitle>
-                                        <AlertDescription>{analysisError}</AlertDescription>
-                                    </Alert>
-                                )}
-
-                                {analysis && (
-                                    <Alert>
-                                        <Info className="h-4 w-4"/>
-                                        <AlertTitle>Consulta Generada</AlertTitle>
-                                        <AlertDescription className="prose prose-sm max-w-none text-foreground leading-relaxed">
-                                            {analysis.split('\n').map((paragraph, index) => (
-                                                <p key={index}>{paragraph}</p>
+                ) : Object.keys(speciesByUnit).length > 0 ? (
+                    Object.entries(speciesByUnit).map(([unit, speciesInUnit]) => (
+                        <Card key={unit} className="shadow-lg">
+                            <CardHeader>
+                                <CardTitle className="text-xl font-headline text-primary flex items-center">
+                                    <BarChart className="mr-2 h-6 w-6" /> Comparación por: {unit}
+                                </CardTitle>
+                                <CardDescription>
+                                    Selecciona dos o más especies para comparar sus datos.
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                                <div className="lg:col-span-1">
+                                    <h4 className="font-semibold mb-2 text-foreground">Seleccionar Especies</h4>
+                                    <ScrollArea className="h-72 rounded-md border p-4 bg-input/50">
+                                        <div className="space-y-2">
+                                            {speciesInUnit.map(s => (
+                                                <div key={s.id} className="flex items-center space-x-2">
+                                                    <Checkbox
+                                                        id={`compare-${unit}-${s.id}`}
+                                                        checked={selectedSpeciesIds.includes(s.id)}
+                                                        onCheckedChange={() => handleSpeciesSelection(s.id)}
+                                                    />
+                                                    <Label htmlFor={`compare-${unit}-${s.id}`} className="text-sm font-normal cursor-pointer">
+                                                        {s.spanishCommonName}
+                                                    </Label>
+                                                </div>
                                             ))}
-                                        </AlertDescription>
-                                    </Alert>
-                                )}
-                                
-                                {selectedSpeciesIds.length < 2 && !analysis && !isAnalysisPending && (
-                                    <p className="text-sm text-muted-foreground">
-                                        Por favor, selecciona al menos dos especies para generar una consulta comparativa.
-                                    </p>
-                                )}
-                            </div>
-                        </CardContent>
-                    </Card>
+                                        </div>
+                                    </ScrollArea>
+                                </div>
+                                <div className="lg:col-span-3">
+                                    {selectedSpeciesIds.filter(id => speciesInUnit.some(s => s.id === id)).length > 0 ? (
+                                        <SpeciesComparisonChart 
+                                            species={allSpecies.filter(s => selectedSpeciesIds.includes(s.id) && speciesInUnit.some(siu => siu.id === s.id))}
+                                            yearFilter={yearFilter}
+                                        />
+                                    ) : (
+                                        <div className="flex flex-col items-center justify-center h-full min-h-[400px] p-8 border border-dashed rounded-lg bg-muted/50">
+                                            <AlertTriangle className="h-12 w-12 text-muted-foreground mb-4" />
+                                            <p className="text-lg font-medium text-center text-muted-foreground">Selecciona al menos una especie de la lista para visualizar el gráfico.</p>
+                                        </div>
+                                    )}
+                                </div>
+                            </CardContent>
+                        </Card>
+                    ))
                 ) : (
                     <Card>
                         <CardContent className="p-10 text-center">
-                            <p className="text-muted-foreground">No hay especies con datos de 'individuos' que coincidan con los filtros aplicados.</p>
+                            <p className="text-muted-foreground">No hay especies con datos históricos que coincidan con los filtros aplicados.</p>
                         </CardContent>
                     </Card>
                 )}
+
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center text-xl font-headline text-primary">
+                            <BrainCircuit className="mr-2 h-6 w-6" /> Consulta Comparativa con IA
+                        </CardTitle>
+                        <CardDescription>
+                            La consulta con IA se generará usando todas las especies que hayas seleccionado, sin importar su unidad de medida.
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <Button
+                            onClick={handleGenerateAnalysis}
+                            disabled={selectedSpeciesIds.length < 2 || isAnalysisPending}
+                        >
+                            {isAnalysisPending ? 'Generando...' : 'Generar Consulta'}
+                        </Button>
+
+                        {isAnalysisPending && (
+                            <div className="space-y-2 mt-4">
+                                <Skeleton className="h-4 w-full" />
+                                <Skeleton className="h-4 w-full" />
+                                <Skeleton className="h-4 w-4/5" />
+                            </div>
+                        )}
+
+                        {analysisError && (
+                            <Alert variant="destructive" className="mt-4">
+                                <AlertTriangle className="h-4 w-4" />
+                                <AlertTitle>Error</AlertTitle>
+                                <AlertDescription>{analysisError}</AlertDescription>
+                            </Alert>
+                        )}
+
+                        {analysis && (
+                            <Alert className="mt-4">
+                                <Info className="h-4 w-4"/>
+                                <AlertTitle>Consulta Generada</AlertTitle>
+                                <AlertDescription className="prose prose-sm max-w-none text-foreground leading-relaxed">
+                                    {analysis.split('\n').map((paragraph, index) => (
+                                        <p key={index}>{paragraph}</p>
+                                    ))}
+                                </AlertDescription>
+                            </Alert>
+                        )}
+                        
+                        {selectedSpeciesIds.length < 2 && !analysis && !isAnalysisPending && (
+                            <p className="text-sm text-muted-foreground mt-4">
+                                Por favor, selecciona al menos dos especies para generar una consulta comparativa.
+                            </p>
+                        )}
+                    </CardContent>
+                </Card>
             </div>
         </RoleBasedGuard>
     );
