@@ -106,7 +106,7 @@ export default function ComparePage() {
                             Genera tu Consulta
                         </CardTitle>
                         <CardDescription>
-                            Usa los filtros para refinar tu búsqueda y luego selecciona las especies a comparar. Las especies se agrupan por la unidad de medida de sus datos históricos (ej. "individuos").
+                            Usa los filtros para refinar tu búsqueda y luego selecciona las especies a comparar. Las especies se agrupan por la unidad de medida de sus datos históricos (ej. "individuos", "parejas reproductoras").
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-6">
