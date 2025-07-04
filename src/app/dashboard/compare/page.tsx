@@ -118,7 +118,7 @@ export default function ComparePage() {
                             Genera tu Consulta
                         </h1>
                         <p className="text-muted-foreground">
-                            Utiliza los controles para filtrar y seleccionar especies, y visualiza las comparaciones.
+                            Utiliza los criterios de búsqueda para filtrar y seleccionar especies, y visualiza las comparaciones.
                         </p>
                     </div>
                     <Button variant="outline" asChild>
@@ -134,7 +134,7 @@ export default function ComparePage() {
                         <CardHeader>
                             <CardTitle className="flex items-center">
                                 <Filter className="mr-2 h-5 w-5" />
-                                Controles
+                                Criterios de búsqueda
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
@@ -232,7 +232,7 @@ export default function ComparePage() {
                              <Card className="flex flex-col items-center justify-center min-h-[400px] border-2 border-dashed bg-muted/30">
                                 <BarChart className="h-16 w-16 text-muted-foreground mb-4" />
                                 <h3 className="text-xl font-semibold text-foreground">Visualiza tus Datos</h3>
-                                <p className="text-muted-foreground mt-2">Selecciona una o más especies del panel de control para comenzar.</p>
+                                <p className="text-muted-foreground mt-2">Selecciona una o más especies del panel de criterios de búsqueda para comenzar.</p>
                              </Card>
                          ) : (
                              Object.entries(chartsToDisplayByUnit).map(([unit, speciesData]) => (
