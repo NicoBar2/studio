@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useState, useMemo } from 'react';
@@ -55,15 +56,14 @@ export default function ComparePage() {
         return Array.from(families).sort();
     }, [allSpecies]);
 
-    const speciesByUnit = useMemo(() => {
-        const grouped: { [unit: string]: Species[] } = {};
-        let speciesToFilter = allSpecies;
-        
-        if (familyFilter) {
-            speciesToFilter = speciesToFilter.filter(s => s.family && s.family.toLowerCase() === familyFilter.toLowerCase());
-        }
+    const filteredSpeciesList = useMemo(() => {
+        if (!familyFilter) return allSpecies;
+        return allSpecies.filter(s => s.family && s.family.toLowerCase() === familyFilter.toLowerCase());
+    }, [allSpecies, familyFilter]);
 
-        speciesToFilter.forEach(s => {
+    const speciesToSelectByUnit = useMemo(() => {
+        const grouped: { [unit: string]: Species[] } = {};
+        filteredSpeciesList.forEach(s => {
             if (s.historicalData && s.historicalData.length > 0) {
                 const unit = s.historicalData[0].unit || 'sin unidad';
                 if (!grouped[unit]) {
@@ -73,7 +73,25 @@ export default function ComparePage() {
             }
         });
         return grouped;
-    }, [allSpecies, familyFilter]);
+    }, [filteredSpeciesList]);
+
+    const selectedSpecies = useMemo(() => {
+        return allSpecies.filter(s => selectedSpeciesIds.includes(s.id));
+    }, [allSpecies, selectedSpeciesIds]);
+
+    const chartsToDisplayByUnit = useMemo(() => {
+        const grouped: { [unit: string]: Species[] } = {};
+        selectedSpecies.forEach(s => {
+            if (s.historicalData && s.historicalData.length > 0) {
+                const unit = s.historicalData[0].unit || 'sin unidad';
+                if (!grouped[unit]) {
+                    grouped[unit] = [];
+                }
+                grouped[unit].push(s);
+            }
+        });
+        return grouped;
+    }, [selectedSpecies]);
 
 
     const handleSpeciesSelection = (speciesId: string) => {
@@ -93,129 +111,146 @@ export default function ComparePage() {
     return (
         <RoleBasedGuard allowedRoles={['admin', 'researcher']}>
             <div className="space-y-6">
-                 <Button variant="outline" asChild>
-                  <Link href="/dashboard">
-                    <ArrowLeft className="mr-2 h-4 w-4" /> Volver al Panel Principal
-                  </Link>
-                </Button>
-
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="flex items-center text-2xl font-headline text-primary">
+                <div className="flex justify-between items-center flex-wrap gap-4">
+                    <div className="space-y-1">
+                        <h1 className="text-2xl font-headline font-bold text-primary flex items-center">
                             <FileSearch className="mr-3 h-7 w-7" />
                             Genera tu Consulta
-                        </CardTitle>
-                        <CardDescription>
-                            Usa los filtros para refinar tu búsqueda y luego selecciona las especies a comparar. Las especies se agrupan por la unidad de medida de sus datos históricos (ej. "individuos", "parejas reproductoras").
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-6">
-                        <div className="space-y-4 rounded-lg border p-4">
-                            <h3 className="font-headline text-lg font-semibold flex items-center">
+                        </h1>
+                        <p className="text-muted-foreground">
+                            Utiliza los controles para filtrar y seleccionar especies, y visualiza las comparaciones.
+                        </p>
+                    </div>
+                    <Button variant="outline" asChild>
+                        <Link href="/dashboard">
+                            <ArrowLeft className="mr-2 h-4 w-4" /> Volver al Panel
+                        </Link>
+                    </Button>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
+                    {/* LEFT PANE: CONTROLS */}
+                    <Card className="lg:col-span-1 lg:sticky lg:top-24 shadow-lg">
+                        <CardHeader>
+                            <CardTitle className="flex items-center">
                                 <Filter className="mr-2 h-5 w-5" />
-                                Filtros de Búsqueda
-                            </h3>
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="familyFilter">Filtrar por Familia</Label>
-                                    <Select
-                                        value={familyFilter}
-                                        onValueChange={(value) => setFamilyFilter(value === 'all' ? '' : value)}
-                                    >
-                                        <SelectTrigger id="familyFilter" className="bg-input">
-                                            <SelectValue placeholder="Seleccionar familia..." />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="all">Todas las familias</SelectItem>
-                                            {uniqueFamilies.map(family => (
-                                                <SelectItem key={family} value={family}>
-                                                    {family}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="minYear">Año de Inicio del Filtro</Label>
+                                Controles
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="familyFilter">Filtrar por Familia</Label>
+                                <Select
+                                    value={familyFilter}
+                                    onValueChange={(value) => setFamilyFilter(value === 'all' ? '' : value)}
+                                >
+                                    <SelectTrigger id="familyFilter" className="bg-input">
+                                        <SelectValue placeholder="Seleccionar familia..." />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="all">Todas las familias</SelectItem>
+                                        {uniqueFamilies.map(family => (
+                                            <SelectItem key={family} value={family}>
+                                                {family}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div className="space-y-2">
+                                <Label>Rango de Años del Gráfico</Label>
+                                <div className="flex items-center gap-2">
                                     <Input 
-                                        id="minYear" 
                                         type="number" 
-                                        placeholder="Ej: 1990" 
+                                        placeholder="Inicio" 
                                         value={yearFilter.min}
                                         onChange={(e) => setYearFilter(prev => ({ ...prev, min: e.target.value }))}
                                         className="bg-input"
+                                        aria-label="Año de inicio del filtro"
                                     />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="maxYear">Año Máximo del Filtro</Label>
+                                    <span className="text-muted-foreground">-</span>
                                     <Input 
-                                        id="maxYear" 
                                         type="number" 
-                                        placeholder="Ej: 2023" 
+                                        placeholder="Fin" 
                                         value={yearFilter.max}
                                         onChange={(e) => setYearFilter(prev => ({ ...prev, max: e.target.value }))}
                                         className="bg-input"
+                                        aria-label="Año máximo del filtro"
                                     />
                                 </div>
                             </div>
-                             <Button onClick={clearFilters} variant="outline" size="sm">
+                            <Button onClick={clearFilters} variant="outline" size="sm" className="w-full">
                                 <FilterX className="mr-2 h-4 w-4" /> Limpiar Filtros
                             </Button>
-                        </div>
 
-                        <div className="space-y-6">
-                            {isLoading ? (
-                                <Skeleton className="h-64 w-full" />
-                            ) : Object.keys(speciesByUnit).length > 0 ? (
-                                Object.entries(speciesByUnit).map(([unit, speciesInUnit]) => (
-                                    <div key={unit} className="space-y-4 rounded-lg border p-4">
-                                        <h3 className="font-headline text-xl text-primary flex items-center">
-                                          <BarChart className="mr-2 h-6 w-6" /> Comparación por: {unit}
-                                        </h3>
-                                        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-                                            <div className="lg:col-span-1">
-                                                <h4 className="font-semibold mb-2 text-foreground">Seleccionar Especies</h4>
-                                                <ScrollArea className="h-72 rounded-md border p-4 bg-input/50">
-                                                    <div className="space-y-2">
-                                                        {speciesInUnit.map(s => (
-                                                            <div key={s.id} className="flex items-center space-x-2">
-                                                                <Checkbox
-                                                                    id={`compare-${unit}-${s.id}`}
-                                                                    checked={selectedSpeciesIds.includes(s.id)}
-                                                                    onCheckedChange={() => handleSpeciesSelection(s.id)}
-                                                                />
-                                                                <Label htmlFor={`compare-${unit}-${s.id}`} className="text-sm font-normal cursor-pointer">
-                                                                    {s.spanishCommonName}
-                                                                </Label>
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                </ScrollArea>
-                                            </div>
-                                            <div className="lg:col-span-3">
-                                                {selectedSpeciesIds.filter(id => speciesInUnit.some(s => s.id === id)).length > 0 ? (
-                                                    <SpeciesComparisonChart 
-                                                        species={allSpecies.filter(s => selectedSpeciesIds.includes(s.id) && speciesInUnit.some(siu => siu.id === s.id))}
-                                                        yearFilter={yearFilter}
-                                                    />
-                                                ) : (
-                                                    <div className="flex flex-col items-center justify-center h-full min-h-[400px] p-8 border border-dashed rounded-lg bg-muted/50">
-                                                        <AlertTriangle className="h-12 w-12 text-muted-foreground mb-4" />
-                                                        <p className="text-lg font-medium text-center text-muted-foreground">Selecciona al menos una especie de la lista para visualizar el gráfico.</p>
-                                                    </div>
-                                                )}
-                                            </div>
+                            <hr className="my-4 border-border" />
+
+                            <div className="space-y-2">
+                                <Label>Seleccionar Especies</Label>
+                                <ScrollArea className="h-80 rounded-md border p-2">
+                                    {isLoading ? (
+                                        <div className="p-2 space-y-2">
+                                            <Skeleton className="h-6 w-full" />
+                                            <Skeleton className="h-6 w-full" />
+                                            <Skeleton className="h-6 w-4/5" />
                                         </div>
-                                    </div>
-                                ))
-                            ) : (
-                                <div className="text-center py-10">
-                                    <p className="text-muted-foreground">No hay especies con datos históricos que coincidan con los filtros aplicados.</p>
-                                </div>
-                            )}
-                        </div>
-                    </CardContent>
-                </Card>
+                                    ) : Object.keys(speciesToSelectByUnit).length === 0 ? (
+                                        <div className="text-center text-sm text-muted-foreground p-4">
+                                            No hay especies que coincidan con el filtro de familia.
+                                        </div>
+                                    ) : (
+                                     Object.entries(speciesToSelectByUnit).map(([unit, speciesList]) => (
+                                         <div key={unit}>
+                                             <h4 className="font-semibold text-muted-foreground text-xs uppercase tracking-wider px-2 py-2">{unit}</h4>
+                                             <div className="space-y-1">
+                                                {speciesList.map(s => (
+                                                    <div key={s.id} className="flex items-center space-x-2 p-1 rounded-md hover:bg-muted">
+                                                        <Checkbox
+                                                            id={`select-${s.id}`}
+                                                            checked={selectedSpeciesIds.includes(s.id)}
+                                                            onCheckedChange={() => handleSpeciesSelection(s.id)}
+                                                        />
+                                                        <Label htmlFor={`select-${s.id}`} className="text-sm font-normal cursor-pointer flex-1">
+                                                            {s.spanishCommonName}
+                                                        </Label>
+                                                    </div>
+                                                ))}
+                                             </div>
+                                         </div>
+                                     ))
+                                    )}
+                                </ScrollArea>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    {/* RIGHT PANE: CHARTS */}
+                    <div className="lg:col-span-3 space-y-6">
+                        {isLoading ? (
+                            <Skeleton className="h-[400px] w-full" />
+                        ) : Object.keys(chartsToDisplayByUnit).length === 0 ? (
+                             <Card className="flex flex-col items-center justify-center min-h-[400px] border-2 border-dashed bg-muted/30">
+                                <BarChart className="h-16 w-16 text-muted-foreground mb-4" />
+                                <h3 className="text-xl font-semibold text-foreground">Visualiza tus Datos</h3>
+                                <p className="text-muted-foreground mt-2">Selecciona una o más especies del panel de control para comenzar.</p>
+                             </Card>
+                         ) : (
+                             Object.entries(chartsToDisplayByUnit).map(([unit, speciesData]) => (
+                                 <Card key={unit} className="shadow-lg">
+                                     <CardHeader>
+                                         <CardTitle className="flex items-center text-primary">
+                                            <BarChart className="mr-2 h-6 w-6" /> 
+                                            Comparación por: {unit}
+                                        </CardTitle>
+                                     </CardHeader>
+                                     <CardContent>
+                                         <SpeciesComparisonChart species={speciesData} yearFilter={yearFilter} />
+                                     </CardContent>
+                                 </Card>
+                             ))
+                         )}
+                    </div>
+                </div>
             </div>
         </RoleBasedGuard>
     );
