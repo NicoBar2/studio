@@ -166,6 +166,9 @@ export default function SpeciesDetailClient({ species }: SpeciesDetailClientProp
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center text-xl text-primary"><ShieldAlert className="mr-2 h-5 w-5" /> Conservación y Población</CardTitle>
+                  <CardDescription>
+                    Estado según la Unión Internacional para la Conservación de la Naturaleza (UICN).
+                  </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-2">
                   <p><strong>Estado UICN:</strong> <Badge variant={species.iucnStatus === 'En Peligro' || species.iucnStatus === 'En Peligro Crítico' ? 'destructive' : 'secondary'}>{species.iucnStatus}</Badge></p>

@@ -182,6 +182,9 @@ export default function AddSpeciesPage() {
                                                     ))}
                                                 </SelectContent>
                                             </Select>
+                                            <p className="text-xs text-muted-foreground mt-1">
+                                                UICN: Unión Internacional para la Conservación de la Naturaleza.
+                                            </p>
                                         </div>
                                         <div>
                                             <Label htmlFor="populationTrend" className="font-semibold">Tendencia Poblacional</Label>
