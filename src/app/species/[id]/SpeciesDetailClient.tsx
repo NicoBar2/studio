@@ -7,7 +7,7 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { useState, useTransition } from 'react';
+import { useState, useTransition, useRef } from 'react';
 import { getAISummary } from '@/app/actions';
 import { 
   AlertCircle, Brain, Edit, BarChart2, Tag, TrendingUp, ShieldAlert, Home, ListChecks, Download,
@@ -17,6 +17,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
 import dynamic from 'next/dynamic';
+import { useTheme } from 'next-themes';
 
 const SpeciesDataChart = dynamic(() => import('@/components/charts/SpeciesDataChart'), {
   loading: () => (
@@ -55,6 +56,8 @@ export default function SpeciesDetailClient({ species }: SpeciesDetailClientProp
   const [error, setError] = useState<string | null>(null);
   const [isSummaryPending, startSummaryTransition] = useTransition();
   const [isPdfPending, startPdfTransition] = useTransition();
+  const chartCardRef = useRef<HTMLDivElement>(null);
+  const { resolvedTheme } = useTheme();
   
   const IconComponent = iconMap[species.icon] || iconMap.Default;
   const scientificName = `${species.genus || ''} ${species.specificEpithet || ''}`.trim();
@@ -76,6 +79,7 @@ export default function SpeciesDetailClient({ species }: SpeciesDetailClientProp
   const handleDownloadPdf = () => {
     startPdfTransition(async () => {
       const { default: jsPDF } = await import('jspdf');
+      const { default: html2canvas } = await import('html2canvas');
       
       const doc = new jsPDF({
         orientation: 'p',
@@ -232,6 +236,37 @@ export default function SpeciesDetailClient({ species }: SpeciesDetailClientProp
           const islandList = presentOnIslands.map(i => i.name).join(', ');
           addBodyText(islandList);
       }
+
+      // 8. Gráfico de Datos Históricos
+      const chartElement = chartCardRef.current;
+      const shouldRenderChart = (role === 'researcher' || role === 'admin' || species.showHistoricalDataToPublic) && species.historicalData && species.historicalData.length > 0;
+
+      if (shouldRenderChart && chartElement) {
+        addSectionHeader('Visualización de Datos Históricos');
+        y += 5;
+
+        if (y > pageHeight - 80) { // Rough estimate for chart height
+            doc.addPage();
+            y = margin;
+        }
+        
+        const canvas = await html2canvas(chartElement, { 
+            scale: 2,
+            backgroundColor: resolvedTheme === 'dark' ? '#222d40' : '#f4f6f8'
+        });
+        const chartImgData = canvas.toDataURL('image/png');
+        const chartImgWidth = pageWidth - margin * 2;
+        const chartImgHeight = (canvas.height * chartImgWidth) / canvas.width;
+
+        if (y + chartImgHeight > pageHeight - 15) {
+            doc.addPage();
+            y = margin;
+        }
+
+        doc.addImage(chartImgData, 'PNG', margin, y, chartImgWidth, chartImgHeight);
+        y += chartImgHeight + 10;
+      }
+
 
       // --- Fin del Contenido ---
 
@@ -413,7 +448,7 @@ export default function SpeciesDetailClient({ species }: SpeciesDetailClientProp
             </Card>
 
             {(role === 'researcher' || role === 'admin' || species.showHistoricalDataToPublic) && (
-               <Card>
+               <Card ref={chartCardRef}>
                   <CardHeader>
                       <CardTitle className="flex items-center text-xl text-primary"><BarChart2 className="mr-2 h-5 w-5" /> Visualización de Datos Históricos</CardTitle>
                        <CardDescription>
