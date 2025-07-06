@@ -30,9 +30,9 @@ type GalapagosMapProps = {
 
 const GalapagosMap: React.FC<GalapagosMapProps> = ({ onIslandClick, selectedIsland }) => {
   // IMPORTANTE: Para que este componente funcione, la imagen del mapa debe estar ubicada en:
-  // public/images/galapagos_map_real.png
+  // public/images/map_galapagos-islands.png
   // Si la imagen no está en esa ruta exacta, no se mostrará.
-  const imageSrc = '/images/galapagos_map_real.png'; 
+  const imageSrc = '/images/map_galapagos-islands.png'; 
 
   return (
     <div className="relative w-full max-w-3xl mx-auto aspect-[1.18] bg-secondary/30 rounded-lg shadow-md overflow-hidden">
