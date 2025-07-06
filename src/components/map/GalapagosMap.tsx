@@ -4,27 +4,27 @@ import Image from 'next/image';
 import React from 'react';
 import { cn } from "@/lib/utils";
 import mapImage from './map_galapagos-islands.png';
+import { Button } from '@/components/ui/button';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { MapPin } from 'lucide-react';
 
-// Datos para los puntos de acceso (hotspots) sobre los nombres de las islas en la imagen del mapa.
-// Las coordenadas son porcentajes (x: left, y: top).
 const mapIslandsData = [
-  { id: 'Darwin', name: 'Darwin', hotspot: { x: 7, y: 1, width: 10, height: 4 } },
-  { id: 'Wolf', name: 'Wolf', hotspot: { x: 12, y: 7, width: 8, height: 4 } },
-  { id: 'Pinta', name: 'Pinta', hotspot: { x: 31, y: 22, width: 9, height: 4 } },
-  { id: 'Marchena', name: 'Marchena', hotspot: { x: 46, y: 27, width: 13, height: 4 } },
-  { id: 'Genovesa', name: 'Genovesa', hotspot: { x: 75, y: 29, width: 13, height: 4 } },
-  { id: 'Santiago', name: 'Santiago', hotspot: { x: 41, y: 49, width: 13, height: 5 } },
-  { id: 'Fernandina', name: 'Fernandina', hotspot: { x: 6, y: 53, width: 15, height: 4 } },
-  { id: 'Isabela', name: 'Isabela', hotspot: { x: 26, y: 73, width: 12, height: 5 } },
-  { id: 'Pinzón', name: 'Pinzón', hotspot: { x: 44, y: 59, width: 9, height: 3 } },
-  { id: 'Santa Cruz', name: 'Santa Cruz', hotspot: { x: 53, y: 64, width: 16, height: 4 } },
-  { id: 'North Seymour', name: 'North Seymour', hotspot: { x: 56, y: 54, width: 14, height: 3 } },
-  { id: 'Santa Fé', name: 'Santa Fé', hotspot: { x: 66, y: 72, width: 11, height: 4 } },
-  { id: 'San Cristobal', name: 'San Cristobal', hotspot: { x: 78, y: 78, width: 20, height: 8 } },
-  { id: 'Floreana', name: 'Floreana', hotspot: { x: 52, y: 89, width: 12, height: 4 } },
-  { id: 'Española', name: 'Española', hotspot: { x: 76, y: 93, width: 12, height: 4 } },
-];
-
+  { id: 'Darwin', name: 'Darwin' },
+  { id: 'Wolf', name: 'Wolf' },
+  { id: 'Pinta', name: 'Pinta' },
+  { id: 'Marchena', name: 'Marchena' },
+  { id: 'Genovesa', name: 'Genovesa' },
+  { id: 'Santiago', name: 'Santiago' },
+  { id: 'Fernandina', name: 'Fernandina' },
+  { id: 'Isabela', name: 'Isabela' },
+  { id: 'Pinzón', name: 'Pinzón' },
+  { id: 'Santa Cruz', name: 'Santa Cruz' },
+  { id: 'North Seymour', name: 'North Seymour' },
+  { id: 'Santa Fé', name: 'Santa Fé' },
+  { id: 'San Cristobal', name: 'San Cristobal' },
+  { id: 'Floreana', name: 'Floreana' },
+  { id: 'Española', name: 'Española' },
+].sort((a, b) => a.name.localeCompare(b.name)); // Sort alphabetically
 
 type GalapagosMapProps = {
   onIslandClick: (islandName: string) => void;
@@ -33,43 +33,45 @@ type GalapagosMapProps = {
 
 const GalapagosMap: React.FC<GalapagosMapProps> = ({ onIslandClick, selectedIsland }) => {
   return (
-    <div className="relative w-full max-w-3xl mx-auto bg-secondary/30 rounded-lg shadow-md">
-      <Image
-        src={mapImage}
-        alt="Mapa de las Islas Galápagos"
-        className="w-full h-auto"
-        priority
-      />
-      {mapIslandsData.map((island) => {
-        const isSelected = selectedIsland === island.name;
-        return (
-          <React.Fragment key={island.id}>
-            {/* Punto Clicable (Hotspot) sobre el nombre de la isla */}
-            <button
-              title={`Isla ${island.name}`}
-              onClick={() => onIslandClick(island.name)}
-              className={cn(
-                "absolute rounded-md focus:outline-none transition-colors duration-200 ease-in-out",
-                "focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background",
-                isSelected 
-                  ? "bg-primary/50 border-2 border-primary" 
-                  : "bg-transparent hover:bg-primary/30",
-              )}
-              style={{
-                left: `${island.hotspot.x}%`,
-                top: `${island.hotspot.y}%`,
-                width: `${island.hotspot.width}%`,
-                height: `${island.hotspot.height}%`,
-              }}
-              aria-label={`Seleccionar isla ${island.name}`}
-              aria-pressed={isSelected}
-            />
-          </React.Fragment>
-        );
-      })}
-      <p className="absolute top-2 left-2 text-xs text-muted-foreground bg-background/70 p-1 rounded shadow">
-        Haz clic en el nombre de una isla para ver sus especies
-      </p>
+    <div className="flex flex-col md:flex-row gap-6 items-start p-4 bg-muted/30 rounded-lg shadow-md">
+      {/* Left side: Island List */}
+      <div className="w-full md:w-1/3 lg:w-1/4">
+        <h3 className="font-semibold mb-2 text-lg text-primary flex items-center">
+          <MapPin className="mr-2 h-5 w-5" />
+          Seleccionar Isla
+        </h3>
+        <ScrollArea className="h-64 md:h-96 pr-3">
+            <div className="flex flex-col gap-1">
+                {mapIslandsData.map(island => (
+                    <Button
+                        key={island.id}
+                        onClick={() => onIslandClick(island.name)}
+                        variant={selectedIsland === island.name ? "secondary" : "ghost"}
+                        className="w-full justify-start text-left h-auto py-2"
+                        aria-pressed={selectedIsland === island.name}
+                    >
+                        {island.name}
+                    </Button>
+                ))}
+            </div>
+        </ScrollArea>
+      </div>
+
+      {/* Right side: Map Image */}
+      <div className="relative w-full md:w-2/3 lg:w-3/4">
+        <Image
+          src={mapImage}
+          alt="Mapa de las Islas Galápagos"
+          className="w-full h-auto rounded-md shadow-sm"
+          priority
+        />
+        <div className="absolute inset-0 rounded-md ring-1 ring-inset ring-black/10 pointer-events-none" />
+        {selectedIsland && (
+          <div className="absolute top-2 right-2 bg-primary text-primary-foreground text-sm font-bold py-1 px-3 rounded-full shadow-lg">
+            {selectedIsland}
+          </div>
+        )}
+      </div>
     </div>
   );
 };
