@@ -8,21 +8,21 @@ import mapImage from './map_galapagos-islands.png';
 // Datos para los puntos de acceso (hotspots) sobre los nombres de las islas en la imagen del mapa.
 // Las coordenadas son porcentajes (x: left, y: top).
 const mapIslandsData = [
-  { id: 'Darwin', name: 'Darwin', hotspot: { x: 8, y: 1, width: 10, height: 4 } },
-  { id: 'Wolf', name: 'Wolf', hotspot: { x: 13, y: 7, width: 8, height: 4 } },
-  { id: 'Pinta', name: 'Pinta', hotspot: { x: 32, y: 22, width: 8, height: 4 } },
-  { id: 'Marchena', name: 'Marchena', hotspot: { x: 47, y: 27, width: 12, height: 4 } },
-  { id: 'Genovesa', name: 'Genovesa', hotspot: { x: 76, y: 29, width: 12, height: 4 } },
-  { id: 'Santiago', name: 'Santiago', hotspot: { x: 39, y: 49, width: 11, height: 4 } },
-  { id: 'Fernandina', name: 'Fernandina', hotspot: { x: 7, y: 53, width: 14, height: 4 } },
-  { id: 'Isabela', name: 'Isabela', hotspot: { x: 27, y: 74, width: 10, height: 4 } },
-  { id: 'Pinzón', name: 'Pinzón', hotspot: { x: 45, y: 59, width: 8, height: 3 } },
-  { id: 'Santa Cruz', name: 'Santa Cruz', hotspot: { x: 54, y: 64, width: 15, height: 4 } },
-  { id: 'North Seymour', name: 'North Seymour', hotspot: { x: 57, y: 54, width: 13, height: 3 } },
-  { id: 'Santa Fé', name: 'Santa Fé', hotspot: { x: 67, y: 72, width: 10, height: 4 } },
-  { id: 'San Cristobal', name: 'San Cristobal', hotspot: { x: 79, y: 79, width: 18, height: 8 } },
-  { id: 'Floreana', name: 'Floreana', hotspot: { x: 53, y: 89, width: 11, height: 4 } },
-  { id: 'Española', name: 'Española', hotspot: { x: 77, y: 93, width: 11, height: 4 } },
+  { id: 'Darwin', name: 'Darwin', hotspot: { x: 7, y: 1, width: 10, height: 4 } },
+  { id: 'Wolf', name: 'Wolf', hotspot: { x: 12, y: 7, width: 8, height: 4 } },
+  { id: 'Pinta', name: 'Pinta', hotspot: { x: 31, y: 22, width: 9, height: 4 } },
+  { id: 'Marchena', name: 'Marchena', hotspot: { x: 46, y: 27, width: 13, height: 4 } },
+  { id: 'Genovesa', name: 'Genovesa', hotspot: { x: 75, y: 29, width: 13, height: 4 } },
+  { id: 'Santiago', name: 'Santiago', hotspot: { x: 41, y: 49, width: 13, height: 5 } },
+  { id: 'Fernandina', name: 'Fernandina', hotspot: { x: 6, y: 53, width: 15, height: 4 } },
+  { id: 'Isabela', name: 'Isabela', hotspot: { x: 26, y: 73, width: 12, height: 5 } },
+  { id: 'Pinzón', name: 'Pinzón', hotspot: { x: 44, y: 59, width: 9, height: 3 } },
+  { id: 'Santa Cruz', name: 'Santa Cruz', hotspot: { x: 53, y: 64, width: 16, height: 4 } },
+  { id: 'North Seymour', name: 'North Seymour', hotspot: { x: 56, y: 54, width: 14, height: 3 } },
+  { id: 'Santa Fé', name: 'Santa Fé', hotspot: { x: 66, y: 72, width: 11, height: 4 } },
+  { id: 'San Cristobal', name: 'San Cristobal', hotspot: { x: 78, y: 78, width: 20, height: 8 } },
+  { id: 'Floreana', name: 'Floreana', hotspot: { x: 52, y: 89, width: 12, height: 4 } },
+  { id: 'Española', name: 'Española', hotspot: { x: 76, y: 93, width: 12, height: 4 } },
 ];
 
 
