@@ -1,4 +1,3 @@
-
 "use client";
 
 import Image from 'next/image';
@@ -33,16 +32,16 @@ const GalapagosMap: React.FC<GalapagosMapProps> = ({ onIslandClick, selectedIsla
   // IMPORTANTE: Para que este componente funcione, la imagen del mapa debe estar ubicada en:
   // public/images/map_galapagos-islands.png
   // Si la imagen no está en esa ruta exacta, no se mostrará.
-  const imageSrc = '/images/map_galapagos-islands.png'; 
+  const imageSrc = '/images/map_galapagos-islands.png';
 
   return (
-    <div className="relative w-full max-w-3xl mx-auto aspect-[1.18] bg-secondary/30 rounded-lg shadow-md overflow-hidden">
+    <div className="relative w-full max-w-3xl mx-auto bg-secondary/30 rounded-lg shadow-md">
       <Image
         src={imageSrc}
         alt="Mapa de las Islas Galápagos"
-        fill
-        style={{ objectFit: 'contain' }}
-        priority
+        width={800}
+        height={678}
+        className="w-full h-auto"
       />
       {mapIslandsData.map((island) => {
         const isSelected = selectedIsland === island.name;
