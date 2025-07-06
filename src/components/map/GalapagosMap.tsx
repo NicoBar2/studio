@@ -4,7 +4,7 @@ import Image from 'next/image';
 import React from 'react';
 import { cn } from "@/lib/utils";
 
-// Datos para los puntos de acceso sobre los nombres de las islas en la imagen del mapa.
+// Datos para los puntos de acceso (hotspots) sobre los nombres de las islas en la imagen del mapa.
 // Las coordenadas son porcentajes (x: left, y: top).
 const mapIslandsData = [
   { id: 'Pinta', name: 'Pinta', hotspot: { x: 33, y: 6, width: 8, height: 4 } },
@@ -29,7 +29,9 @@ type GalapagosMapProps = {
 };
 
 const GalapagosMap: React.FC<GalapagosMapProps> = ({ onIslandClick, selectedIsland }) => {
-  // IMPORTANTE: La imagen del mapa debe estar en public/images/galapagos_map_real.png
+  // IMPORTANTE: Para que este componente funcione, la imagen del mapa debe estar ubicada en:
+  // public/images/galapagos_map_real.png
+  // Si la imagen no está en esa ruta exacta, no se mostrará.
   const imageSrc = '/images/galapagos_map_real.png'; 
 
   return (
