@@ -1,24 +1,27 @@
-
 "use client";
 
 import Image from 'next/image';
 import React from 'react';
 import { cn } from "@/lib/utils";
 
-// Datos para los puntos de acceso y etiquetas de las islas. Las coordenadas son porcentajes (arriba, izquierda, ancho, alto para el punto de acceso; arriba, izquierda para la etiqueta).
-// Estas son estimaciones y podrían necesitar ajustes basados en el renderizado final de la imagen y su relación de aspecto.
+// Datos para los puntos de acceso sobre los nombres de las islas en la imagen del mapa.
+// Las coordenadas son porcentajes (x: left, y: top).
 const mapIslandsData = [
-  { id: 'Isabela', name: 'Isabela', hotspot: { x: 12, y: 18, width: 28, height: 65 }, labelPos: { x: 28, y: 50 } },
-  { id: 'Fernandina', name: 'Fernandina', hotspot: { x: 4, y: 33, width: 13, height: 22 }, labelPos: { x: 10, y: 45 } },
-  { id: 'Santa Cruz', name: 'Santa Cruz', hotspot: { x: 43, y: 42, width: 22, height: 23 }, labelPos: { x: 54, y: 53 } },
-  { id: 'San Cristobal', name: 'San Cristobal', hotspot: { x: 73, y: 50, width: 22, height: 18 }, labelPos: { x: 84, y: 59 } },
-  { id: 'Española', name: 'Española', hotspot: { x: 73, y: 84, width: 18, height: 10 }, labelPos: { x: 82, y: 90 } },
-  { id: 'Floreana', name: 'Floreana', hotspot: { x: 48, y: 76, width: 18, height: 13 }, labelPos: { x: 57, y: 83 } },
-  { id: 'Santiago', name: 'Santiago', hotspot: { x: 38, y: 30, width: 20, height: 16 }, labelPos: { x: 48, y: 37 } },
-  { id: 'Genovesa', name: 'Genovesa', hotspot: { x: 78, y: 12, width: 13, height: 13 }, labelPos: { x: 85, y: 18 } },
-  { id: 'Pinta', name: 'Pinta', hotspot: { x: 43, y: 3, width: 10, height: 8 }, labelPos: { x: 48, y: 7 } },
-  { id: 'Marchena', name: 'Marchena', hotspot: { x: 58, y: 9, width: 11, height: 9 }, labelPos: { x: 63, y: 14 } },
+  { id: 'Pinta', name: 'Pinta', hotspot: { x: 33, y: 6, width: 8, height: 4 } },
+  { id: 'Marchena', name: 'Marchena', hotspot: { x: 48, y: 15, width: 12, height: 4 } },
+  { id: 'Genovesa', name: 'Genovesa', hotspot: { x: 77, y: 18, width: 12, height: 4 } },
+  { id: 'Santiago', name: 'Santiago', hotspot: { x: 40, y: 36, width: 11, height: 4 } },
+  { id: 'Fernandina', name: 'Fernandina', hotspot: { x: 10, y: 42, width: 14, height: 4 } },
+  { id: 'Isabela', name: 'Isabela', hotspot: { x: 30, y: 60, width: 10, height: 4 } },
+  { id: 'Pinzón', name: 'Pinzón', hotspot: { x: 46, y: 48, width: 8, height: 3 } },
+  { id: 'Santa Cruz', name: 'Santa Cruz', hotspot: { x: 55, y: 55, width: 15, height: 4 } },
+  { id: 'Santa Fé', name: 'Santa Fé', hotspot: { x: 69, y: 63, width: 10, height: 4 } },
+  { id: 'San Cristobal', name: 'San Cristobal', hotspot: { x: 81, y: 70, width: 18, height: 8 } },
+  { id: 'Floreana', name: 'Floreana', hotspot: { x: 55, y: 86, width: 11, height: 4 } },
+  { id: 'Española', name: 'Española', hotspot: { x: 78, y: 91, width: 11, height: 4 } },
+  { id: 'North Seymour', name: 'North Seymour', hotspot: { x: 58, y: 42, width: 13, height: 3 } },
 ];
+
 
 type GalapagosMapProps = {
   onIslandClick: (islandName: string) => void;
@@ -26,33 +29,33 @@ type GalapagosMapProps = {
 };
 
 const GalapagosMap: React.FC<GalapagosMapProps> = ({ onIslandClick, selectedIsland }) => {
-  // IMPORTANTE: Coloca tu imagen del mapa en public/images/galapagos_map_real.png
+  // IMPORTANTE: La imagen del mapa debe estar en public/images/galapagos_map_real.png
   const imageSrc = '/images/galapagos_map_real.png'; 
 
   return (
-    <div className="relative w-full max-w-2xl mx-auto aspect-square bg-secondary/30 rounded-lg shadow-md overflow-hidden">
+    <div className="relative w-full max-w-3xl mx-auto aspect-[1.18] bg-secondary/30 rounded-lg shadow-md overflow-hidden">
       <Image
         src={imageSrc}
         alt="Mapa de las Islas Galápagos"
         layout="fill"
         objectFit="contain" 
         priority
-        unoptimized={true} // Bueno para imágenes locales en la carpeta public si la optimización no es necesaria o causa problemas
+        unoptimized={true} 
       />
       {mapIslandsData.map((island) => {
         const isSelected = selectedIsland === island.name;
         return (
           <React.Fragment key={island.id}>
-            {/* Punto Clicable (Hotspot) */}
+            {/* Punto Clicable (Hotspot) sobre el nombre de la isla */}
             <button
               title={`Isla ${island.name}`}
               onClick={() => onIslandClick(island.name)}
               className={cn(
-                "absolute rounded-md focus:outline-none transition-all duration-200 ease-in-out transform hover:scale-105",
+                "absolute rounded-md focus:outline-none transition-colors duration-200 ease-in-out",
                 "focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background",
                 isSelected 
-                  ? "bg-primary/60 border-2 border-primary shadow-lg" 
-                  : "bg-black/20 border border-gray-400/50 hover:bg-primary/40 hover:border-primary",
+                  ? "bg-primary/50 border-2 border-primary" 
+                  : "bg-transparent hover:bg-primary/30",
               )}
               style={{
                 left: `${island.hotspot.x}%`,
@@ -63,25 +66,11 @@ const GalapagosMap: React.FC<GalapagosMapProps> = ({ onIslandClick, selectedIsla
               aria-label={`Seleccionar isla ${island.name}`}
               aria-pressed={isSelected}
             />
-            {/* Etiqueta */}
-            <span
-              className={cn(
-                "absolute pointer-events-none text-xs md:text-sm font-medium p-1 rounded shadow-md",
-                isSelected ? "text-primary-foreground bg-primary font-bold" : "text-foreground bg-background/80",
-              )}
-              style={{
-                left: `${island.labelPos.x}%`,
-                top: `${island.labelPos.y}%`,
-                transform: 'translate(-50%, -50%)', // Centra la etiqueta en sus coordenadas
-              }}
-            >
-              {island.name}
-            </span>
           </React.Fragment>
         );
       })}
       <p className="absolute top-2 left-2 text-xs text-muted-foreground bg-background/70 p-1 rounded shadow">
-        Haz clic en una isla para ver sus especies
+        Haz clic en el nombre de una isla para ver sus especies
       </p>
     </div>
   );
