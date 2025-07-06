@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import React from 'react';
 import { cn } from "@/lib/utils";
+import mapImage from './map_galapagos-islands.png';
 
 // Datos para los puntos de acceso (hotspots) sobre los nombres de las islas en la imagen del mapa.
 // Las coordenadas son porcentajes (x: left, y: top).
@@ -29,19 +30,15 @@ type GalapagosMapProps = {
 };
 
 const GalapagosMap: React.FC<GalapagosMapProps> = ({ onIslandClick, selectedIsland }) => {
-  // IMPORTANTE: Para que este componente funcione, la imagen del mapa debe estar ubicada en:
-  // public/images/map_galapagos-islands.png
-  // Si la imagen no está en esa ruta exacta, no se mostrará.
-  const imageSrc = '/images/map_galapagos-islands.png';
-
   return (
     <div className="relative w-full max-w-3xl mx-auto bg-secondary/30 rounded-lg shadow-md">
       <Image
-        src={imageSrc}
+        src={mapImage}
         alt="Mapa de las Islas Galápagos"
         width={800}
         height={678}
         className="w-full h-auto"
+        priority
       />
       {mapIslandsData.map((island) => {
         const isSelected = selectedIsland === island.name;
