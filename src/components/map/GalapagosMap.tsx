@@ -1,3 +1,4 @@
+
 "use client";
 
 import Image from 'next/image';
@@ -39,10 +40,9 @@ const GalapagosMap: React.FC<GalapagosMapProps> = ({ onIslandClick, selectedIsla
       <Image
         src={imageSrc}
         alt="Mapa de las Islas Galápagos"
-        layout="fill"
-        objectFit="contain" 
+        fill
+        style={{ objectFit: 'contain' }}
         priority
-        unoptimized={true} 
       />
       {mapIslandsData.map((island) => {
         const isSelected = selectedIsland === island.name;
