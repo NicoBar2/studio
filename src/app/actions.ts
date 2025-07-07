@@ -22,7 +22,6 @@ import {
 } from '@/lib/researchers';
 import { enrichSpeciesData, type EnrichedData } from '@/ai/flows/enrichSpeciesData';
 import { getComparisonAnalysis, type CompareSpeciesInput } from '@/ai/flows/compareSpeciesFlow';
-import { createSpeciesDataWithAI, type NewSpeciesData } from '@/ai/flows/createSpeciesWithAI';
 import { z } from 'zod';
 import { redirect } from 'next/navigation';
 import bcrypt from 'bcryptjs';
@@ -667,48 +666,6 @@ export async function enrichSpeciesDataAction(prevState: any, formData: FormData
   } catch (error) {
     console.error("Error enriqueciendo datos de especie con IA:", error);
     return { success: false, message: "Ocurrió un error al contactar al servicio de IA." };
-  }
-}
-
-export async function createSpeciesWithAIAction(prevState: any, formData: FormData): Promise<{ success: boolean; message: string; speciesId?: string }> {
-  const speciesName = formData.get('speciesName') as string;
-  const userRole = formData.get('userRole') as string;
-
-  if (userRole !== 'admin') {
-    return { success: false, message: "Acción no permitida. Solo los administradores pueden usar esta función." };
-  }
-  
-  if (!speciesName || speciesName.trim().length < 3) {
-      return { success: false, message: "El nombre de la especie es obligatorio y debe tener al menos 3 caracteres." };
-  }
-
-  try {
-    // 1. Call the AI flow to get structured data
-    const newSpeciesPayload: NewSpeciesData = await createSpeciesDataWithAI(speciesName);
-
-    // 2. Prepare the full species object for storage
-    const hintString = newSpeciesPayload.spanishCommonName.split(' ').slice(0, 2).join(' ').toLowerCase();
-    
-    const newSpeciesData: Partial<Species> = {
-        ...newSpeciesPayload, // Spread the data from the AI
-        imageUrl: `https://placehold.co/600x400.png`,
-        dataAiHint: hintString,
-        icon: 'Footprints', // Default icon, can be changed later
-        historicalData: [], // Start with empty historical data
-        showHistoricalDataToPublic: false, // Default to private
-    };
-
-    // 3. Add the species to the store
-    const newSpecies = await addSpeciesToStore(newSpeciesData);
-
-    revalidatePath('/'); 
-    revalidatePath('/dashboard');
-    redirect(`/dashboard/edit/${newSpecies.id}`);
-    
-  } catch (error) {
-    console.error("Error creando especie con IA:", error);
-    const message = error instanceof Error ? error.message : "Ocurrió un error inesperado al crear la especie con IA.";
-    return { success: false, message: message };
   }
 }
 

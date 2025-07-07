@@ -694,5 +694,118 @@
     "class": "Reptilia",
     "order": "Squamata",
     "family": "Tropiduridae"
+  },
+  {
+    "conservationStatus": "Vulnerable",
+    "englishCommonName": "Galapagos Penguin",
+    "genus": "Spheniscus",
+    "habitat": "Rocky shores and coastlines",
+    "keyStats": [
+      {
+        "label": "Altura promedio",
+        "value": "49",
+        "unit": "cm"
+      },
+      {
+        "label": "Peso promedio",
+        "value": "2.5",
+        "unit": "kg"
+      }
+    ],
+    "populationTrend": "decreasing",
+    "spanishCommonName": "Pingüino de las Galápagos",
+    "spanishDescription": "El Pingüino de las Galápagos (Spheniscus mendiculus) es una especie endémica de las Islas Galápagos. Es el único pingüino que vive en el ecuador y uno de los más pequeños del mundo. Se distingue por su franja blanca alrededor de la cabeza y su cuerpo adaptado para nadar en aguas cálidas.",
+    "specificEpithet": "mendiculus",
+    "threats": [
+      "El Niño events",
+      "Climate change",
+      "Oil pollution",
+      "Bycatch in fishing nets"
+    ],
+    "imageUrl": "https://placehold.co/600x400.png",
+    "dataAiHint": "pingüino de",
+    "icon": "Footprints",
+    "historicalData": [],
+    "showHistoricalDataToPublic": false,
+    "id": "pingino-de-las-galpagos",
+    "iucnStatus": "Datos Insuficientes",
+    "is_darwin": false,
+    "is_espanola": false,
+    "is_fernandina": false,
+    "is_floreana": false,
+    "is_genovesa": false,
+    "is_isabela": false,
+    "is_marchena": false,
+    "is_pinta": false,
+    "is_pinzon": false,
+    "is_san_cristobal": false,
+    "is_santa_cruz": false,
+    "is_santa_fe": false,
+    "is_santiago": false,
+    "is_north_seymour": false,
+    "is_wolf": false,
+    "is_unknown_island": false,
+    "is_elizabeth_bay": false,
+    "is_far_northern": false,
+    "is_northern": false,
+    "is_south_eastern": false,
+    "is_unknown_bioregion": false,
+    "is_western": false
+  },
+  {
+    "conservationStatus": "En Peligro Crítico",
+    "englishCommonName": "Floreana Mockingbird",
+    "genus": "Mimus",
+    "habitat": "Zonas áridas y semiáridas, matorrales y áreas con vegetación baja en islas pequeñas.",
+    "keyStats": [
+      {
+        "label": "Longitud",
+        "value": "25-26",
+        "unit": "cm"
+      },
+      {
+        "label": "Peso",
+        "value": "56-65",
+        "unit": "g"
+      }
+    ],
+    "populationTrend": "increasing",
+    "spanishCommonName": "Sinsonte de Floreana",
+    "spanishDescription": "El Sinsonte de Floreana (Mimus trifasciatus) es una especie endémica de las Islas Galápagos, actualmente restringida a islas pequeñas como Champion e Isla Gardner cerca de Floreana. Se caracteriza por su plumaje de color grisáceo-marrón, con rayas más oscuras en la espalda y alas. Son omnívoros, alimentándose de insectos, frutos y néctar.  Muestran un comportamiento social complejo, incluyendo la cría cooperativa.",
+    "specificEpithet": "trifasciatus",
+    "threats": [
+      "Pérdida de hábitat debido a la introducción de especies invasoras.",
+      "Competencia con especies introducidas por recursos alimenticios.",
+      "Predación por especies introducidas como gatos y roedores."
+    ],
+    "imageUrl": "https://placehold.co/600x400.png",
+    "dataAiHint": "sinsonte de",
+    "icon": "Footprints",
+    "historicalData": [],
+    "showHistoricalDataToPublic": false,
+    "id": "sinsonte-de-floreana",
+    "iucnStatus": "Datos Insuficientes",
+    "is_darwin": false,
+    "is_espanola": false,
+    "is_fernandina": false,
+    "is_floreana": false,
+    "is_genovesa": false,
+    "is_isabela": false,
+    "is_marchena": false,
+    "is_pinta": false,
+    "is_pinzon": false,
+    "is_san_cristobal": false,
+    "is_santa_cruz": false,
+    "is_santa_fe": false,
+    "is_santiago": false,
+    "is_north_seymour": false,
+    "is_wolf": false,
+    "is_unknown_island": false,
+    "is_elizabeth_bay": false,
+    "is_far_northern": false,
+    "is_northern": false,
+    "is_south_eastern": false,
+    "is_unknown_bioregion": false,
+    "is_western": false
   }
 ]
