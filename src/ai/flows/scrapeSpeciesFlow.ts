@@ -60,7 +60,8 @@ const scraperPrompt = ai.definePrompt({
   prompt: `Eres un biólogo experto y un investigador web que se especializa en la fauna de las Islas Galápagos.
   Para la especie llamada "{{input}}", investiga y proporciona la siguiente información basada en fuentes públicas y fiables (como Wikipedia, IUCN Red List, etc.).
   Asegúrate de que la información sea precisa y esté bien estructurada según el formato solicitado.
-  La especie debe ser real y relevante para las Islas Galápagos. Si no puedes encontrar la especie o no es de Galápagos, indica un nombre en español inválido para que la validación falle.
+  
+  **Regla Crítica**: La especie debe ser real y tener una presencia documentada y significativa en las Islas Galápagos. Si no puedes encontrar la especie, o si es una especie que no pertenece a Galápagos (ej. un oso polar), debes fallar intencionadamente devolviendo un nombre común en español inválido, como por ejemplo "especie_invalida". Esto es para prevenir la adición de datos incorrectos.
 
   - Nombre común en español
   - Nombre común en inglés

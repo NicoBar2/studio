@@ -56,14 +56,18 @@ export const updateSpeciesData = async (id: string, updatedData: Partial<Species
 export const addSpecies = async (newSpeciesData: Partial<Species>): Promise<Species> => {
     const speciesList = await readSpecies();
     
-    if (!newSpeciesData.spanishCommonName) {
-        throw new Error("El nombre común en español es requerido para crear una nueva especie.");
+    if (!newSpeciesData.spanishCommonName || newSpeciesData.spanishCommonName.trim().length < 3) {
+        throw new Error("El nombre común en español es requerido y debe tener al menos 3 caracteres.");
     }
 
-    const newId = newSpeciesData.spanishCommonName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+    const newId = newSpeciesData.spanishCommonName.trim().toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+
+    if (!newId) {
+        throw new Error("El nombre de la especie no es válido para generar un ID.");
+    }
 
     if (speciesList.some(s => s.id === newId)) {
-        throw new Error(`Ya existe una especie con el id: ${newId}`);
+        throw new Error(`La especie "${newSpeciesData.spanishCommonName}" ya existe en la base de datos.`);
     }
 
     // Setting default values for the extensive new model
