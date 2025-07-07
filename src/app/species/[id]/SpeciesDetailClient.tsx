@@ -422,7 +422,7 @@ export default function SpeciesDetailClient({ species }: SpeciesDetailClientProp
               </CardContent>
             </Card>
             
-            {species.createdAt && (
+            {(role === 'admin' || role === 'researcher') && species.createdAt && (
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center text-xl text-primary"><CalendarClock className="mr-2 h-5 w-5" /> Información de Registro</CardTitle>
