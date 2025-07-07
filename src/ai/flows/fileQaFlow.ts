@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview A Genkit flow to answer questions based on a provided document.
@@ -6,13 +7,14 @@
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 
-export const FileQaInputSchema = z.object({
+const FileQaInputSchema = z.object({
   fileContent: z.string().describe("The text content of the file to be queried."),
   question: z.string().describe("The user's question about the file content."),
 });
 export type FileQaInput = z.infer<typeof FileQaInputSchema>;
 
-export const FileQaOutputSchema = z.string().describe("The answer to the question, based *only* on the provided file content. If the answer is not in the content, state that.");
+const FileQaOutputSchema = z.string().describe("The answer to the question, based *only* on the provided file content. If the answer is not in the content, state that.");
+export type FileQaOutput = z.infer<typeof FileQaOutputSchema>;
 
 const fileQaPrompt = ai.definePrompt({
     name: 'fileQaPrompt',
@@ -48,6 +50,6 @@ const fileQaFlow = ai.defineFlow(
     }
 );
 
-export async function answerQuestionFromFile(input: FileQaInput): Promise<string> {
+export async function answerQuestionFromFile(input: FileQaInput): Promise<FileQaOutput> {
     return fileQaFlow(input);
 }

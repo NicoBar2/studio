@@ -23,7 +23,7 @@ import {
 import { enrichSpeciesData, type EnrichedData } from '@/ai/flows/enrichSpeciesData';
 import { getComparisonAnalysis, type CompareSpeciesInput } from '@/ai/flows/compareSpeciesFlow';
 import { scrapeAndGetSpeciesData } from '@/ai/flows/scrapeSpeciesFlow';
-import { answerQuestionFromFile, type FileQaInput } from '@/ai/flows/fileQaFlow';
+import { answerQuestionFromFile, type FileQaInput, type FileQaOutput } from '@/ai/flows/fileQaFlow';
 import { z } from 'zod';
 import { redirect } from 'next/navigation';
 import bcrypt from 'bcryptjs';
