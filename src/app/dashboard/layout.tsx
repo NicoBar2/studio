@@ -72,10 +72,10 @@ export default function DashboardLayout({
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                     <SidebarMenuItem>
-                      <SidebarMenuButton asChild variant="ghost" className="justify-start w-full" tooltip="Traer con IA">
+                      <SidebarMenuButton asChild variant="ghost" className="justify-start w-full" tooltip="Generar con IA">
                         <Link href="/dashboard/admin/create-ai">
                           <Wand2 />
-                          <span className="group-data-[state=collapsed]:hidden">Traer con IA</span>
+                          <span className="group-data-[state=collapsed]:hidden">Generar con IA</span>
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>

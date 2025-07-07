@@ -30,7 +30,7 @@ function SubmitButton() {
       ) : (
         <>
           <Wand2 className="mr-2 h-5 w-5" />
-          Traer Especie con IA
+          Generar Ficha con IA
         </>
       )}
     </Button>
@@ -67,7 +67,7 @@ export default function CreateSpeciesWithAIPage() {
           <CardHeader>
             <CardTitle className="flex items-center text-2xl font-headline text-primary">
               <Wand2 className="mr-3 h-7 w-7" />
-              Traer Especies con Inteligencia Artificial
+              Generar Ficha con Inteligencia Artificial
             </CardTitle>
             <CardDescription>
               Introduce el nombre de una especie (en español, inglés o su nombre científico) y la IA generará una ficha de datos inicial. El sistema creará una nueva entrada que podrás revisar y editar.
