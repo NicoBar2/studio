@@ -23,11 +23,9 @@ import {
 import { enrichSpeciesData, type EnrichedData } from '@/ai/flows/enrichSpeciesData';
 import { getComparisonAnalysis, type CompareSpeciesInput } from '@/ai/flows/compareSpeciesFlow';
 import { scrapeAndGetSpeciesData } from '@/ai/flows/scrapeSpeciesFlow';
-import { answerQuestionFromFile, type FileQaInput, type FileQaOutput } from '@/ai/flows/fileQaFlow';
 import { z } from 'zod';
 import { redirect } from 'next/navigation';
 import bcrypt from 'bcryptjs';
-import pdf from 'pdf-parse';
 
 // Placeholder for AI insight generation
 async function generateSpeciesInsight(speciesName: string, speciesData: string): Promise<string> {
@@ -805,53 +803,5 @@ export async function generateComparisonAnalysisAction(
   } catch (error) {
     console.error("Error generando análisis comparativo:", error);
     return { error: "Ocurrió un error al contactar al servicio de IA para el análisis." };
-  }
-}
-
-export async function askQuestionAboutFileAction(
-  prevState: any,
-  formData: FormData
-): Promise<{ success: boolean; message: string; answer?: string }> {
-  const file = formData.get('documentFile') as File;
-  const question = formData.get('question') as string;
-
-  if (!file || file.size === 0) {
-    return { success: false, message: "No se ha seleccionado ningún archivo." };
-  }
-  if (!question || question.trim() === '') {
-    return { success: false, message: "Por favor, escribe una pregunta." };
-  }
-
-  try {
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-    let fileContent = '';
-
-    if (file.type === 'application/pdf') {
-        const data = await pdf(buffer);
-        fileContent = data.text;
-    } else if (file.type === 'text/plain') {
-        fileContent = buffer.toString('utf-8');
-    } else {
-        return { success: false, message: "Formato de archivo no soportado. Por favor, sube un archivo PDF o TXT." };
-    }
-
-    if (fileContent.trim() === '') {
-        return { success: false, message: "El archivo parece estar vacío o no se pudo extraer texto de él." };
-    }
-
-    const flowInput: FileQaInput = {
-        fileContent,
-        question
-    };
-    
-    const answer = await answerQuestionFromFile(flowInput);
-
-    return { success: true, message: 'Respuesta generada.', answer };
-
-  } catch (error) {
-    console.error("Error procesando el archivo y generando respuesta:", error);
-    const errorMessage = error instanceof Error ? error.message : "Ocurrió un error desconocido.";
-    return { success: false, message: `Error: ${errorMessage}` };
   }
 }
