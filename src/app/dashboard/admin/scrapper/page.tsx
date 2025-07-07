@@ -23,7 +23,7 @@ function SubmitButton() {
   const { pending } = useFormStatus();
   return (
     <Button type="submit" disabled={pending} className="w-full sm:w-auto">
-      {pending ? 'Procesando...' : 'Iniciar Scrapping'}
+      {pending ? 'Procesando...' : 'Iniciar Proceso'}
     </Button>
   );
 }
@@ -60,10 +60,10 @@ export default function ScrapperPage() {
           <CardHeader>
             <CardTitle className="flex items-center text-2xl font-headline text-primary">
               <Webhook className="mr-3 h-7 w-7" />
-              Importar Especies por Scrapping
+              Importar Especies por Scrapping con IA
             </CardTitle>
             <CardDescription>
-              Introduce los nombres de las especies que deseas importar (uno por línea). El sistema buscará la información relevante en la web y creará un nuevo registro para cada una. Este proceso puede tardar varios minutos.
+              Esta herramienta utiliza un agente de IA para investigar en la web y crear nuevos registros de especies. Introduce los nombres de las especies que deseas importar (uno por línea). El proceso es automático pero puede tardar varios minutos dependiendo de la cantidad de nombres.
             </CardDescription>
           </CardHeader>
           <CardContent>
