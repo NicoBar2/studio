@@ -57,8 +57,8 @@ const scraperPrompt = ai.definePrompt({
   name: 'scrapeSpeciesPrompt',
   input: { schema: z.string() },
   output: { schema: ScrapedSpeciesDataSchema },
-  prompt: `Eres un biólogo experto y un investigador web que se especializa en la fauna de las Islas Galápagos.
-  Para la especie llamada "{{input}}", investiga y proporciona la siguiente información basada en fuentes públicas y fiables (como Wikipedia, IUCN Red List, etc.).
+  prompt: `Eres un biólogo experto y un investigador web que se especializa en la fauna de las Islas Galápagos. Tu fuente de información principal y más fiable es el sitio web datazone.darwinfoundation.org.
+  Para la especie llamada "{{input}}", investiga y proporciona la siguiente información basándote en fuentes públicas y fiables, dando prioridad absoluta a la información del sitio web de la Fundación Darwin (datazone.darwinfoundation.org).
   Asegúrate de que la información sea precisa y esté bien estructurada según el formato solicitado.
   
   **Regla Crítica**: La especie debe ser real y tener una presencia documentada y significativa en las Islas Galápagos. Si no puedes encontrar la especie, o si es una especie que no pertenece a Galápagos (ej. un oso polar), debes fallar intencionadamente devolviendo un nombre común en español inválido, como por ejemplo "especie_invalida". Esto es para prevenir la adición de datos incorrectos.
