@@ -57,10 +57,10 @@ export default function ImportDataPage() {
           <CardHeader>
             <CardTitle className="flex items-center text-2xl font-headline text-primary">
               <UploadCloud className="mr-3 h-7 w-7" />
-              Traer Especies desde Archivo
+              Importar Especies desde Archivo
             </CardTitle>
             <CardDescription>
-              Sube un archivo Excel (.xlsx) para traer nuevas especies o actualizar las existentes. El sistema utiliza el <strong>nombre</strong> para identificar cada especie. Si una con el mismo nombre ya existe, sus datos se actualizarán. De lo contrario, se creará una nueva.
+              Sube un archivo Excel (.xlsx) para importar nuevas especies o actualizar las existentes. El sistema utiliza el <strong>nombre</strong> para identificar cada especie. Si una con el mismo nombre ya existe, sus datos se actualizarán. De lo contrario, se creará una nueva.
               <br />
               <strong className="text-destructive mt-2 block">Columnas Requeridas:</strong> 
               <code className="text-xs">nombre, cientifico, conservacion, poblacion, habitat, amenazas</code>.

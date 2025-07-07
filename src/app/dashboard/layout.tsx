@@ -64,18 +64,18 @@ export default function DashboardLayout({
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                     <SidebarMenuItem>
-                      <SidebarMenuButton asChild variant="ghost" className="justify-start w-full" tooltip="Traer Especies">
+                      <SidebarMenuButton asChild variant="ghost" className="justify-start w-full" tooltip="Importar especies">
                         <Link href="/dashboard/admin/import">
                           <FileUp />
-                          <span className="group-data-[state=collapsed]:hidden">Traer Especies</span>
+                          <span className="group-data-[state=collapsed]:hidden">Importar especies</span>
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                     <SidebarMenuItem>
-                      <SidebarMenuButton asChild variant="ghost" className="justify-start w-full" tooltip="Generar con IA">
+                      <SidebarMenuButton asChild variant="ghost" className="justify-start w-full" tooltip="Generador de Especie">
                         <Link href="/dashboard/admin/create-ai">
                           <Wand2 />
-                          <span className="group-data-[state=collapsed]:hidden">Generar con IA</span>
+                          <span className="group-data-[state=collapsed]:hidden">Generador de Especie</span>
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
