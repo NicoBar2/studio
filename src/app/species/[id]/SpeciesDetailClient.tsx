@@ -11,7 +11,7 @@ import { useState, useTransition, useRef } from 'react';
 import { getAISummary } from '@/app/actions';
 import { 
   AlertCircle, Brain, Edit, BarChart2, Tag, TrendingUp, ShieldAlert, Home, ListChecks, Download,
-  Turtle, Bird, Footprints, ShieldQuestion, Waves, Bug, type LucideIcon, HelpCircle, Sigma, MapPin, LoaderCircle
+  Turtle, Bird, Footprints, ShieldQuestion, Waves, Bug, type LucideIcon, HelpCircle, Sigma, MapPin, LoaderCircle, CalendarClock
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import Link from 'next/link';
@@ -421,6 +421,18 @@ export default function SpeciesDetailClient({ species }: SpeciesDetailClientProp
                 )}
               </CardContent>
             </Card>
+            
+            {species.createdAt && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center text-xl text-primary"><CalendarClock className="mr-2 h-5 w-5" /> Información de Registro</CardTitle>
+                  <CardDescription>Metadatos de la entrada en la plataforma.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p><strong>Fecha de Creación:</strong> {new Date(species.createdAt).toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                </CardContent>
+              </Card>
+            )}
 
             <Card>
               <CardHeader>

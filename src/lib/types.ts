@@ -99,6 +99,7 @@ export type Species = {
   threats: string[];
   habitat: string; 
   showHistoricalDataToPublic?: boolean;
+  createdAt?: string;
 };
 
 export type Researcher = {

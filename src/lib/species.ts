@@ -88,6 +88,7 @@ export const addSpecies = async (newSpeciesData: Partial<Species>): Promise<Spec
         keyStats: newSpeciesData.keyStats || [],
         historicalData: newSpeciesData.historicalData || [],
         showHistoricalDataToPublic: newSpeciesData.showHistoricalDataToPublic ?? false,
+        createdAt: new Date().toISOString(),
 
         // Initialize all island flags, overwriting undefined from the spread with a boolean value
         is_darwin: newSpeciesData.is_darwin ?? false,
