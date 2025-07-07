@@ -64,10 +64,10 @@ export default function DashboardLayout({
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                     <SidebarMenuItem>
-                      <SidebarMenuButton asChild variant="ghost" className="justify-start w-full" tooltip="Importar Datos">
+                      <SidebarMenuButton asChild variant="ghost" className="justify-start w-full" tooltip="Traer Especies">
                         <Link href="/dashboard/admin/import">
                           <FileUp />
-                          <span className="group-data-[state=collapsed]:hidden">Importar Datos</span>
+                          <span className="group-data-[state=collapsed]:hidden">Traer Especies</span>
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
