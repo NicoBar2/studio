@@ -22,6 +22,7 @@ import {
 } from '@/lib/researchers';
 import { enrichSpeciesData, type EnrichedData } from '@/ai/flows/enrichSpeciesData';
 import { getComparisonAnalysis, type CompareSpeciesInput } from '@/ai/flows/compareSpeciesFlow';
+import { scrapeAndGetSpeciesData } from '@/ai/flows/scrapeSpeciesFlow';
 import { z } from 'zod';
 import { redirect } from 'next/navigation';
 import bcrypt from 'bcryptjs';
@@ -668,6 +669,57 @@ export async function enrichSpeciesDataAction(prevState: any, formData: FormData
     return { success: false, message: "Ocurrió un error al contactar al servicio de IA." };
   }
 }
+
+export async function scrapeSpeciesAction(
+  prevState: any,
+  formData: FormData
+): Promise<{ success: boolean; message: string }> {
+  const userRole = formData.get('userRole') as string;
+  if (userRole !== 'admin') {
+    return { success: false, message: "Acción no permitida." };
+  }
+
+  const speciesNames = formData.get('speciesNames') as string;
+  if (!speciesNames || speciesNames.trim() === '') {
+    return { success: false, message: "No se han proporcionado nombres de especies." };
+  }
+
+  const namesList = speciesNames.split('\n').map(name => name.trim()).filter(name => name.length > 0);
+  if (namesList.length === 0) {
+    return { success: false, message: "La lista de nombres de especies está vacía." };
+  }
+  
+  let addedCount = 0;
+  let failedCount = 0;
+  const failedNames: string[] = [];
+
+  for (const name of namesList) {
+    try {
+      const scrapedData = await scrapeAndGetSpeciesData(name);
+      
+      // The scraped data is a partial object, pass it to the robust addSpecies function
+      await addSpeciesToStore(scrapedData);
+      addedCount++;
+    } catch (error) {
+      console.error(`Error procesando scrapping para "${name}":`, error);
+      failedCount++;
+      failedNames.push(name);
+    }
+  }
+
+  if (addedCount > 0) {
+    revalidatePath('/');
+    revalidatePath('/dashboard');
+  }
+
+  let message = `Proceso de scrapping completado. Especies añadidas: ${addedCount}.`;
+  if (failedCount > 0) {
+    message += ` Fallidas: ${failedCount} (${failedNames.join(', ')}). Revisa la consola del servidor para detalles.`;
+  }
+
+  return { success: addedCount > 0, message };
+}
+
 
 const ADMIN_CREDENTIALS = { 
   email: 'admin@galapagos.com', 

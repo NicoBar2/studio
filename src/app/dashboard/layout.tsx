@@ -1,7 +1,8 @@
+
 "use client"; 
 import RoleBasedGuard from '@/components/auth/RoleBasedGuard';
 import { Sidebar, SidebarProvider, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarHeader, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
-import { LayoutDashboard, Users, HomeIcon, FileUp, GitCompareArrows, PlusCircle } from 'lucide-react';
+import { LayoutDashboard, Users, HomeIcon, FileUp, GitCompareArrows, PlusCircle, Webhook } from 'lucide-react';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -68,6 +69,14 @@ export default function DashboardLayout({
                         <Link href="/dashboard/admin/import">
                           <FileUp />
                           <span className="group-data-[state=collapsed]:hidden">Importar especies</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                     <SidebarMenuItem>
+                      <SidebarMenuButton asChild variant="ghost" className="justify-start w-full" tooltip="Importar por Scrapping">
+                        <Link href="/dashboard/admin/scrapper">
+                          <Webhook />
+                          <span className="group-data-[state=collapsed]:hidden">Importar por Scrapping</span>
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
