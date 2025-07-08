@@ -30,6 +30,25 @@ La plataforma está diseñada para apoyar la **investigación ecológica y de co
 - **Estado de Conservación**: Centraliza el seguimiento del estado de conservación de las especies según la UICN, una métrica vital para los esfuerzos de protección.
 - **Estudios Taxonómicos y Biológicos**: El modelo de datos detallado permite almacenar información taxonómica completa, descripciones, hábitats, amenazas y estadísticas clave, proporcionando una visión holística de cada especie.
 
+## Mapa de Navegación del Prototipo
+
+```text
+                       [ Sitio Público / Inicio ]
+                              |
+      +-----------------------+-----------------------+
+      |                       |                       |
+[ Acceso / Login ]     [ Panel de Investigador ]        [ Panel de Administrador ]
+      |                       |                               |
+      L-- Registro            +-- Gestión de Especies         +-- Gestión de Usuarios
+                              |   (Añadir, Editar, IA)        |
+                              |                               +-- Herramientas de Importación
+                              +-- Visualización de Datos      |   (Excel, Scrapping)
+                              |   (Gráficos individuales)     |
+                              |                               L-- (Todas las funciones de Investigador)
+                              L-- Comparador de Especies
+                                  (Consulta de gráficos)
+```
+
 ## Comparativa con Otras Plataformas
 
 - **Frente a Herramientas de Propósito General (ej. Excel, Google Sheets)**: A diferencia de las hojas de cálculo, DataLens ofrece una interfaz estructurada, validaciones de datos, seguridad basada en roles y visualizaciones interactivas (mapas/gráficos) diseñadas específicamente para datos de biodiversidad, lo que reduce errores y facilita el análisis.

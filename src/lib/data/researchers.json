@@ -3,6 +3,7 @@
     "id": "mcnkn7cj31xy8junp",
     "name": "Nicolas B",
     "email": "nicoleyro13@gmail.com",
-    "isVerified": false
+    "isVerified": true,
+    "password": "$2a$10$pvP0KKgYgb98CiMzAHAYKeuLVSThO8TdXlTdaup7jlgswjWPicf.S"
   }
 ]
