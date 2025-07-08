@@ -1,3 +1,4 @@
+
 [
   {
     "id": "tortuga-gigante-de-galapagos",
@@ -392,7 +393,7 @@
     "specificEpithet": "albemarlensis",
     "spanishDescription": "Pequeños reptiles muy comunes en las islas, con diferentes especies o subespecies en cada isla. Son conocidos por sus exhibiciones de 'flexiones' (push-ups) para defender su territorio. El color de los machos varía según la isla.",
     "englishDescription": "Small reptiles very common on the islands, with different species or subspecies on each island. They are known for their 'push-up' displays to defend their territory. The color of the males varies depending on the island.",
-    "imageUrl": "https://images.unsplash.com/photo-1549488344-cbb6c34cf08b?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "imageUrl": "https://placehold.co/600x400.png",
     "dataAiHint": "lava lizard",
     "icon": "Footprints",
     "populationTrend": "stable",
@@ -453,7 +454,7 @@
     "genus": "Mimus",
     "specificEpithet": "trifasciatus",
     "spanishDescription": "El Sinsonte de Floreana es una especie endémica de las Islas Galápagos, actualmente restringida a islas pequeñas como Champion e Isla Gardner cerca de Floreana. Se caracteriza por su plumaje de color grisáceo-marrón, con rayas más oscuras en la espalda y alas. Son omnívoros, alimentándose de insectos, frutos y néctar.",
-    "imageUrl": "https://images.unsplash.com/photo-1610482643584-81d34c113543?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "imageUrl": "https://placehold.co/600x400.png",
     "dataAiHint": "sinsonte floreana",
     "icon": "Bird",
     "historicalData": [],
@@ -609,5 +610,3 @@
     "showHistoricalDataToPublic": true
   }
 ]
-
-    
