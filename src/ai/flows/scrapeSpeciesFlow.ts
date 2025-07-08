@@ -16,7 +16,7 @@ const ScrapedSpeciesDataSchema = z.object({
   genus: z.string().describe("El género taxonómico de la especie."),
   specificEpithet: z.string().describe("El epíteto específico taxonómico de la especie."),
   spanishDescription: z.string().describe("Una descripción detallada de la especie en español (2-3 frases)."),
-  habitat: z.string().describe("El hábitat primario de la especie."),
+  habitat: z.string().describe("El hábitat primario de la especie (ej. zonas costeras rocosas, manglares). Extraer de la sección 'Hábitat' o 'Ecología' de la fuente."),
   iucnStatus: z.enum([
     'En Peligro Crítico',
     'En Peligro',
@@ -34,21 +34,21 @@ const ScrapedSpeciesDataSchema = z.object({
     value: z.union([z.string(), z.number()]).describe("El valor de la estadística."),
     unit: z.string().optional().describe("La unidad para la estadística (ej., 'kg', 'm').")
   })).describe("Una lista de 2-3 estadísticas clave sobre la especie."),
-   is_darwin: z.boolean().describe("¿La especie habita en la isla Darwin?"),
-  is_espanola: z.boolean().describe("¿La especie habita en la isla Española?"),
-  is_fernandina: z.boolean().describe("¿La especie habita en la isla Fernandina?"),
-  is_floreana: z.boolean().describe("¿La especie habita en la isla Floreana?"),
-  is_genovesa: z.boolean().describe("¿La especie habita en la isla Genovesa?"),
-  is_isabela: z.boolean().describe("¿La especie habita en la isla Isabela?"),
-  is_marchena: z.boolean().describe("¿La especie habita en la isla Marchena?"),
-  is_pinta: z.boolean().describe("¿La especie habita en la isla Pinta?"),
-  is_pinzon: z.boolean().describe("¿La especie habita en la isla Pinzón?"),
-  is_san_cristobal: z.boolean().describe("¿La especie habita en la isla San Cristóbal?"),
-  is_santa_cruz: z.boolean().describe("¿La especie habita en la isla Santa Cruz?"),
-  is_santa_fe: z.boolean().describe("¿La especie habita en la isla Santa Fé?"),
-  is_santiago: z.boolean().describe("¿La especie habita en la isla Santiago?"),
-  is_north_seymour: z.boolean().describe("¿La especie habita en la isla Seymour Norte?"),
-  is_wolf: z.boolean().describe("¿La especie habita en la isla Wolf?"),
+   is_darwin: z.boolean().describe("¿La especie habita en la isla Darwin? Extraer de la lista de distribución."),
+  is_espanola: z.boolean().describe("¿La especie habita en la isla Española? Extraer de la lista de distribución."),
+  is_fernandina: z.boolean().describe("¿La especie habita en la isla Fernandina? Extraer de la lista de distribución."),
+  is_floreana: z.boolean().describe("¿La especie habita en la isla Floreana? Extraer de la lista de distribución."),
+  is_genovesa: z.boolean().describe("¿La especie habita en la isla Genovesa? Extraer de la lista de distribución."),
+  is_isabela: z.boolean().describe("¿La especie habita en la isla Isabela? Extraer de la lista de distribución."),
+  is_marchena: z.boolean().describe("¿La especie habita en la isla Marchena? Extraer de la lista de distribución."),
+  is_pinta: z.boolean().describe("¿La especie habita en la isla Pinta? Extraer de la lista de distribución."),
+  is_pinzon: z.boolean().describe("¿La especie habita en la isla Pinzón? Extraer de la lista de distribución."),
+  is_san_cristobal: z.boolean().describe("¿La especie habita en la isla San Cristóbal? Extraer de la lista de distribución."),
+  is_santa_cruz: z.boolean().describe("¿La especie habita en la isla Santa Cruz? Extraer de la lista de distribución."),
+  is_santa_fe: z.boolean().describe("¿La especie habita en la isla Santa Fé? Extraer de la lista de distribución."),
+  is_santiago: z.boolean().describe("¿La especie habita en la isla Santiago? Extraer de la lista de distribución."),
+  is_north_seymour: z.boolean().describe("¿La especie habita en la isla Seymour Norte? Extraer de la lista de distribución."),
+  is_wolf: z.boolean().describe("¿La especie habita en la isla Wolf? Extraer de la lista de distribución."),
 });
 
 export type ScrapedSpeciesData = z.infer<typeof ScrapedSpeciesDataSchema>;
@@ -60,7 +60,7 @@ const scraperPrompt = ai.definePrompt({
   prompt: `Eres un **robot de extracción de datos**, no un asistente generativo. Tu única función es actuar como un web scraper especializado en el sitio datazone.darwinfoundation.org.
 
   **Tarea**:
-  Para la especie llamada "{{input}}", debes simular la navegación a datazone.darwinfoundation.org, encontrar la página de esa especie y **extraer textualmente** la siguiente información. No debes inferir, resumir ni usar conocimiento externo. Si no encuentras un dato exacto en el sitio, deja el campo correspondiente vacío o con un valor por defecto apropiado (ej. 'unknown', false).
+  Para la especie llamada "{{input}}", debes simular la navegación a datazone.darwinfoundation.org, encontrar la página de esa especie y **extraer textualmente** la siguiente información. No debes inferir, resumir ni usar conocimiento externo. Es crucial que hagas tu mejor esfuerzo para encontrar cada uno de los siguientes datos. Si después de una búsqueda exhaustiva no encuentras un dato exacto en el sitio, deja el campo correspondiente vacío o con un valor por defecto apropiado (ej. 'unknown', false).
   
   **Regla Crítica**: La especie debe ser real y tener una presencia documentada y significativa en las Islas Galápagos según datazone.darwinfoundation.org. Si no puedes encontrar la especie en ese sitio, o si no pertenece a Galápagos, debes fallar intencionadamente devolviendo un nombre común en español inválido, como "especie_invalida". Esto es para prevenir la adición de datos incorrectos.
 
@@ -69,12 +69,12 @@ const scraperPrompt = ai.definePrompt({
   - Nombre común en inglés
   - Género y epíteto específico
   - Descripción en español (copia 2-3 frases textuales si es posible)
-  - Hábitat principal
+  - **Hábitat principal:** (Busca en secciones de ecología, descripción o hábitat)
   - Estado de conservación oficial de la UICN
   - Tendencia poblacional actual
   - 3-4 amenazas principales
   - 2-3 estadísticas clave (como peso, longevidad, tamaño, etc.)
-  - La presencia (verdadero/falso) en cada una de las siguientes islas de Galápagos: Darwin, Española, Fernandina, Floreana, Genovesa, Isabela, Marchena, Pinta, Pinzón, San Cristóbal, Santa Cruz, Santa Fé, Santiago, Seymour Norte, Wolf.
+  - **La presencia (verdadero/falso) en cada una de las siguientes islas de Galápagos:** Darwin, Española, Fernandina, Floreana, Genovesa, Isabela, Marchena, Pinta, Pinzón, San Cristóbal, Santa Cruz, Santa Fé, Santiago, Seymour Norte, Wolf. (Busca en la sección de 'Distribución').
   `,
 });
 
@@ -104,3 +104,5 @@ export async function scrapeAndGetSpeciesData(speciesName: string): Promise<Scra
     }
     return scrapeSpeciesFlow(speciesName.trim());
 }
+
+    

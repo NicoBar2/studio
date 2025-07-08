@@ -1,32 +1,32 @@
-
 [
   {
-    "id": "tortuga-gigante",
+    "id": "tortuga-gigante-de-galapagos",
     "spanishCommonName": "Tortuga Gigante de Galápagos",
     "englishCommonName": "Galapagos Giant Tortoise",
     "genus": "Chelonoidis",
     "specificEpithet": "niger",
     "spanishDescription": "Reptiles icónicos conocidos por su larga vida y gran tamaño, desempeñando un papel crucial en la configuración de su entorno. Son herbívoros y su lento metabolismo les permite sobrevivir largos períodos sin comida ni agua.",
     "englishDescription": "Iconic reptiles known for their long lifespan and large size, playing a crucial role in shaping their environment. They are herbivores, and their slow metabolism allows them to survive long periods without food or water.",
-    "imageUrl": "https://placehold.co/600x400.png",
+    "imageUrl": "https://images.unsplash.com/photo-1549488344-cbb6c34cf08b?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     "dataAiHint": "giant tortoise",
     "icon": "Turtle",
-    "populationTrend": "increasing",
+    "populationTrend": "stable",
     "iucnStatus": "Vulnerable",
-    "habitat": "Zonas altas y húmedas con vegetación densa, y zonas bajas y áridas con cactus.",
+    "habitat": "Zonas áridas de tierras bajas hasta bosques húmedos de tierras altas.",
     "threats": [
       "Especies invasoras (ratas, cerdos)",
-      "Pérdida de hábitat histórico"
+      "Pérdida de hábitat",
+      "Enfermedades"
     ],
     "keyStats": [
       {
-        "label": "Peso",
-        "value": "Hasta 400",
+        "label": "Peso Promedio",
+        "value": 250,
         "unit": "kg"
       },
       {
         "label": "Longevidad",
-        "value": "Más de 100",
+        "value": "100+",
         "unit": "años"
       }
     ],
@@ -57,7 +57,7 @@
     "is_fernandina": false,
     "is_santiago": true,
     "is_floreana": false,
-    "is_pinta": true,
+    "is_pinta": false,
     "is_pinzon": true,
     "is_darwin": false,
     "is_genovesa": false,
@@ -66,14 +66,7 @@
     "is_wolf": false,
     "is_north_seymour": false,
     "createdAt": "2024-01-01T12:00:00.000Z",
-    "showHistoricalDataToPublic": true,
-    "localName": "",
-    "domain": "Eukaryota",
-    "kingdom": "Animalia",
-    "phylum": "Chordata",
-    "class": "Reptilia",
-    "order": "Testudines",
-    "family": "Testudinidae"
+    "showHistoricalDataToPublic": false
   },
   {
     "id": "iguana-marina",
@@ -83,43 +76,47 @@
     "specificEpithet": "cristatus",
     "spanishDescription": "La única iguana del mundo que se alimenta en el mar. Estas criaturas prehistóricas son famosas por su capacidad para bucear y alimentarse de algas submarinas. Pasan gran parte de su tiempo tomando el sol en las rocas volcánicas para calentarse.",
     "englishDescription": "The world's only sea-feeding iguana. These prehistoric-looking creatures are famous for their ability to dive and feed on underwater algae. They spend much of their time basking on volcanic rocks to warm up.",
-    "imageUrl": "https://placehold.co/600x400.png",
+    "imageUrl": "https://images.unsplash.com/photo-1596481775269-9a3b6527cb04?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     "dataAiHint": "marine iguana",
     "icon": "Waves",
-    "populationTrend": "stable",
+    "populationTrend": "decreasing",
     "iucnStatus": "Vulnerable",
-    "habitat": "Costas rocosas y zonas intermareales a lo largo de la mayoría de las islas.",
+    "habitat": "Costas rocosas, playas de arena y zonas de manglares.",
     "threats": [
-      "Contaminación marina (derrames de petróleo)",
-      "Depredación por especies introducidas (perros, gatos)",
-      "El Niño, que reduce la disponibilidad de algas"
+      "Eventos de El Niño",
+      "Contaminación marina",
+      "Depredadores introducidos"
     ],
     "keyStats": [
       {
         "label": "Profundidad de Buceo",
-        "value": "Hasta 20",
+        "value": 20,
         "unit": "m"
       },
       {
-        "label": "Dieta Principal",
-        "value": "Algas rojas y verdes"
+        "label": "Longitud Promedio",
+        "value": "1.3",
+        "unit": "m"
       }
     ],
     "historicalData": [
       {
         "year": 1990,
         "value": 250000,
-        "unit": "individuos"
+        "unit": "individuos",
+        "description": ""
       },
       {
         "year": 2010,
         "value": 200000,
-        "unit": "individuos"
+        "unit": "individuos",
+        "description": ""
       },
       {
         "year": 2022,
         "value": 220000,
-        "unit": "individuos"
+        "unit": "individuos",
+        "description": ""
       }
     ],
     "is_isabela": true,
@@ -131,21 +128,14 @@
     "is_floreana": true,
     "is_pinta": true,
     "is_pinzon": true,
-    "is_genovesa": true,
-    "is_darwin": true,
-    "is_marchena": true,
-    "is_santa_fe": true,
-    "is_wolf": true,
-    "is_north_seymour": true,
+    "is_genovesa": false,
+    "is_darwin": false,
+    "is_marchena": false,
+    "is_santa_fe": false,
+    "is_wolf": false,
+    "is_north_seymour": false,
     "createdAt": "2024-01-01T12:00:00.000Z",
-    "showHistoricalDataToPublic": true,
-    "localName": "",
-    "domain": "Eukaryota",
-    "kingdom": "Animalia",
-    "phylum": "Chordata",
-    "class": "Reptilia",
-    "order": "Squamata",
-    "family": "Iguanidae"
+    "showHistoricalDataToPublic": true
   },
   {
     "id": "pinzon-de-darwin",
@@ -155,41 +145,41 @@
     "specificEpithet": "magnirostris",
     "spanishDescription": "Un grupo de unas 15 especies de aves famosas por la variación en la forma y tamaño de sus picos, que están adaptados a diferentes fuentes de alimento. Jugaron un papel clave en la teoría de la evolución por selección natural de Darwin.",
     "englishDescription": "A group of about 15 species of birds famous for the variation in the shape and size of their beaks, which are adapted to different food sources. They played a key role in Darwin's theory of evolution by natural selection.",
-    "imageUrl": "https://placehold.co/600x400.png",
+    "imageUrl": "https://images.unsplash.com/photo-1610482643584-81d34c113543?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     "dataAiHint": "finch bird",
     "icon": "Bird",
     "populationTrend": "stable",
     "iucnStatus": "Preocupación Menor",
-    "habitat": "Varía ampliamente entre especies, desde bosques húmedos hasta zonas costeras áridas.",
+    "habitat": "Diversos, desde zonas costeras áridas hasta bosques húmedos.",
     "threats": [
-      "Especies invasoras (mosca parásita Philornis downsi)",
-      "Enfermedades aviares"
+      "Parásitos invasores (Philornis downsi)",
+      "Competencia por alimentos"
     ],
     "keyStats": [
       {
         "label": "Número de Especies",
-        "value": "~15"
-      },
-      {
-        "label": "Característica Clave",
-        "value": "Diversidad de picos"
+        "value": "15+",
+        "unit": ""
       }
     ],
     "historicalData": [
       {
         "year": 1995,
         "value": 300000,
-        "unit": "individuos"
+        "unit": "individuos",
+        "description": ""
       },
       {
         "year": 2005,
         "value": 320000,
-        "unit": "individuos"
+        "unit": "individuos",
+        "description": ""
       },
       {
         "year": 2015,
         "value": 310000,
-        "unit": "individuos"
+        "unit": "individuos",
+        "description": ""
       }
     ],
     "is_isabela": true,
@@ -208,14 +198,7 @@
     "is_wolf": true,
     "is_north_seymour": true,
     "createdAt": "2024-01-01T12:00:00.000Z",
-    "showHistoricalDataToPublic": false,
-    "localName": "",
-    "domain": "Eukaryota",
-    "kingdom": "Animalia",
-    "phylum": "Chordata",
-    "class": "Aves",
-    "order": "Passeriformes",
-    "family": "Thraupidae"
+    "showHistoricalDataToPublic": false
   },
   {
     "id": "piquero-patas-azules",
@@ -225,37 +208,224 @@
     "specificEpithet": "nebouxii",
     "spanishDescription": "Ave marina famosa por sus llamativas patas de color azul brillante, un rasgo de selección sexual. Son excelentes buceadores que se zambullen en el océano a alta velocidad para atrapar peces.",
     "englishDescription": "A seabird famous for its striking bright blue feet, a trait of sexual selection. They are excellent divers who plunge into the ocean at high speed to catch fish.",
-    "imageUrl": "https://placehold.co/600x400.png",
+    "imageUrl": "https://images.unsplash.com/photo-1591714712499-258079571129?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     "dataAiHint": "blue-footed booby",
     "icon": "Bird",
     "populationTrend": "decreasing",
     "iucnStatus": "Preocupación Menor",
-    "habitat": "Costas e islas rocosas, anidan en el suelo en pequeñas depresiones.",
+    "habitat": "Costas rocosas y acantilados para anidación.",
     "threats": [
-      "Disminución de las poblaciones de sardinas, su principal fuente de alimento.",
-      "Perturbaciones humanas en sus sitios de anidación."
+      "Disminución de la población de sardinas",
+      "Perturbación humana en sitios de anidación"
     ],
     "keyStats": [
       {
         "label": "Envergadura",
-        "value": "Aprox. 1.5",
+        "value": "1.5",
         "unit": "m"
-      },
-      {
-        "label": "Característica",
-        "value": "Patas azules brillantes"
       }
     ],
     "historicalData": [
       {
         "year": 1960,
         "value": 20000,
-        "unit": "parejas reproductoras"
+        "unit": "parejas reproductoras",
+        "description": ""
       },
       {
         "year": 2012,
         "value": 6500,
-        "unit": "parejas reproductoras"
+        "unit": "parejas reproductoras",
+        "description": ""
+      }
+    ],
+    "is_isabela": true,
+    "is_santa_cruz": true,
+    "is_san_cristobal": true,
+    "is_espanola": true,
+    "is_fernandina": false,
+    "is_santiago": true,
+    "is_floreana": false,
+    "is_pinta": false,
+    "is_pinzon": true,
+    "is_genovesa": false,
+    "is_darwin": false,
+    "is_marchena": false,
+    "is_santa_fe": true,
+    "is_wolf": false,
+    "is_north_seymour": true,
+    "createdAt": "2024-01-01T12:00:00.000Z",
+    "showHistoricalDataToPublic": false
+  },
+  {
+    "id": "cormoran-no-volador",
+    "spanishCommonName": "Cormorán no Volador",
+    "englishCommonName": "Flightless Cormorant",
+    "genus": "Nannopterum",
+    "specificEpithet": "harrisi",
+    "spanishDescription": "Un ejemplo perfecto de evolución en las islas. Al no tener depredadores terrestres, perdió la capacidad de volar y desarrolló patas poderosas para nadar y bucear en busca de peces y pulpos cerca de la costa.",
+    "englishDescription": "A perfect example of island evolution. Having no land predators, it lost the ability to fly and developed powerful legs for swimming and diving for fish and octopus near the coast.",
+    "imageUrl": "https://images.unsplash.com/photo-1620935359738-f6671a5d6a8b?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "dataAiHint": "cormorant bird",
+    "icon": "Bird",
+    "populationTrend": "stable",
+    "iucnStatus": "Vulnerable",
+    "habitat": "Zonas costeras de las islas Fernandina e Isabela.",
+    "threats": [
+      "Vulnerabilidad a eventos climáticos",
+      "Depredadores introducidos"
+    ],
+    "keyStats": [
+      {
+        "label": "Población total",
+        "value": "~1600",
+        "unit": "individuos"
+      }
+    ],
+    "historicalData": [
+      {
+        "year": 2000,
+        "value": 1500,
+        "unit": "individuos",
+        "description": ""
+      },
+      {
+        "year": 2010,
+        "value": 1600,
+        "unit": "individuos",
+        "description": ""
+      },
+      {
+        "year": 2020,
+        "value": 1650,
+        "unit": "individuos",
+        "description": ""
+      }
+    ],
+    "is_isabela": true,
+    "is_fernandina": true,
+    "is_santa_cruz": false,
+    "is_san_cristobal": false,
+    "is_espanola": false,
+    "is_santiago": false,
+    "is_floreana": false,
+    "is_pinta": false,
+    "is_pinzon": false,
+    "is_genovesa": false,
+    "is_darwin": false,
+    "is_marchena": false,
+    "is_santa_fe": false,
+    "is_wolf": false,
+    "is_north_seymour": false,
+    "createdAt": "2024-01-01T12:00:00.000Z",
+    "showHistoricalDataToPublic": false
+  },
+  {
+    "id": "albatros-de-galapagos",
+    "spanishCommonName": "Albatros de Galápagos",
+    "englishCommonName": "Waved Albatross",
+    "genus": "Phoebastria",
+    "specificEpithet": "irrorata",
+    "spanishDescription": "Prácticamente toda la población mundial de esta especie anida en la isla Española. Son conocidos por sus elaborados rituales de cortejo y su impresionante envergadura. Pasan la mayor parte de su vida en el mar.",
+    "englishDescription": "Virtually the entire world population of this species nests on Española Island. They are known for their elaborate courtship rituals and impressive wingspan. They spend most of their lives at sea.",
+    "imageUrl": "https://images.unsplash.com/photo-1598463133311-953535552a8a?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "dataAiHint": "albatross bird",
+    "icon": "Bird",
+    "populationTrend": "decreasing",
+    "iucnStatus": "En Peligro Crítico",
+    "habitat": "Acantilados y zonas abiertas en la Isla Española.",
+    "threats": [
+      "Pesca con palangre",
+      "Contaminación por plásticos",
+      "Cambio climático"
+    ],
+    "keyStats": [
+      {
+        "label": "Envergadura",
+        "value": "2.4",
+        "unit": "m"
+      }
+    ],
+    "historicalData": [
+      {
+        "year": 1994,
+        "value": 15000,
+        "unit": "parejas reproductoras",
+        "description": ""
+      },
+      {
+        "year": 2007,
+        "value": 12000,
+        "unit": "parejas reproductoras",
+        "description": ""
+      },
+      {
+        "year": 2020,
+        "value": 10000,
+        "unit": "parejas reproductoras",
+        "description": ""
+      }
+    ],
+    "is_espanola": true,
+    "is_isabela": false,
+    "is_santa_cruz": false,
+    "is_san_cristobal": false,
+    "is_fernandina": false,
+    "is_santiago": false,
+    "is_floreana": false,
+    "is_pinta": false,
+    "is_pinzon": false,
+    "is_genovesa": false,
+    "is_darwin": false,
+    "is_marchena": false,
+    "is_santa_fe": false,
+    "is_wolf": false,
+    "is_north_seymour": false,
+    "createdAt": "2024-01-01T12:00:00.000Z",
+    "showHistoricalDataToPublic": false
+  },
+  {
+    "id": "lagartija-de-lava",
+    "spanishCommonName": "Lagartija de Lava de Galápagos",
+    "englishCommonName": "Galapagos Lava Lizard",
+    "genus": "Microlophus",
+    "specificEpithet": "albemarlensis",
+    "spanishDescription": "Pequeños reptiles muy comunes en las islas, con diferentes especies o subespecies en cada isla. Son conocidos por sus exhibiciones de 'flexiones' (push-ups) para defender su territorio. El color de los machos varía según la isla.",
+    "englishDescription": "Small reptiles very common on the islands, with different species or subspecies on each island. They are known for their 'push-up' displays to defend their territory. The color of the males varies depending on the island.",
+    "imageUrl": "https://images.unsplash.com/photo-1549488344-cbb6c34cf08b?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "dataAiHint": "lava lizard",
+    "icon": "Footprints",
+    "populationTrend": "stable",
+    "iucnStatus": "Preocupación Menor",
+    "habitat": "Zonas áridas, rocosas y de matorrales en la mayoría de las islas.",
+    "threats": [
+      "Depredadores introducidos como gatos y ratas."
+    ],
+    "keyStats": [
+      {
+        "label": "Longitud",
+        "value": "15",
+        "unit": "cm"
+      }
+    ],
+    "historicalData": [
+      {
+        "year": 2000,
+        "value": 500000,
+        "unit": "individuos",
+        "description": ""
+      },
+      {
+        "year": 2010,
+        "value": 550000,
+        "unit": "individuos",
+        "description": ""
+      },
+      {
+        "year": 2020,
+        "value": 530000,
+        "unit": "individuos",
+        "description": ""
       }
     ],
     "is_isabela": true,
@@ -263,49 +433,77 @@
     "is_san_cristobal": true,
     "is_espanola": true,
     "is_fernandina": true,
-    "is_santiago": false,
+    "is_santiago": true,
     "is_floreana": true,
     "is_pinta": true,
     "is_pinzon": true,
     "is_genovesa": true,
     "is_darwin": false,
-    "is_marchena": false,
+    "is_marchena": true,
     "is_santa_fe": true,
     "is_wolf": false,
     "is_north_seymour": true,
     "createdAt": "2024-01-01T12:00:00.000Z",
-    "showHistoricalDataToPublic": true,
-    "localName": "",
-    "domain": "Eukaryota",
-    "kingdom": "Animalia",
-    "phylum": "Chordata",
-    "class": "Aves",
-    "order": "Suliformes",
-    "family": "Sulidae"
+    "showHistoricalDataToPublic": false
   },
   {
-    "id": "leon-marino",
+    "id": "sinsonte-de-floreana",
+    "spanishCommonName": "Sinsonte de Floreana",
+    "englishCommonName": "Floreana Mockingbird",
+    "genus": "Mimus",
+    "specificEpithet": "trifasciatus",
+    "spanishDescription": "El Sinsonte de Floreana es una especie endémica de las Islas Galápagos, actualmente restringida a islas pequeñas como Champion e Isla Gardner cerca de Floreana. Se caracteriza por su plumaje de color grisáceo-marrón, con rayas más oscuras en la espalda y alas. Son omnívoros, alimentándose de insectos, frutos y néctar.",
+    "imageUrl": "https://images.unsplash.com/photo-1610482643584-81d34c113543?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "dataAiHint": "sinsonte floreana",
+    "icon": "Bird",
+    "historicalData": [],
+    "iucnStatus": "En Peligro Crítico",
+    "keyStats": [],
+    "populationTrend": "decreasing",
+    "threats": [],
+    "habitat": "Matorrales áridos y bosques de cactus.",
+    "is_darwin": false,
+    "is_espanola": false,
+    "is_fernandina": false,
+    "is_floreana": true,
+    "is_genovesa": false,
+    "is_isabela": false,
+    "is_marchena": false,
+    "is_pinta": false,
+    "is_pinzon": false,
+    "is_san_cristobal": false,
+    "is_santa_cruz": false,
+    "is_santa_fe": false,
+    "is_santiago": false,
+    "is_north_seymour": false,
+    "is_wolf": false,
+    "createdAt": "2024-01-01T12:00:00.000Z",
+    "showHistoricalDataToPublic": false
+  },
+  {
+    "id": "leon-marino-de-galapagos",
     "spanishCommonName": "León Marino de Galápagos",
     "englishCommonName": "Galapagos Sea Lion",
     "genus": "Zalophus",
     "specificEpithet": "wollebaeki",
     "spanishDescription": "Mamífero marino endémico muy sociable y juguetón, a menudo visto descansando en playas y muelles. Son más pequeños que sus parientes de California y tienen un ladrido característico.",
     "englishDescription": "A very social and playful endemic marine mammal, often seen resting on beaches and piers. They are smaller than their California relatives and have a characteristic bark.",
-    "imageUrl": "data:image/jpeg;base64,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",
+    "imageUrl": "https://images.unsplash.com/photo-1574920412838-34f3b7f27435?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     "dataAiHint": "sea lion",
     "icon": "Waves",
     "populationTrend": "decreasing",
     "iucnStatus": "En Peligro",
-    "habitat": "Playas de arena y costas rocosas en todo el archipiélago.",
-    "threats": [],
+    "habitat": "Playas de arena y costas rocosas en todas las islas.",
+    "threats": [
+      "Enfermedades",
+      "Eventos de El Niño",
+      "Interacción con pesquerías"
+    ],
     "keyStats": [
       {
-        "label": "Población Estimada",
-        "value": "~50,000"
-      },
-      {
-        "label": "Dieta",
-        "value": "Peces, sardinas, calamares"
+        "label": "Peso Macho",
+        "value": "250",
+        "unit": "kg"
       }
     ],
     "historicalData": [
@@ -329,29 +527,22 @@
       }
     ],
     "is_isabela": true,
-    "is_santa_cruz": false,
+    "is_santa_cruz": true,
     "is_san_cristobal": true,
     "is_espanola": true,
-    "is_fernandina": false,
-    "is_santiago": false,
-    "is_floreana": false,
-    "is_pinta": false,
-    "is_pinzon": false,
-    "is_genovesa": false,
-    "is_darwin": false,
-    "is_marchena": false,
-    "is_santa_fe": false,
-    "is_wolf": false,
+    "is_fernandina": true,
+    "is_santiago": true,
+    "is_floreana": true,
+    "is_pinta": true,
+    "is_pinzon": true,
+    "is_genovesa": true,
+    "is_darwin": true,
+    "is_marchena": true,
+    "is_santa_fe": true,
+    "is_wolf": true,
     "is_north_seymour": true,
     "createdAt": "2024-01-01T12:00:00.000Z",
-    "showHistoricalDataToPublic": true,
-    "localName": "Lobo marino",
-    "domain": "Eukaryota",
-    "kingdom": "Animalia",
-    "phylum": "Chordata",
-    "class": "Mammalia",
-    "order": "Carnivora",
-    "family": "Otariidae"
+    "showHistoricalDataToPublic": true
   },
   {
     "id": "pinguino-de-galapagos",
@@ -361,49 +552,48 @@
     "specificEpithet": "mendiculus",
     "spanishDescription": "El único pingüino que vive al norte del ecuador. Es una de las especies de pingüinos más pequeñas del mundo. Utiliza las frías corrientes de Humboldt y Cromwell para sobrevivir en el clima tropical.",
     "englishDescription": "The only penguin that lives north of the equator. It is one of the smallest penguin species in the world. It uses the cold Humboldt and Cromwell currents to survive in the tropical climate.",
-    "imageUrl": "https://placehold.co/600x400.png",
+    "imageUrl": "https://images.unsplash.com/photo-1568951239823-35f991b198a2?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     "dataAiHint": "penguin galapagos",
     "icon": "Bird",
     "populationTrend": "stable",
     "iucnStatus": "En Peligro",
-    "habitat": "Costas de lava de las islas Fernandina e Isabela, con pequeñas poblaciones en otras islas.",
+    "habitat": "Costas rocosas volcánicas, principalmente en Fernandina e Isabela.",
     "threats": [
-      "Eventos de El Niño",
-      "Depredación por especies introducidas",
-      "Captura incidental en pesquerías"
+      "Cambio climático (El Niño)",
+      "Depredadores introducidos",
+      "Enfermedades"
     ],
     "keyStats": [
       {
         "label": "Altura Promedio",
-        "value": "49",
+        "value": 49,
         "unit": "cm"
-      },
-      {
-        "label": "Población",
-        "value": "< 2,000 individuos"
       }
     ],
     "historicalData": [
       {
         "year": 2004,
         "value": 1000,
-        "unit": "individuos"
+        "unit": "individuos",
+        "description": "Censo post El Niño severo."
       },
       {
         "year": 2019,
         "value": 1200,
-        "unit": "individuos"
+        "unit": "individuos",
+        "description": ""
       },
       {
         "year": 2021,
         "value": 2000,
-        "unit": "individuos"
+        "unit": "individuos",
+        "description": "Aumento significativo post-La Niña."
       }
     ],
     "is_isabela": true,
     "is_fernandina": true,
     "is_santiago": true,
-    "is_floreana": true,
+    "is_floreana": false,
     "is_santa_cruz": false,
     "is_san_cristobal": false,
     "is_espanola": false,
@@ -416,409 +606,8 @@
     "is_wolf": false,
     "is_north_seymour": false,
     "createdAt": "2024-01-01T12:00:00.000Z",
-    "showHistoricalDataToPublic": true,
-    "localName": "",
-    "domain": "Eukaryota",
-    "kingdom": "Animalia",
-    "phylum": "Chordata",
-    "class": "Aves",
-    "order": "Sphenisciformes",
-    "family": "Spheniscidae"
-  },
-  {
-    "id": "cormoran-no-volador",
-    "spanishCommonName": "Cormorán no Volador",
-    "englishCommonName": "Flightless Cormorant",
-    "genus": "Nannopterum",
-    "specificEpithet": "harrisi",
-    "spanishDescription": "Un ejemplo perfecto de evolución en las islas. Al no tener depredadores terrestres, perdió la capacidad de volar y desarrolló patas poderosas para nadar y bucear en busca de peces y pulpos cerca de la costa.",
-    "englishDescription": "A perfect example of island evolution. Having no land predators, it lost the ability to fly and developed powerful legs for swimming and diving for fish and octopus near the coast.",
-    "imageUrl": "https://placehold.co/600x400.png",
-    "dataAiHint": "cormorant bird",
-    "icon": "Bird",
-    "populationTrend": "stable",
-    "iucnStatus": "Vulnerable",
-    "habitat": "Costas rocosas de las islas Fernandina e Isabela.",
-    "threats": [
-      "Vulnerabilidad a eventos climáticos como El Niño.",
-      "Perturbaciones humanas y pesca."
-    ],
-    "keyStats": [
-      {
-        "label": "Característica",
-        "value": "Es el cormorán más pesado"
-      },
-      {
-        "label": "Población",
-        "value": "~1,600 individuos"
-      }
-    ],
-    "historicalData": [
-      {
-        "year": 2000,
-        "value": 1500,
-        "unit": "individuos"
-      },
-      {
-        "year": 2010,
-        "value": 1600,
-        "unit": "individuos"
-      },
-      {
-        "year": 2020,
-        "value": 1650,
-        "unit": "individuos"
-      }
-    ],
-    "is_isabela": true,
-    "is_fernandina": true,
-    "is_santa_cruz": false,
-    "is_san_cristobal": false,
-    "is_espanola": false,
-    "is_santiago": false,
-    "is_floreana": false,
-    "is_pinta": false,
-    "is_pinzon": false,
-    "is_genovesa": false,
-    "is_darwin": false,
-    "is_marchena": false,
-    "is_santa_fe": false,
-    "is_wolf": false,
-    "is_north_seymour": false,
-    "createdAt": "2024-01-01T12:00:00.000Z",
-    "showHistoricalDataToPublic": false,
-    "localName": "",
-    "domain": "Eukaryota",
-    "kingdom": "Animalia",
-    "phylum": "Chordata",
-    "class": "Aves",
-    "order": "Suliformes",
-    "family": "Phalacrocoracidae"
-  },
-  {
-    "id": "albatros-de-galapagos",
-    "spanishCommonName": "Albatros de Galápagos",
-    "englishCommonName": "Waved Albatross",
-    "genus": "Phoebastria",
-    "specificEpithet": "irrorata",
-    "spanishDescription": "Prácticamente toda la población mundial de esta especie anida en la isla Española. Son conocidos por sus elaborados rituales de cortejo y su impresionante envergadura. Pasan la mayor parte de su vida en el mar.",
-    "englishDescription": "Virtually the entire world population of this species nests on Española Island. They are known for their elaborate courtship rituals and impressive wingspan. They spend most of their lives at sea.",
-    "imageUrl": "https://placehold.co/600x400.png",
-    "dataAiHint": "albatross bird",
-    "icon": "Bird",
-    "populationTrend": "decreasing",
-    "iucnStatus": "En Peligro Crítico",
-    "habitat": "Anida casi exclusivamente en la isla Española. Se alimenta en la costa de Perú y Ecuador.",
-    "threats": [
-      "Pesca con palangre, que causa mortalidad incidental.",
-      "Contaminación por plásticos.",
-      "Turismo no regulado."
-    ],
-    "keyStats": [
-      {
-        "label": "Envergadura",
-        "value": "Hasta 2.5",
-        "unit": "m"
-      },
-      {
-        "label": "Longevidad",
-        "value": "40-45 años"
-      }
-    ],
-    "historicalData": [
-      {
-        "year": 1994,
-        "value": 15000,
-        "unit": "parejas reproductoras"
-      },
-      {
-        "year": 2007,
-        "value": 12000,
-        "unit": "parejas reproductoras"
-      },
-      {
-        "year": 2020,
-        "value": 10000,
-        "unit": "parejas reproductoras"
-      }
-    ],
-    "is_espanola": true,
-    "is_isabela": false,
-    "is_santa_cruz": false,
-    "is_san_cristobal": false,
-    "is_fernandina": false,
-    "is_santiago": false,
-    "is_floreana": false,
-    "is_pinta": false,
-    "is_pinzon": false,
-    "is_genovesa": false,
-    "is_darwin": false,
-    "is_marchena": false,
-    "is_santa_fe": false,
-    "is_wolf": false,
-    "is_north_seymour": false,
-    "createdAt": "2024-01-01T12:00:00.000Z",
-    "showHistoricalDataToPublic": false,
-    "localName": "",
-    "domain": "Eukaryota",
-    "kingdom": "Animalia",
-    "phylum": "Chordata",
-    "class": "Aves",
-    "order": "Procellariiformes",
-    "family": "Diomedeidae"
-  },
-  {
-    "id": "halcon-de-galapagos",
-    "spanishCommonName": "Halcón de Galápagos",
-    "englishCommonName": "Galapagos Hawk",
-    "genus": "Buteo",
-    "specificEpithet": "galapagoensis",
-    "spanishDescription": "El principal depredador ápice de las islas. Es un ave de presa endémica que no muestra miedo a los humanos. Se alimenta de una variedad de presas, desde insectos y lagartijas hasta iguanas jóvenes y crías de tortugas.",
-    "englishDescription": "The main apex predator of the islands. It is an endemic bird of prey that shows no fear of humans. It feeds on a variety of prey, from insects and lizards to young iguanas and tortoise hatchlings.",
-    "imageUrl": "https://placehold.co/600x400.png",
-    "dataAiHint": "hawk galapagos",
-    "icon": "Bird",
-    "populationTrend": "stable",
-    "iucnStatus": "Vulnerable",
-    "habitat": "Presente en la mayoría de las islas principales, en una variedad de hábitats desde la costa hasta las tierras altas.",
-    "threats": [
-      "Persecución histórica por parte de los humanos.",
-      "Competencia con especies introducidas."
-    ],
-    "keyStats": [
-      {
-        "label": "Población",
-        "value": "~150 parejas reproductoras"
-      },
-      {
-        "label": "Comportamiento",
-        "value": "Poliandria cooperativa (una hembra se aparea con varios machos)"
-      }
-    ],
-    "historicalData": [
-      {
-        "year": 1990,
-        "value": 150,
-        "unit": "parejas reproductoras"
-      },
-      {
-        "year": 2005,
-        "value": 160,
-        "unit": "parejas reproductoras"
-      },
-      {
-        "year": 2018,
-        "value": 155,
-        "unit": "parejas reproductoras"
-      }
-    ],
-    "is_isabela": true,
-    "is_fernandina": true,
-    "is_santiago": true,
-    "is_pinta": true,
-    "is_pinzon": true,
-    "is_santa_fe": true,
-    "is_espanola": true,
-    "is_santa_cruz": false,
-    "is_san_cristobal": false,
-    "is_floreana": false,
-    "is_genovesa": false,
-    "is_darwin": false,
-    "is_marchena": false,
-    "is_wolf": false,
-    "is_north_seymour": false,
-    "createdAt": "2024-01-01T12:00:00.000Z",
-    "showHistoricalDataToPublic": false,
-    "localName": "",
-    "domain": "Eukaryota",
-    "kingdom": "Animalia",
-    "phylum": "Chordata",
-    "class": "Aves",
-    "order": "Accipitriformes",
-    "family": "Accipitridae"
-  },
-  {
-    "id": "lagartija-de-lava",
-    "spanishCommonName": "Lagartija de Lava de Galápagos",
-    "englishCommonName": "Galapagos Lava Lizard",
-    "genus": "Microlophus",
-    "specificEpithet": "albemarlensis",
-    "spanishDescription": "Pequeños reptiles muy comunes en las islas, con diferentes especies o subespecies en cada isla. Son conocidos por sus exhibiciones de 'flexiones' (push-ups) para defender su territorio. El color de los machos varía según la isla.",
-    "englishDescription": "Small reptiles very common on the islands, with different species or subspecies on each island. They are known for their 'push-up' displays to defend their territory. The color of the males varies depending on the island.",
-    "imageUrl": "https://placehold.co/600x400.png",
-    "dataAiHint": "lava lizard",
-    "icon": "Footprints",
-    "populationTrend": "stable",
-    "iucnStatus": "Preocupación Menor",
-    "habitat": "Zonas áridas y costeras, campos de lava y matorrales secos. Se adaptan a muchos entornos.",
-    "threats": [
-      "Depredación por gatos y ratas introducidos."
-    ],
-    "keyStats": [
-      {
-        "label": "Comportamiento",
-        "value": "Territorial, exhibiciones de 'push-ups'"
-      },
-      {
-        "label": "Dieta",
-        "value": "Insectos, arañas, escorpiones, y a veces materia vegetal"
-      }
-    ],
-    "historicalData": [
-      {
-        "year": 2000,
-        "value": 500000,
-        "unit": "individuos"
-      },
-      {
-        "year": 2010,
-        "value": 550000,
-        "unit": "individuos"
-      },
-      {
-        "year": 2020,
-        "value": 530000,
-        "unit": "individuos"
-      }
-    ],
-    "is_isabela": true,
-    "is_santa_cruz": true,
-    "is_san_cristobal": true,
-    "is_espanola": true,
-    "is_fernandina": true,
-    "is_santiago": true,
-    "is_floreana": true,
-    "is_pinta": true,
-    "is_pinzon": true,
-    "is_genovesa": false,
-    "is_darwin": false,
-    "is_marchena": false,
-    "is_santa_fe": true,
-    "is_wolf": false,
-    "is_north_seymour": true,
-    "createdAt": "2024-01-01T12:00:00.000Z",
-    "showHistoricalDataToPublic": false,
-    "localName": "",
-    "domain": "Eukaryota",
-    "kingdom": "Animalia",
-    "phylum": "Chordata",
-    "class": "Reptilia",
-    "order": "Squamata",
-    "family": "Tropiduridae"
-  },
-  {
-    "conservationStatus": "Vulnerable",
-    "englishCommonName": "Galapagos Penguin",
-    "genus": "Spheniscus",
-    "habitat": "Rocky shores and coastlines",
-    "keyStats": [
-      {
-        "label": "Altura promedio",
-        "value": "49",
-        "unit": "cm"
-      },
-      {
-        "label": "Peso promedio",
-        "value": "2.5",
-        "unit": "kg"
-      }
-    ],
-    "populationTrend": "decreasing",
-    "spanishCommonName": "Pingüino de las Galápagos",
-    "spanishDescription": "El Pingüino de las Galápagos (Spheniscus mendiculus) es una especie endémica de las Islas Galápagos. Es el único pingüino que vive en el ecuador y uno de los más pequeños del mundo. Se distingue por su franja blanca alrededor de la cabeza y su cuerpo adaptado para nadar en aguas cálidas.",
-    "specificEpithet": "mendiculus",
-    "threats": [
-      "El Niño events",
-      "Climate change",
-      "Oil pollution",
-      "Bycatch in fishing nets"
-    ],
-    "imageUrl": "https://placehold.co/600x400.png",
-    "dataAiHint": "pingüino de",
-    "icon": "Footprints",
-    "historicalData": [],
-    "showHistoricalDataToPublic": false,
-    "id": "pingino-de-las-galpagos",
-    "iucnStatus": "Datos Insuficientes",
-    "is_darwin": false,
-    "is_espanola": false,
-    "is_fernandina": false,
-    "is_floreana": false,
-    "is_genovesa": false,
-    "is_isabela": false,
-    "is_marchena": false,
-    "is_pinta": false,
-    "is_pinzon": false,
-    "is_san_cristobal": false,
-    "is_santa_cruz": false,
-    "is_santa_fe": false,
-    "is_santiago": false,
-    "is_north_seymour": false,
-    "is_wolf": false,
-    "is_unknown_island": false,
-    "is_elizabeth_bay": false,
-    "is_far_northern": false,
-    "is_northern": false,
-    "is_south_eastern": false,
-    "is_unknown_bioregion": false,
-    "is_western": false,
-    "createdAt": "2024-01-01T12:00:00.000Z"
-  },
-  {
-    "conservationStatus": "En Peligro Crítico",
-    "englishCommonName": "Floreana Mockingbird",
-    "genus": "Mimus",
-    "habitat": "Zonas áridas y semiáridas, matorrales y áreas con vegetación baja en islas pequeñas.",
-    "keyStats": [
-      {
-        "label": "Longitud",
-        "value": "25-26",
-        "unit": "cm"
-      },
-      {
-        "label": "Peso",
-        "value": "56-65",
-        "unit": "g"
-      }
-    ],
-    "populationTrend": "increasing",
-    "spanishCommonName": "Sinsonte de Floreana",
-    "spanishDescription": "El Sinsonte de Floreana (Mimus trifasciatus) es una especie endémica de las Islas Galápagos, actualmente restringida a islas pequeñas como Champion e Isla Gardner cerca de Floreana. Se caracteriza por su plumaje de color grisáceo-marrón, con rayas más oscuras en la espalda y alas. Son omnívoros, alimentándose de insectos, frutos y néctar.  Muestran un comportamiento social complejo, incluyendo la cría cooperativa.",
-    "specificEpithet": "trifasciatus",
-    "threats": [
-      "Pérdida de hábitat debido a la introducción de especies invasoras.",
-      "Competencia con especies introducidas por recursos alimenticios.",
-      "Predación por especies introducidas como gatos y roedores."
-    ],
-    "imageUrl": "https://placehold.co/600x400.png",
-    "dataAiHint": "sinsonte de",
-    "icon": "Footprints",
-    "historicalData": [],
-    "showHistoricalDataToPublic": false,
-    "id": "sinsonte-de-floreana",
-    "iucnStatus": "Datos Insuficientes",
-    "is_darwin": false,
-    "is_espanola": false,
-    "is_fernandina": false,
-    "is_floreana": false,
-    "is_genovesa": false,
-    "is_isabela": false,
-    "is_marchena": false,
-    "is_pinta": false,
-    "is_pinzon": false,
-    "is_san_cristobal": false,
-    "is_santa_cruz": false,
-    "is_santa_fe": false,
-    "is_santiago": false,
-    "is_north_seymour": false,
-    "is_wolf": false,
-    "is_unknown_island": false,
-    "is_elizabeth_bay": false,
-    "is_far_northern": false,
-    "is_northern": false,
-    "is_south_eastern": false,
-    "is_unknown_bioregion": false,
-    "is_western": false,
-    "createdAt": "2024-01-01T12:00:00.000Z"
+    "showHistoricalDataToPublic": true
   }
 ]
+
+    
