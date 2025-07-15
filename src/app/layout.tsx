@@ -6,7 +6,7 @@ import SiteLayout from '@/components/layout/SiteLayout';
 import { ThemeProvider } from "next-themes";
 
 export const metadata: Metadata = {
-  title: 'Galapagos DataLens',
+  title: 'Galápagos DataLens',
   description: 'Visualiza y edita datos estadísticos de las especies de Galápagos.',
   icons: {
     icon: '/favicon.ico', // Assuming a favicon might be added later

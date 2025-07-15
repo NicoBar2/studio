@@ -3,7 +3,7 @@ import type { MetadataRoute } from 'next';
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'Galapagos DataLens',
+    name: 'Galápagos DataLens',
     short_name: 'DataLens',
     description: 'Visualiza y edita datos estadísticos de las especies de Galápagos.',
     start_url: '/',

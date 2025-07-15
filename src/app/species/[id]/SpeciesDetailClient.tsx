@@ -277,7 +277,7 @@ export default function SpeciesDetailClient({ species }: SpeciesDetailClientProp
         doc.setFontSize(9);
         doc.setFont('helvetica', 'italic');
         doc.text(
-          `Informe generado por Galapagos DataLens`,
+          `Informe generado por Galápagos DataLens`,
           margin,
           pageHeight - 8
         );

@@ -26,7 +26,7 @@ export default function Header() {
       <div className="container mx-auto px-4 md:px-6 h-16 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2" prefetch={false}>
           <MountainIcon className="h-6 w-6 text-primary" />
-          <span className="text-xl font-headline font-semibold text-primary">Galapagos DataLens</span>
+          <span className="text-xl font-headline font-semibold text-primary">Galápagos DataLens</span>
         </Link>
         <nav className="flex items-center gap-4 md:gap-6">
           <Link
