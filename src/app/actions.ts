@@ -20,7 +20,6 @@ import {
   getResearcherByEmail,
   setResearcherPassword
 } from '@/lib/researchers';
-import { enrichSpeciesData, type EnrichedData } from '@/ai/flows/enrichSpeciesData';
 import { getComparisonAnalysis, type CompareSpeciesInput } from '@/ai/flows/compareSpeciesFlow';
 import { scrapeAndGetSpeciesData } from '@/ai/flows/scrapeSpeciesFlow';
 import { z } from 'zod';
@@ -629,44 +628,6 @@ export async function importSpeciesDataAction(
     console.error("Error en la importación de datos:", error);
     const errorMessage = error instanceof Error ? error.message : "Ocurrió un error desconocido durante la importación.";
     return { success: false, message: `Error al procesar el archivo: ${errorMessage}` };
-  }
-}
-
-export async function enrichSpeciesDataAction(prevState: any, formData: FormData): Promise<{ success: boolean; message: string; speciesId?: string }> {
-  const speciesId = formData.get('speciesId') as string;
-  if (!speciesId) {
-    return { success: false, message: "Falta el ID de la especie." };
-  }
-
-  const species = await getSpeciesById(speciesId);
-  if (!species) {
-    return { success: false, message: "Especie no encontrada." };
-  }
-
-  try {
-    const enrichedData: EnrichedData = await enrichSpeciesData(species.spanishCommonName);
-
-    const updatedData: Partial<Species> = {
-      habitat: enrichedData.habitat,
-      iucnStatus: enrichedData.conservationStatus,
-      populationTrend: enrichedData.populationTrend,
-      threats: enrichedData.threats,
-      keyStats: enrichedData.keyStats,
-    };
-
-    const success = await updateSpeciesData(speciesId, updatedData);
-
-    if (success) {
-      revalidatePath('/dashboard');
-      revalidatePath(`/species/${speciesId}`);
-      return { success: true, message: `¡Datos de ${species.spanishCommonName} enriquecidos con IA!`, speciesId };
-    } else {
-      return { success: false, message: "Error al guardar los datos enriquecidos." };
-    }
-
-  } catch (error) {
-    console.error("Error enriqueciendo datos de especie con IA:", error);
-    return { success: false, message: "Ocurrió un error al contactar al servicio de IA." };
   }
 }
 

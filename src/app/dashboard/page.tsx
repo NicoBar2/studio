@@ -12,7 +12,6 @@ import {
 } from 'lucide-react';
 import { useEffect, useState, useMemo } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
-import EnrichButton from '@/components/dashboard/EnrichButton';
 import DeleteSpeciesButton from '@/components/dashboard/DeleteSpeciesButton';
 import { Badge } from '@/components/ui/badge';
 import GalapagosMap from '@/components/map/GalapagosMap';
@@ -99,10 +98,10 @@ export default function DashboardPage() {
           <CardHeader>
             <CardTitle className="flex items-center text-primary">
               <BrainCircuit className="mr-2 h-6 w-6" />
-              Función de Enriquecimiento con IA
+              Funciones de Inteligencia Artificial
             </CardTitle>
             <CardDescription>
-              Usa el botón "Enriquecer con IA" para obtener y guardar automáticamente datos de internet sobre hábitat, estado de conservación, amenazas y más.
+              Utiliza las herramientas de IA como "Importar por Scrapping" para añadir automáticamente nuevas especies a la base de datos desde fuentes externas.
             </CardDescription>
           </CardHeader>
         </Card>
@@ -212,9 +211,6 @@ export default function DashboardPage() {
                           <BarChart3 className="mr-2 h-4 w-4" /> Ver Visualizaciones
                         </Link>
                       </Button>
-                    )}
-                    {role === 'admin' && (
-                       <EnrichButton species={species} />
                     )}
                      <DeleteSpeciesButton
                         speciesId={species.id}
