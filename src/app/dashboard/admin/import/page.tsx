@@ -60,19 +60,19 @@ export default function ImportDataPage() {
               Importar Especies desde Archivo
             </CardTitle>
             <CardDescription>
-              Sube un archivo Excel (.xlsx) para importar nuevas especies o actualizar las existentes. El sistema utiliza el <strong>nombre</strong> para identificar cada especie. Si una con el mismo nombre ya existe, sus datos se actualizarán. De lo contrario, se creará una nueva.
-              <br />
-              <strong className="text-destructive mt-2 block">Columnas Requeridas:</strong> 
-              <code className="text-xs">nombre, cientifico, conservacion, poblacion, habitat, amenazas</code>.
+              Sube un archivo Excel (.xlsx) para importar nuevas especies o actualizar las existentes.
+              Puedes descargar la lista de especies más reciente desde {' '}
+              <a href="https://datazone.darwinfoundation.org/es/checklist/checklists-archive" target="_blank" rel="noopener noreferrer" className="text-primary underline hover:text-primary/80">
+                Datazone de la Fundación Darwin
+              </a>.
               <br/>
-              <strong className="mt-1 block">Nota:</strong> 
-              La columna 'amenazas' debe ser una lista de valores separados por comas. La columna 'poblacion' debe ser 'Creciente', 'Decreciente', 'Estable' o 'Desconocida'. Los campos no proporcionados usarán valores predeterminados.
+              El sistema utiliza el <strong>Nombre Común en Español</strong> para identificar cada especie. Si una especie con el mismo nombre ya existe, sus datos se actualizarán. De lo contrario, se creará una nueva entrada. Los campos no proporcionados usarán valores predeterminados.
             </CardDescription>
           </CardHeader>
           <CardContent>
             <form ref={formRef} action={formAction} className="space-y-4">
               <div>
-                <Label htmlFor="speciesFile" className="font-semibold">Archivo Excel de Especies</Label>
+                <Label htmlFor="speciesFile" className="font-semibold">Archivo Excel de Especies (.xlsx)</Label>
                 <Input 
                   id="speciesFile" 
                   name="speciesFile" 
@@ -81,7 +81,7 @@ export default function ImportDataPage() {
                   accept=".xlsx"
                   required
                 />
-                <p className="text-xs text-muted-foreground mt-1">Sube un archivo en formato .xlsx.</p>
+                <p className="text-xs text-muted-foreground mt-1">Sube el archivo en formato .xlsx descargado de la fuente oficial.</p>
               </div>
               <SubmitButton />
             </form>

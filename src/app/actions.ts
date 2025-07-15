@@ -21,7 +21,6 @@ import {
   setResearcherPassword
 } from '@/lib/researchers';
 import { getComparisonAnalysis, type CompareSpeciesInput } from '@/ai/flows/compareSpeciesFlow';
-import { scrapeAndGetSpeciesData } from '@/ai/flows/scrapeSpeciesFlow';
 import { z } from 'zod';
 import { redirect } from 'next/navigation';
 import bcrypt from 'bcryptjs';
@@ -527,7 +526,7 @@ export async function importSpeciesDataAction(
 
     for (const row of data) {
       try {
-        const spanishName = String(row['Spanish Common Name'] || '');
+        const spanishName = String(row['spanishCommonName'] || row['Spanish Common Name'] || '');
         if (!spanishName) {
           failedCount++;
           continue;
@@ -539,54 +538,54 @@ export async function importSpeciesDataAction(
         const speciesData: Partial<Species> = {
           id,
           spanishCommonName: spanishName,
-          englishCommonName: row['English Common Name'] || '',
-          localName: row['Local Name'] || '',
-          domain: row['Domain'] || '',
-          kingdom: row['Kingdom'] || '',
-          phylum: row['Phylum or Division'] || '',
-          class: row['Class'] || '',
-          order: row['Order'] || '',
-          suborder: row['Suborder'] || '',
-          superfamily: row['Superfamily'] || '',
-          family: row['Family'] || '',
-          subfamily: row['Subfamily'] || '',
-          tribe: row['Tribe or Section'] || '',
-          genus: row['Genus'] || '',
-          specificEpithet: row['Specific Epithtet'] || '',
-          infraspecificEpithet: row['Infraspecific Epithet'] || '',
-          author: row['Author'] || '',
-          origin: row['Origin'] || '',
-          suborigin: row['Suborigin'] || '',
-          iucnStatus: row['IUCN Status'] as ConservationStatus || 'Datos Insuficientes',
-          taxonStatus: row['Taxon Status'] || '',
-          taxonomicComments: row['Taxonomic Comments'] || '',
-          distributionComments: row['Distribution Comments'] || '',
-          spanishDistributionComments: row['Spanish Distribution Comments'] || '',
-          englishComments: row['English Comments'] || '',
-          spanishComments: row['Spanish Comments'] || '',
-          englishDescription: row['English Description'] || '',
-          spanishDescription: row['Spanish Description'] || '',
-          is_darwin: String(row['Darwin']).toLowerCase() === 'x',
-          is_espanola: String(row['Española']).toLowerCase() === 'x',
-          is_fernandina: String(row['Fernandina']).toLowerCase() === 'x',
-          is_floreana: String(row['Floreana']).toLowerCase() === 'x',
-          is_genovesa: String(row['Genovesa']).toLowerCase() === 'x',
-          is_isabela: String(row['Isabela']).toLowerCase() === 'x',
-          is_marchena: String(row['Marchena']).toLowerCase() === 'x',
-          is_pinta: String(row['Pinta']).toLowerCase() === 'x',
-          is_pinzon: String(row['Pinzón']).toLowerCase() === 'x',
-          is_san_cristobal: String(row['San Cristóbal']).toLowerCase() === 'x',
-          is_santa_cruz: String(row['Santa Cruz']).toLowerCase() === 'x',
-          is_santa_fe: String(row['Santa Fé']).toLowerCase() === 'x',
-          is_santiago: String(row['Santiago']).toLowerCase() === 'x',
-          is_unknown_island: String(row['Unknown Island']).toLowerCase() === 'x',
-          is_wolf: String(row['Wolf']).toLowerCase() === 'x',
-          is_elizabeth_bay: String(row['Elizabeth Bay/Bahía Elizabeth']).toLowerCase() === 'x',
-          is_far_northern: String(row['Far-northern/Lejano Norte']).toLowerCase() === 'x',
-          is_northern: String(row['Northern/Norte']).toLowerCase() === 'x',
-          is_south_eastern: String(row['South-eastern/Centro Sur']).toLowerCase() === 'x',
-          is_unknown_bioregion: String(row['Unknown Bioregion']).toLowerCase() === 'x',
-          is_western: String(row['Western/Oeste']).toLowerCase() === 'x',
+          englishCommonName: row['englishCommonName'] || row['English Common Name'] || '',
+          localName: row['localName'] || row['Local Name'] || '',
+          domain: row['domain'] || row['Domain'] || '',
+          kingdom: row['kingdom'] || row['Kingdom'] || '',
+          phylum: row['phylum'] || row['Phylum or Division'] || '',
+          class: row['class'] || row['Class'] || '',
+          order: row['order'] || row['Order'] || '',
+          suborder: row['suborder'] || row['Suborder'] || '',
+          superfamily: row['superfamily'] || row['Superfamily'] || '',
+          family: row['family'] || row['Family'] || '',
+          subfamily: row['subfamily'] || row['Subfamily'] || '',
+          tribe: row['tribe'] || row['Tribe or Section'] || '',
+          genus: row['genus'] || row['Genus'] || '',
+          specificEpithet: row['specificEpithet'] || row['Specific Epithtet'] || '',
+          infraspecificEpithet: row['infraspecificEpithet'] || row['Infraspecific Epithet'] || '',
+          author: row['author'] || row['Author'] || '',
+          origin: row['origin'] || row['Origin'] || '',
+          suborigin: row['suborigin'] || row['Suborigin'] || '',
+          iucnStatus: row['iucnStatus'] as ConservationStatus || row['IUCN Status'] as ConservationStatus || 'Datos Insuficientes',
+          taxonStatus: row['taxonStatus'] || row['Taxon Status'] || '',
+          taxonomicComments: row['taxonomicComments'] || row['Taxonomic Comments'] || '',
+          distributionComments: row['distributionComments'] || row['Distribution Comments'] || '',
+          spanishDistributionComments: row['spanishDistributionComments'] || row['Spanish Distribution Comments'] || '',
+          englishComments: row['englishComments'] || row['English Comments'] || '',
+          spanishComments: row['spanishComments'] || row['Spanish Comments'] || '',
+          englishDescription: row['englishDescription'] || row['English Description'] || '',
+          spanishDescription: row['spanishDescription'] || row['Spanish Description'] || '',
+          is_darwin: String(row['is_darwin'] || row['Darwin']).toLowerCase() === 'x',
+          is_espanola: String(row['is_espanola'] || row['Española']).toLowerCase() === 'x',
+          is_fernandina: String(row['is_fernandina'] || row['Fernandina']).toLowerCase() === 'x',
+          is_floreana: String(row['is_floreana'] || row['Floreana']).toLowerCase() === 'x',
+          is_genovesa: String(row['is_genovesa'] || row['Genovesa']).toLowerCase() === 'x',
+          is_isabela: String(row['is_isabela'] || row['Isabela']).toLowerCase() === 'x',
+          is_marchena: String(row['is_marchena'] || row['Marchena']).toLowerCase() === 'x',
+          is_pinta: String(row['is_pinta'] || row['Pinta']).toLowerCase() === 'x',
+          is_pinzon: String(row['is_pinzon'] || row['Pinzón']).toLowerCase() === 'x',
+          is_san_cristobal: String(row['is_san_cristobal'] || row['San Cristóbal']).toLowerCase() === 'x',
+          is_santa_cruz: String(row['is_santa_cruz'] || row['Santa Cruz']).toLowerCase() === 'x',
+          is_santa_fe: String(row['is_santa_fe'] || row['Santa Fé']).toLowerCase() === 'x',
+          is_santiago: String(row['is_santiago'] || row['Santiago']).toLowerCase() === 'x',
+          is_unknown_island: String(row['is_unknown_island'] || row['Unknown Island']).toLowerCase() === 'x',
+          is_wolf: String(row['is_wolf'] || row['Wolf']).toLowerCase() === 'x',
+          is_elizabeth_bay: String(row['is_elizabeth_bay'] || row['Elizabeth Bay/Bahía Elizabeth']).toLowerCase() === 'x',
+          is_far_northern: String(row['is_far_northern'] || row['Far-northern/Lejano Norte']).toLowerCase() === 'x',
+          is_northern: String(row['is_northern'] || row['Northern/Norte']).toLowerCase() === 'x',
+          is_south_eastern: String(row['is_south_eastern'] || row['South-eastern/Centro Sur']).toLowerCase() === 'x',
+          is_unknown_bioregion: String(row['is_unknown_bioregion'] || row['Unknown Bioregion']).toLowerCase() === 'x',
+          is_western: String(row['is_western'] || row['Western/Oeste']).toLowerCase() === 'x',
         };
 
         if (existingSpecies) {
@@ -630,57 +629,6 @@ export async function importSpeciesDataAction(
     return { success: false, message: `Error al procesar el archivo: ${errorMessage}` };
   }
 }
-
-export async function scrapeSpeciesAction(
-  prevState: any,
-  formData: FormData
-): Promise<{ success: boolean; message: string }> {
-  const userRole = formData.get('userRole') as string;
-  if (userRole !== 'admin') {
-    return { success: false, message: "Acción no permitida." };
-  }
-
-  const speciesNames = formData.get('speciesNames') as string;
-  if (!speciesNames || speciesNames.trim() === '') {
-    return { success: false, message: "No se han proporcionado nombres de especies." };
-  }
-
-  const namesList = speciesNames.split('\n').map(name => name.trim()).filter(name => name.length > 0);
-  if (namesList.length === 0) {
-    return { success: false, message: "La lista de nombres de especies está vacía." };
-  }
-  
-  let addedCount = 0;
-  let failedCount = 0;
-  const failedNames: string[] = [];
-
-  for (const name of namesList) {
-    try {
-      const scrapedData = await scrapeAndGetSpeciesData(name);
-      
-      // The scraped data is a partial object, pass it to the robust addSpecies function
-      await addSpeciesToStore(scrapedData);
-      addedCount++;
-    } catch (error) {
-      console.error(`Error procesando scrapping para "${name}":`, error);
-      failedCount++;
-      failedNames.push(name);
-    }
-  }
-
-  if (addedCount > 0) {
-    revalidatePath('/');
-    revalidatePath('/dashboard');
-  }
-
-  let message = `Proceso de scrapping completado. Especies añadidas: ${addedCount}.`;
-  if (failedCount > 0) {
-    message += ` Fallidas: ${failedCount} (${failedNames.join(', ')}). Revisa la consola del servidor para detalles.`;
-  }
-
-  return { success: addedCount > 0, message };
-}
-
 
 const ADMIN_CREDENTIALS = { 
   email: 'admin@galapagos.com', 

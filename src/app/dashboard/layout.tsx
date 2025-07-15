@@ -72,14 +72,6 @@ export default function DashboardLayout({
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
-                     <SidebarMenuItem>
-                      <SidebarMenuButton asChild variant="ghost" className="justify-start w-full" tooltip="Importar por Scrapping">
-                        <Link href="/dashboard/admin/scrapper">
-                          <Webhook />
-                          <span className="group-data-[state=collapsed]:hidden">Importar por Scrapping</span>
-                        </Link>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
                   </>
                 )}
 
