@@ -12,6 +12,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useToast } from '@/hooks/use-toast';
 import { UserPlus, ListChecks } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const initialFormState = {
   success: false,
@@ -23,6 +24,7 @@ export default function ResearcherManagementClient() {
   const [researchers, setResearchers] = useState<Researcher[]>([]);
   const [isLoadingList, setIsLoadingList] = useState(true);
   const { toast } = useToast();
+  const { t } = useLanguage();
   const formRef = useRef<HTMLFormElement>(null);
 
   const [formState, formAction, isCreating] = useActionState(createResearcherAction, initialFormState);
@@ -47,7 +49,7 @@ export default function ResearcherManagementClient() {
     // Check if the message is not the initial one to avoid showing toast on load
     if (formState.message && formState.message !== initialFormState.message) { 
       toast({
-        title: formState.success ? '¡Éxito!' : 'Error',
+        title: formState.success ? t.success : t.error,
         description: formState.message,
         variant: formState.success ? 'default' : 'destructive',
       });
@@ -61,7 +63,7 @@ export default function ResearcherManagementClient() {
         formRef.current?.reset();
       }
     }
-  }, [formState, toast]);
+  }, [formState, toast, t]);
 
   const handleDeleteResearcher = (researcherId: string) => {
     setResearchers(prev => prev.filter(r => r.id !== researcherId));
@@ -81,10 +83,10 @@ export default function ResearcherManagementClient() {
         <CardHeader>
           <CardTitle className="flex items-center text-2xl font-headline text-primary">
             <UserPlus className="mr-3 h-7 w-7" />
-            Crear Nuevo Investigador (Admin)
+            {t.admin_create_researcher_title}
           </CardTitle>
           <CardDescription>
-            Añade un nuevo investigador directamente al sistema. La cuenta se creará como no verificada.
+            {t.admin_create_researcher_desc}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -97,11 +99,11 @@ export default function ResearcherManagementClient() {
           >
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="researcherNameAdmin" className="font-semibold">Nombre del Investigador</Label>
+                <Label htmlFor="researcherNameAdmin" className="font-semibold">{t.fullName}</Label>
                 <Input 
                   id="researcherNameAdmin" 
                   name="researcherName" 
-                  placeholder="Ej: Dra. Jane Goodall" 
+                  placeholder={t.fullNamePlaceholder}
                   className="mt-1" 
                   required 
                   minLength={3}
@@ -110,12 +112,12 @@ export default function ResearcherManagementClient() {
                 />
               </div>
               <div>
-                <Label htmlFor="emailAdmin" className="font-semibold">Correo Electrónico</Label>
+                <Label htmlFor="emailAdmin" className="font-semibold">{t.email}</Label>
                 <Input 
                   id="emailAdmin" 
                   name="email" 
                   type="email"
-                  placeholder="investigador@ejemplo.com" 
+                  placeholder={t.emailPlaceholder}
                   className="mt-1" 
                   required 
                   value={email}
@@ -123,22 +125,22 @@ export default function ResearcherManagementClient() {
                 />
               </div>
               <div>
-                <Label htmlFor="institutionAdmin" className="font-semibold">Institución (Opcional)</Label>
+                <Label htmlFor="institutionAdmin" className="font-semibold">{t.institution} ({t.optional})</Label>
                 <Input 
                   id="institutionAdmin" 
                   name="institution" 
-                  placeholder="Ej: Universidad de Galápagos" 
+                  placeholder={t.institutionPlaceholder}
                   className="mt-1" 
                   value={institution}
                   onChange={(e) => setInstitution(e.target.value)}
                 />
               </div>
               <div>
-                <Label htmlFor="specializationAdmin" className="font-semibold">Especialización (Opcional)</Label>
+                <Label htmlFor="specializationAdmin" className="font-semibold">{t.specialization} ({t.optional})</Label>
                 <Input 
                   id="specializationAdmin" 
                   name="specialization" 
-                  placeholder="Ej: Biología Marina, Ornitología" 
+                  placeholder={t.specializationPlaceholder}
                   className="mt-1" 
                   value={specialization}
                   onChange={(e) => setSpecialization(e.target.value)}
@@ -146,7 +148,7 @@ export default function ResearcherManagementClient() {
               </div>
             </div>
             <Button type="submit" disabled={isCreating} className="bg-primary hover:bg-primary/90">
-              {isCreating ? 'Creando...' : 'Crear Investigador'}
+              {isCreating ? t.creating : t.createResearcherButton}
             </Button>
           </form>
         </CardContent>
@@ -156,10 +158,10 @@ export default function ResearcherManagementClient() {
         <CardHeader>
           <CardTitle className="flex items-center text-2xl font-headline text-primary">
             <ListChecks className="mr-3 h-7 w-7" />
-            Lista de Investigadores
+            {t.researcherList}
           </CardTitle>
           <CardDescription>
-            Gestiona los investigadores registrados en el sistema. Verifica, desverifica o elimina sus cuentas.
+            {t.researcherListDesc}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -181,10 +183,12 @@ export default function ResearcherManagementClient() {
               ))}
             </ul>
           ) : (
-            <p className="text-muted-foreground text-center py-4">No hay investigadores registrados todavía.</p>
+            <p className="text-muted-foreground text-center py-4">{t.noResearchersYet}</p>
           )}
         </CardContent>
       </Card>
     </div>
   );
 }
+
+    

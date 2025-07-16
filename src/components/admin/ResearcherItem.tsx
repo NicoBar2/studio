@@ -9,6 +9,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { Trash2, Users, Mail, Building, Award, CheckCircle, XCircle, ShieldCheck } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 type ResearcherItemProps = {
   researcher: Researcher;
@@ -31,6 +32,7 @@ const initialVerifyState = {
 export default function ResearcherItem({ researcher, onDelete, onVerificationChange }: ResearcherItemProps) {
   const { toast } = useToast();
   const { role } = useAuth();
+  const { t } = useLanguage();
   const [deleteState, deleteFormAction, isDeleting] = useActionState(
     deleteResearcherAction,
     initialDeleteState
@@ -46,7 +48,7 @@ export default function ResearcherItem({ researcher, onDelete, onVerificationCha
   useEffect(() => {
     if (deleteState.message && deleteState.message !== prevDeleteMessageRef.current) {
       toast({
-        title: deleteState.success ? '¡Éxito!' : 'Error',
+        title: deleteState.success ? t.success : t.error,
         description: deleteState.message,
         variant: deleteState.success ? 'default' : 'destructive',
       });
@@ -55,12 +57,12 @@ export default function ResearcherItem({ researcher, onDelete, onVerificationCha
       }
       prevDeleteMessageRef.current = deleteState.message;
     }
-  }, [deleteState, toast, onDelete]);
+  }, [deleteState, toast, onDelete, t]);
 
   useEffect(() => {
     if (verifyState.message && verifyState.message !== prevVerifyMessageRef.current) {
       toast({
-        title: verifyState.success ? '¡Éxito!' : 'Error',
+        title: verifyState.success ? t.success : t.error,
         description: verifyState.message,
         variant: verifyState.success ? 'default' : 'destructive',
       });
@@ -69,7 +71,7 @@ export default function ResearcherItem({ researcher, onDelete, onVerificationCha
       }
       prevVerifyMessageRef.current = verifyState.message;
     }
-  }, [verifyState, toast, onVerificationChange]);
+  }, [verifyState, toast, onVerificationChange, t]);
 
   return (
     <li className="p-4 bg-card rounded-lg border shadow-sm hover:shadow-md transition-shadow">
@@ -80,7 +82,7 @@ export default function ResearcherItem({ researcher, onDelete, onVerificationCha
             <h3 className="text-lg font-semibold text-primary">{researcher.name}</h3>
             <Badge variant={researcher.isVerified ? 'default' : 'secondary'} className="ml-auto sm:ml-2">
               {researcher.isVerified ? <CheckCircle className="mr-1 h-4 w-4" /> : <XCircle className="mr-1 h-4 w-4" />}
-              {researcher.isVerified ? 'Verificado' : 'Pendiente'}
+              {researcher.isVerified ? t.verified : t.pending}
             </Badge>
           </div>
           <p className="text-sm text-muted-foreground flex items-center gap-2">
@@ -111,7 +113,7 @@ export default function ResearcherItem({ researcher, onDelete, onVerificationCha
               disabled={isVerifying}
             >
               <ShieldCheck className="mr-2 h-4 w-4" />
-              {isVerifying ? 'Actualizando...' : (researcher.isVerified ? 'Marcar No Verificado' : 'Marcar Verificado')}
+              {isVerifying ? t.updating : (researcher.isVerified ? t.markUnverified : t.markVerified)}
             </Button>
           </form>
           <form action={deleteFormAction} className="w-full sm:w-auto">
@@ -122,11 +124,11 @@ export default function ResearcherItem({ researcher, onDelete, onVerificationCha
               variant="destructive"
               size="sm"
               className="w-full justify-center"
-              aria-label={`Eliminar a ${researcher.name}`}
+              aria-label={`${t.deleteButton} ${researcher.name}`}
               disabled={isDeleting}
             >
               <Trash2 className="mr-2 h-4 w-4" />
-              {isDeleting ? 'Eliminando...' : 'Eliminar'}
+              {isDeleting ? t.deleting : t.deleteButton}
             </Button>
           </form>
         </div>
@@ -134,3 +136,5 @@ export default function ResearcherItem({ researcher, onDelete, onVerificationCha
     </li>
   );
 }
+
+    

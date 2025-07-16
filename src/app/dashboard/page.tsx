@@ -1,6 +1,7 @@
 
 "use client";
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
@@ -32,6 +33,7 @@ const iconMap: Record<string, LucideIcon> = {
 
 export default function DashboardPage() {
   const { role } = useAuth();
+  const { t } = useLanguage();
   const [speciesList, setSpeciesList] = useState<Species[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -69,13 +71,13 @@ export default function DashboardPage() {
     if (searchTerm) {
       const lowercasedTerm = searchTerm.toLowerCase();
       filteredSpecies = filteredSpecies.filter(species =>
-        species.spanishCommonName.toLowerCase().includes(lowercasedTerm) ||
+        t.getSpeciesName(species).toLowerCase().includes(lowercasedTerm) ||
         (species.genus && species.specificEpithet && `${species.genus} ${species.specificEpithet}`.toLowerCase().includes(lowercasedTerm)) ||
         species.habitat.toLowerCase().includes(lowercasedTerm)
       );
     }
-    return filteredSpecies;
-  }, [speciesList, selectedIsland, searchTerm]);
+    return filteredSpecies.sort((a,b) => t.getSpeciesName(a).localeCompare(t.getSpeciesName(b)));
+  }, [speciesList, selectedIsland, searchTerm, t]);
 
   const handleSpeciesDeleted = (deletedId: string) => {
     setSpeciesList(currentList => currentList.filter(s => s.id !== deletedId));
@@ -86,26 +88,12 @@ export default function DashboardPage() {
     <div className="space-y-8">
       <section>
         <h1 className="text-3xl font-headline font-bold text-primary mb-2">
-          ¡Bienvenido/a, {role === 'admin' ? 'Administrador/a' : 'Investigador/a'}!
+          {t.dashboard_welcome}, {role === 'admin' ? t.role_admin : t.role_researcher}!
         </h1>
         <p className="text-lg text-foreground">
-          Gestiona, filtra y analiza los datos de las especies de Galápagos.
+          {t.dashboard_description}
         </p>
       </section>
-
-      {role === 'admin' && (
-        <Card className="bg-primary/10 border-primary">
-          <CardHeader>
-            <CardTitle className="flex items-center text-primary">
-              <BrainCircuit className="mr-2 h-6 w-6" />
-              Funciones de Inteligencia Artificial
-            </CardTitle>
-            <CardDescription>
-              Utiliza las herramientas de IA como "Importar por Scrapping" para añadir automáticamente nuevas especies a la base de datos desde fuentes externas.
-            </CardDescription>
-          </CardHeader>
-        </Card>
-      )}
 
       <Card className="shadow-lg overflow-hidden">
         <CardHeader className="bg-muted/30">
@@ -113,10 +101,10 @@ export default function DashboardPage() {
             <MapPinIcon className="h-8 w-8 text-primary" />
             <div>
               <CardTitle className="text-2xl font-headline text-primary">
-                Mapa Interactivo y Filtros
+                {t.dashboard_map_title}
               </CardTitle>
               <CardDescription>
-                Usa el mapa o los filtros para explorar y encontrar especies específicas para gestionar.
+                {t.dashboard_map_description}
               </CardDescription>
             </div>
           </div>
@@ -127,7 +115,7 @@ export default function DashboardPage() {
           </div>
           <div className="lg:col-span-1 space-y-4">
              <div className="space-y-2">
-                <Label htmlFor="island-filter">Filtrar por Isla</Label>
+                <Label htmlFor="island-filter">{t.dashboard_filter_island}</Label>
                 <Select
                   value={selectedIsland || ''}
                   onValueChange={(value) => {
@@ -135,10 +123,10 @@ export default function DashboardPage() {
                   }}
                 >
                   <SelectTrigger id="island-filter" className="w-full bg-input">
-                    <SelectValue placeholder="Seleccionar isla..." />
+                    <SelectValue placeholder={t.dashboard_select_island_placeholder} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all-islands">Todas las Islas</SelectItem>
+                    <SelectItem value="all-islands">{t.allIslands}</SelectItem>
                     {GALAPAGOS_ISLANDS_NAMES.sort().map((islandName) => (
                       <SelectItem key={islandName} value={islandName}>
                         {islandName}
@@ -148,13 +136,13 @@ export default function DashboardPage() {
                 </Select>
               </div>
               <div className="space-y-2">
-                  <Label htmlFor="search-filter">Buscar por Nombre o Hábitat</Label>
+                  <Label htmlFor="search-filter">{t.dashboard_search_label}</Label>
                   <div className="relative w-full">
                       <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                       <Input 
                           id="search-filter"
                           type="search"
-                          placeholder="Buscar por nombre, hábitat..."
+                          placeholder={t.dashboard_search_placeholder}
                           value={searchTerm}
                           onChange={(e) => setSearchTerm(e.target.value)}
                           className="pl-10 bg-input"
@@ -162,7 +150,7 @@ export default function DashboardPage() {
                   </div>
               </div>
               <Button onClick={clearSelection} variant="outline" className="w-full">
-                <ListIcon className="mr-2 h-5 w-5" /> Ver Todas / Limpiar Filtros
+                <ListIcon className="mr-2 h-5 w-5" /> {t.clearFilters}
               </Button>
           </div>
         </CardContent>
@@ -172,11 +160,11 @@ export default function DashboardPage() {
       <section>
         <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
             <h2 className="text-2xl font-headline font-semibold text-primary">
-              {selectedIsland ? `Especies en ${selectedIsland}` : "Resumen de Todas las Especies"}
-              {searchTerm && ` (buscando "${searchTerm}")`}
+              {selectedIsland ? t.dashboard_species_in(selectedIsland) : t.dashboard_all_species_summary}
+              {searchTerm && ` (${t.searchingFor} "${searchTerm}")`}
             </h2>
             {!isLoading && (
-              <Badge variant="secondary">{displayedSpecies.length} de {speciesList.length} Especies Mostradas</Badge>
+              <Badge variant="secondary">{t.dashboard_species_shown(displayedSpecies.length, speciesList.length)}</Badge>
             )}
         </div>
         <div className="space-y-4">
@@ -194,7 +182,7 @@ export default function DashboardPage() {
                 <Card key={species.id} className="shadow-sm hover:shadow-md transition-shadow">
                   <CardHeader>
                     <CardTitle className="flex items-center justify-between">
-                      {species.spanishCommonName}
+                      {t.getSpeciesName(species)}
                       <IconComponent className="h-6 w-6 text-muted-foreground" />
                     </CardTitle>
                     <CardDescription>{scientificName}</CardDescription>
@@ -202,24 +190,24 @@ export default function DashboardPage() {
                   <CardContent className="flex flex-wrap items-center gap-2">
                     <Button asChild variant="outline" size="sm">
                       <Link href={`/dashboard/edit/${species.id}`}>
-                        <Edit3 className="mr-2 h-4 w-4" /> Editar Datos
+                        <Edit3 className="mr-2 h-4 w-4" /> {t.edit}
                       </Link>
                     </Button>
                     {(role === 'researcher' || role === 'admin') && (
                       <Button asChild variant="outline" size="sm">
                         <Link href={`/dashboard/visualize/${species.id}`}>
-                          <BarChart3 className="mr-2 h-4 w-4" /> Ver Visualizaciones
+                          <BarChart3 className="mr-2 h-4 w-4" /> {t.viewVisualizations}
                         </Link>
                       </Button>
                     )}
                      <DeleteSpeciesButton
                         speciesId={species.id}
-                        speciesName={species.spanishCommonName}
+                        speciesName={t.getSpeciesName(species)}
                         onDeleteSuccess={handleSpeciesDeleted}
                       />
                     <Button asChild variant="ghost" size="sm" className="text-primary hover:text-primary/90 sm:ml-auto">
                       <Link href={`/species/${species.id}`}>
-                        Ver Página Pública
+                        {t.viewPublicPage}
                       </Link>
                     </Button>
                   </CardContent>
@@ -231,12 +219,12 @@ export default function DashboardPage() {
               <CardContent className="flex flex-col items-center">
                 <InfoIcon className="h-12 w-12 text-muted-foreground mb-4" />
                 <p className="text-lg font-medium text-foreground">
-                  No se encontraron especies que coincidan con los filtros aplicados.
+                  {t.noSpeciesFound}
                 </p>
                 <p className="text-muted-foreground mt-1">
-                  Intenta con otros filtros o límpialos para ver todas las especies.
+                  {t.tryDifferentFilters}
                 </p>
-                <Button onClick={clearSelection} variant="link" className="mt-2">Limpiar todos los filtros</Button>
+                <Button onClick={clearSelection} variant="link" className="mt-2">{t.clearAllFilters}</Button>
               </CardContent>
             </Card>
           )}
@@ -245,3 +233,5 @@ export default function DashboardPage() {
     </div>
   );
 }
+
+    

@@ -12,6 +12,7 @@ import { Label } from '@/components/ui/label';
 import Link from 'next/link';
 import { ArrowLeft, AlertTriangle, TrendingUp, TrendingDown, MinusSquare, Filter, FilterX, TableIcon } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { useEffect, useState, useMemo } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import dynamic from 'next/dynamic';
@@ -34,6 +35,7 @@ type VisualizeSpeciesPageProps = {
 export default function VisualizeSpeciesPage({ params }: VisualizeSpeciesPageProps) {
   const [species, setSpecies] = useState<Species | null | undefined>(undefined);
   const { isLoading: authLoading } = useAuth();
+  const { t, language } = useLanguage();
 
   const [yearFilter, setYearFilter] = useState<{ min: string; max: string }>({ min: '', max: '' });
   const [valueFilter, setValueFilter] = useState<{ min: string; max: string }>({ min: '', max: '' });
@@ -44,13 +46,13 @@ export default function VisualizeSpeciesPage({ params }: VisualizeSpeciesPagePro
         const foundSpecies = await getSpeciesByIdAction(params.id);
         setSpecies(foundSpecies);
         if (foundSpecies) {
-          document.title = `Visualizar ${foundSpecies.spanishCommonName} | Galapagos DataLens`;
+          document.title = `${t.visualize_title_prefix} ${t.getSpeciesName(foundSpecies)} | Galápagos DataLens`;
         } else if (foundSpecies === null) {
-          document.title = `Especie No Encontrada | Galapagos DataLens`;
+          document.title = `${t.speciesNotFound} | Galápagos DataLens`;
         }
     };
     fetchSpeciesData();
-  }, [params.id]);
+  }, [params.id, t]);
 
 
   const filteredHistoricalData = useMemo(() => {
@@ -129,36 +131,36 @@ export default function VisualizeSpeciesPage({ params }: VisualizeSpeciesPagePro
       <div className="space-y-6">
         <Button variant="outline" asChild>
           <Link href="/dashboard">
-            <ArrowLeft className="mr-2 h-4 w-4" /> Volver al Panel
+            <ArrowLeft className="mr-2 h-4 w-4" /> {t.backToDashboard}
           </Link>
         </Button>
 
         <Card className="shadow-lg">
           <CardHeader>
             <CardTitle className="text-2xl font-headline text-primary flex items-center">
-              <Filter className="mr-2 h-6 w-6" /> Filtros de Datos Históricos
+              <Filter className="mr-2 h-6 w-6" /> {t.visualize_filters_title}
             </CardTitle>
-            <CardDescription>Ajusta los rangos para filtrar los datos que se muestran en el gráfico, estadísticas y tabla de {species.spanishCommonName}.</CardDescription>
+            <CardDescription>{t.visualize_filters_desc(t.getSpeciesName(species))}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="minYear">Año Mínimo</Label>
+                <Label htmlFor="minYear">{t.visualize_minYear}</Label>
                 <Input 
                   id="minYear" 
                   type="number" 
-                  placeholder="Ej: 1990" 
+                  placeholder={t.startYear}
                   value={yearFilter.min}
                   onChange={(e) => handleFilterChange('year', 'min', e.target.value)}
                   className="bg-input"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="maxYear">Año Máximo</Label>
+                <Label htmlFor="maxYear">{t.visualize_maxYear}</Label>
                 <Input 
                   id="maxYear" 
                   type="number" 
-                  placeholder="Ej: 2023" 
+                  placeholder={t.endYear} 
                   value={yearFilter.max}
                   onChange={(e) => handleFilterChange('year', 'max', e.target.value)}
                   className="bg-input"
@@ -167,22 +169,22 @@ export default function VisualizeSpeciesPage({ params }: VisualizeSpeciesPagePro
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="minValue">Valor Mínimo ({filteredHistoricalData[0]?.unit || species.historicalData[0]?.unit || 'unidad'})</Label>
+                <Label htmlFor="minValue">{t.visualize_minValue(filteredHistoricalData[0]?.unit || species.historicalData[0]?.unit || t.unit)}</Label>
                 <Input 
                   id="minValue" 
                   type="number" 
-                  placeholder="Ej: 1000" 
+                  placeholder={t.visualize_value_placeholder} 
                   value={valueFilter.min}
                   onChange={(e) => handleFilterChange('value', 'min', e.target.value)}
                   className="bg-input"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="maxValue">Valor Máximo ({filteredHistoricalData[0]?.unit || species.historicalData[0]?.unit || 'unidad'})</Label>
+                <Label htmlFor="maxValue">{t.visualize_maxValue(filteredHistoricalData[0]?.unit || species.historicalData[0]?.unit || t.unit)}</Label>
                 <Input 
                   id="maxValue" 
                   type="number" 
-                  placeholder="Ej: 50000" 
+                  placeholder={t.visualize_value_placeholder_max}
                   value={valueFilter.max}
                   onChange={(e) => handleFilterChange('value', 'max', e.target.value)}
                   className="bg-input"
@@ -190,15 +192,15 @@ export default function VisualizeSpeciesPage({ params }: VisualizeSpeciesPagePro
               </div>
             </div>
             <Button onClick={clearFilters} variant="outline">
-              <FilterX className="mr-2 h-4 w-4" /> Limpiar Filtros
+              <FilterX className="mr-2 h-4 w-4" /> {t.clearFilters}
             </Button>
           </CardContent>
         </Card>
 
         <Card className="shadow-lg">
           <CardHeader>
-            <CardTitle className="text-3xl font-headline text-primary">Visualización de Datos: {species.spanishCommonName}</CardTitle>
-            <CardDescription>Gráficos de barras interactivos que muestran datos históricos filtrados para {species.spanishCommonName}.</CardDescription>
+            <CardTitle className="text-3xl font-headline text-primary">{t.visualize_main_title_prefix} {t.getSpeciesName(species)}</CardTitle>
+            <CardDescription>{t.visualize_main_title_desc(t.getSpeciesName(species))}</CardDescription>
           </CardHeader>
           <CardContent>
             {filteredHistoricalData && filteredHistoricalData.length > 0 ? (
@@ -208,12 +210,13 @@ export default function VisualizeSpeciesPage({ params }: VisualizeSpeciesPagePro
                 nameKey="year"
                 unit={filteredHistoricalData[0]?.unit || species.historicalData[0]?.unit || 'conteo'} 
                 chartType="bar"
+                lang={language}
               />
             ) : (
               <div className="flex flex-col items-center justify-center p-8 border border-dashed rounded-lg">
                 <AlertTriangle className="h-12 w-12 text-muted-foreground mb-4" />
-                <p className="text-lg font-medium text-muted-foreground">No hay datos históricos que coincidan con los filtros aplicados.</p>
-                <p className="text-sm text-muted-foreground">Intenta ajustar los filtros o limpiarlos para ver más datos.</p>
+                <p className="text-lg font-medium text-muted-foreground">{t.noDataForFilters}</p>
+                <p className="text-sm text-muted-foreground">{t.tryAdjustingFilters}</p>
               </div>
             )}
           </CardContent>
@@ -223,18 +226,18 @@ export default function VisualizeSpeciesPage({ params }: VisualizeSpeciesPagePro
            <Card className="shadow-lg">
             <CardHeader>
               <CardTitle className="text-2xl font-headline text-primary flex items-center">
-                <TableIcon className="mr-2 h-6 w-6" /> Datos Históricos Tabulados (Filtrados)
+                <TableIcon className="mr-2 h-6 w-6" /> {t.visualize_table_title}
               </CardTitle>
-              <CardDescription>Tabla de los datos históricos filtrados para {species.spanishCommonName}.</CardDescription>
+              <CardDescription>{t.visualize_table_desc(t.getSpeciesName(species))}</CardDescription>
             </CardHeader>
             <CardContent>
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="w-[100px]">Año</TableHead>
-                    <TableHead>Descripción</TableHead>
-                    <TableHead className="w-[150px] text-right">Valor</TableHead>
-                    <TableHead className="w-[150px]">Unidad</TableHead>
+                    <TableHead className="w-[100px]">{t.year}</TableHead>
+                    <TableHead>{t.description}</TableHead>
+                    <TableHead className="w-[150px] text-right">{t.value}</TableHead>
+                    <TableHead className="w-[150px]">{t.unit}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -255,36 +258,36 @@ export default function VisualizeSpeciesPage({ params }: VisualizeSpeciesPagePro
         {stats && (
           <Card className="shadow-lg">
             <CardHeader>
-              <CardTitle className="text-2xl font-headline text-primary">Estadísticas Históricas Clave (Filtradas)</CardTitle>
-              <CardDescription>Un resumen de los datos históricos filtrados de {species.spanishCommonName}.</CardDescription>
+              <CardTitle className="text-2xl font-headline text-primary">{t.visualize_stats_title}</CardTitle>
+              <CardDescription>{t.visualize_stats_desc(t.getSpeciesName(species))}</CardDescription>
             </CardHeader>
             <CardContent>
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="w-[200px]">Métrica</TableHead>
-                    <TableHead>Año</TableHead>
-                    <TableHead className="text-right">Valor</TableHead>
+                    <TableHead className="w-[200px]">{t.metric}</TableHead>
+                    <TableHead>{t.year}</TableHead>
+                    <TableHead className="text-right">{t.value}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   <TableRow>
                     <TableCell className="font-medium flex items-center">
-                      <TrendingUp className="mr-2 h-5 w-5 text-green-600" /> Máximo en Rango Filtrado
+                      <TrendingUp className="mr-2 h-5 w-5 text-green-600" /> {t.maxInRange}
                     </TableCell>
                     <TableCell>{stats.maxPoint.year}</TableCell>
                     <TableCell className="text-right">{stats.maxPoint.value.toLocaleString()} {stats.unit}</TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell className="font-medium flex items-center">
-                      <TrendingDown className="mr-2 h-5 w-5 text-red-600" /> Mínimo en Rango Filtrado
+                      <TrendingDown className="mr-2 h-5 w-5 text-red-600" /> {t.minInRange}
                     </TableCell>
                     <TableCell>{stats.minPoint.year}</TableCell>
                     <TableCell className="text-right">{stats.minPoint.value.toLocaleString()} {stats.unit}</TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell className="font-medium flex items-center">
-                      <MinusSquare className="mr-2 h-5 w-5 text-blue-600" /> Promedio en Rango Filtrado
+                      <MinusSquare className="mr-2 h-5 w-5 text-blue-600" /> {t.avgInRange}
                     </TableCell>
                     <TableCell>N/A</TableCell>
                     <TableCell className="text-right">{stats.average.toLocaleString()} {stats.unit}</TableCell>
@@ -298,3 +301,5 @@ export default function VisualizeSpeciesPage({ params }: VisualizeSpeciesPagePro
     </RoleBasedGuard>
   );
 }
+
+    

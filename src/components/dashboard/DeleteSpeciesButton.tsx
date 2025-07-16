@@ -19,6 +19,7 @@ import {
 import { Trash2, AlertTriangle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 type DeleteSpeciesButtonProps = {
   speciesId: string;
@@ -30,9 +31,10 @@ const initialState = { success: false, message: "" };
 
 function SubmitButton() {
   const { pending } = useFormStatus();
+  const { t } = useLanguage();
   return (
     <Button type="submit" variant="destructive" disabled={pending}>
-      {pending ? "Eliminando..." : "Sí, eliminar"}
+      {pending ? t.deleting : t.confirmDelete}
     </Button>
   );
 }
@@ -40,6 +42,7 @@ function SubmitButton() {
 export default function DeleteSpeciesButton({ speciesId, speciesName, onDeleteSuccess }: DeleteSpeciesButtonProps) {
   const { toast } = useToast();
   const { role } = useAuth();
+  const { t } = useLanguage();
   const [state, formAction] = useActionState(deleteSpeciesAction, initialState);
   const [isOpen, setIsOpen] = useState(false);
   const prevMessageRef = useRef<string>();
@@ -47,7 +50,7 @@ export default function DeleteSpeciesButton({ speciesId, speciesName, onDeleteSu
   useEffect(() => {
     if (state.message && state.message !== prevMessageRef.current) {
       toast({
-        title: state.success ? "Éxito" : "Error",
+        title: state.success ? t.success : t.error,
         description: state.message,
         variant: state.success ? "default" : "destructive",
       });
@@ -57,7 +60,7 @@ export default function DeleteSpeciesButton({ speciesId, speciesName, onDeleteSu
       }
       prevMessageRef.current = state.message;
     }
-  }, [state, toast, speciesId, onDeleteSuccess]);
+  }, [state, toast, speciesId, onDeleteSuccess, t]);
   
   // Only admins can delete
   if (role !== 'admin') {
@@ -69,21 +72,21 @@ export default function DeleteSpeciesButton({ speciesId, speciesName, onDeleteSu
       <AlertDialogTrigger asChild>
         <Button variant="destructive" size="sm">
           <Trash2 className="mr-2 h-4 w-4" />
-          Eliminar
+          {t.deleteButton}
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle className="flex items-center">
             <AlertTriangle className="mr-2 h-6 w-6 text-destructive" />
-            ¿Estás seguro?
+            {t.areYouSure}
           </AlertDialogTitle>
           <AlertDialogDescription>
-            Estás a punto de eliminar permanentemente la especie <strong>{speciesName}</strong>. Esta acción no se puede deshacer.
+            {t.deleteWarning(speciesName)}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+          <AlertDialogCancel>{t.cancel}</AlertDialogCancel>
           <form action={formAction}>
             <input type="hidden" name="speciesId" value={speciesId} />
             <input type="hidden" name="userRole" value={role || ''} />
@@ -96,3 +99,5 @@ export default function DeleteSpeciesButton({ speciesId, speciesName, onDeleteSu
     </AlertDialog>
   );
 }
+
+    

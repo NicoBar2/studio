@@ -1,6 +1,6 @@
 
-"use client" // This needs to be a client component to use the language hook for the button
-import { getSpeciesById, getSpeciesList } from '@/lib/species';
+"use client";
+import { getSpeciesById } from '@/lib/species';
 import SpeciesDetailClient from './SpeciesDetailClient';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
@@ -16,28 +16,30 @@ type SpeciesDetailPageProps = {
 };
 
 export default function SpeciesDetailPage({ params }: SpeciesDetailPageProps) {
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
   const [species, setSpecies] = useState<Species | null | undefined>(undefined);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     async function fetchSpecies() {
+      setIsLoading(true);
       const data = await getSpeciesById(params.id);
       setSpecies(data);
+      setIsLoading(false);
     }
     fetchSpecies();
   }, [params.id]);
   
-  // Set metadata dynamically
   useEffect(() => {
-      if (species) {
-        document.title = `${t.getSpeciesName(species, 'es')} | Galápagos DataLens`;
-      } else if (species === null) {
-        document.title = 'Especie No Encontrada';
-      }
+    if (species) {
+      document.title = `${t.getSpeciesName(species)} | Galápagos DataLens`;
+    } else if (species === null) {
+      document.title = t.speciesNotFound;
+    }
   }, [species, t]);
 
 
-  if (species === undefined) {
+  if (isLoading || species === undefined) {
     return (
         <div className="container mx-auto px-4 py-8">
             <Skeleton className="h-10 w-64 mb-6" />
@@ -61,3 +63,5 @@ export default function SpeciesDetailPage({ params }: SpeciesDetailPageProps) {
     </div>
   );
 }
+
+    

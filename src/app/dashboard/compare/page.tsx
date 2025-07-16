@@ -16,6 +16,7 @@ import RoleBasedGuard from '@/components/auth/RoleBasedGuard';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useLanguage } from '@/contexts/LanguageContext';
 
 
 const SpeciesComparisonChart = dynamic(() => import('@/components/charts/SpeciesComparisonChart'), {
@@ -31,6 +32,7 @@ export default function ComparePage() {
     const [allSpecies, setAllSpecies] = useState<Species[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [selectedSpeciesIds, setSelectedSpeciesIds] = useState<string[]>([]);
+    const { t } = useLanguage();
     
     const [familyFilter, setFamilyFilter] = useState('');
     const [yearFilter, setYearFilter] = useState<{ min: string; max: string }>({ min: '', max: '' });
@@ -65,7 +67,7 @@ export default function ComparePage() {
         const grouped: { [unit: string]: Species[] } = {};
         filteredSpeciesList.forEach(s => {
             if (s.historicalData && s.historicalData.length > 0) {
-                const unit = s.historicalData[0].unit || 'sin unidad';
+                const unit = s.historicalData[0].unit || t.unitless;
                 if (!grouped[unit]) {
                     grouped[unit] = [];
                 }
@@ -73,7 +75,7 @@ export default function ComparePage() {
             }
         });
         return grouped;
-    }, [filteredSpeciesList]);
+    }, [filteredSpeciesList, t]);
 
     const selectedSpecies = useMemo(() => {
         return allSpecies.filter(s => selectedSpeciesIds.includes(s.id));
@@ -83,7 +85,7 @@ export default function ComparePage() {
         const grouped: { [unit: string]: Species[] } = {};
         selectedSpecies.forEach(s => {
             if (s.historicalData && s.historicalData.length > 0) {
-                const unit = s.historicalData[0].unit || 'sin unidad';
+                const unit = s.historicalData[0].unit || t.unitless;
                 if (!grouped[unit]) {
                     grouped[unit] = [];
                 }
@@ -91,7 +93,7 @@ export default function ComparePage() {
             }
         });
         return grouped;
-    }, [selectedSpecies]);
+    }, [selectedSpecies, t]);
 
 
     const handleSpeciesSelection = (speciesId: string) => {
@@ -115,15 +117,15 @@ export default function ComparePage() {
                     <div className="space-y-1">
                         <h1 className="text-2xl font-headline font-bold text-primary flex items-center">
                             <FileSearch className="mr-3 h-7 w-7" />
-                            Genera tu Consulta
+                            {t.compare_title}
                         </h1>
                         <p className="text-muted-foreground">
-                            Utiliza los criterios de búsqueda para filtrar y seleccionar especies, y visualiza las comparaciones.
+                            {t.compare_description}
                         </p>
                     </div>
                     <Button variant="outline" asChild>
                         <Link href="/dashboard">
-                            <ArrowLeft className="mr-2 h-4 w-4" /> Volver al Panel
+                            <ArrowLeft className="mr-2 h-4 w-4" /> {t.backToDashboard}
                         </Link>
                     </Button>
                 </div>
@@ -134,21 +136,21 @@ export default function ComparePage() {
                         <CardHeader>
                             <CardTitle className="flex items-center">
                                 <Filter className="mr-2 h-5 w-5" />
-                                Criterios de búsqueda
+                                {t.compare_filters_title}
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="space-y-2">
-                                <Label htmlFor="familyFilter">Filtrar por Familia</Label>
+                                <Label htmlFor="familyFilter">{t.compare_filter_family}</Label>
                                 <Select
                                     value={familyFilter}
                                     onValueChange={(value) => setFamilyFilter(value === 'all' ? '' : value)}
                                 >
                                     <SelectTrigger id="familyFilter" className="bg-input">
-                                        <SelectValue placeholder="Seleccionar familia..." />
+                                        <SelectValue placeholder={t.compare_filter_family_placeholder} />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="all">Todas las familias</SelectItem>
+                                        <SelectItem value="all">{t.compare_filter_family_all}</SelectItem>
                                         {uniqueFamilies.map(family => (
                                             <SelectItem key={family} value={family}>
                                                 {family}
@@ -158,35 +160,35 @@ export default function ComparePage() {
                                 </Select>
                             </div>
                             <div className="space-y-2">
-                                <Label>Rango de Años del Gráfico</Label>
+                                <Label>{t.compare_filter_year}</Label>
                                 <div className="flex items-center gap-2">
                                     <Input 
                                         type="number" 
-                                        placeholder="Inicio" 
+                                        placeholder={t.startYear} 
                                         value={yearFilter.min}
                                         onChange={(e) => setYearFilter(prev => ({ ...prev, min: e.target.value }))}
                                         className="bg-input"
-                                        aria-label="Año de inicio del filtro"
+                                        aria-label={t.startYearAria}
                                     />
                                     <span className="text-muted-foreground">-</span>
                                     <Input 
                                         type="number" 
-                                        placeholder="Fin" 
+                                        placeholder={t.endYear} 
                                         value={yearFilter.max}
                                         onChange={(e) => setYearFilter(prev => ({ ...prev, max: e.target.value }))}
                                         className="bg-input"
-                                        aria-label="Año máximo del filtro"
+                                        aria-label={t.endYearAria}
                                     />
                                 </div>
                             </div>
                             <Button onClick={clearFilters} variant="outline" size="sm" className="w-full">
-                                <FilterX className="mr-2 h-4 w-4" /> Limpiar Filtros
+                                <FilterX className="mr-2 h-4 w-4" /> {t.clearFilters}
                             </Button>
 
                             <hr className="my-4 border-border" />
 
                             <div className="space-y-2">
-                                <Label>Seleccionar Especies</Label>
+                                <Label>{t.compare_select_species}</Label>
                                 <ScrollArea className="h-80 rounded-md border p-2">
                                     {isLoading ? (
                                         <div className="p-2 space-y-2">
@@ -196,7 +198,7 @@ export default function ComparePage() {
                                         </div>
                                     ) : Object.keys(speciesToSelectByUnit).length === 0 ? (
                                         <div className="text-center text-sm text-muted-foreground p-4">
-                                            No hay especies que coincidan con el filtro de familia.
+                                            {t.compare_no_species_match}
                                         </div>
                                     ) : (
                                      Object.entries(speciesToSelectByUnit).map(([unit, speciesList]) => (
@@ -211,7 +213,7 @@ export default function ComparePage() {
                                                             onCheckedChange={() => handleSpeciesSelection(s.id)}
                                                         />
                                                         <Label htmlFor={`select-${s.id}`} className="text-sm font-normal cursor-pointer flex-1">
-                                                            {s.spanishCommonName}
+                                                            {t.getSpeciesName(s)}
                                                         </Label>
                                                     </div>
                                                 ))}
@@ -231,8 +233,8 @@ export default function ComparePage() {
                         ) : Object.keys(chartsToDisplayByUnit).length === 0 ? (
                              <Card className="flex flex-col items-center justify-center min-h-[400px] border-2 border-dashed bg-muted/30">
                                 <BarChart className="h-16 w-16 text-muted-foreground mb-4" />
-                                <h3 className="text-xl font-semibold text-foreground">Visualiza tus Datos</h3>
-                                <p className="text-muted-foreground mt-2">Selecciona una o más especies del panel de criterios de búsqueda para comenzar.</p>
+                                <h3 className="text-xl font-semibold text-foreground">{t.compare_chart_placeholder_title}</h3>
+                                <p className="text-muted-foreground mt-2">{t.compare_chart_placeholder_desc}</p>
                              </Card>
                          ) : (
                              Object.entries(chartsToDisplayByUnit).map(([unit, speciesData]) => (
@@ -240,7 +242,7 @@ export default function ComparePage() {
                                      <CardHeader>
                                          <CardTitle className="flex items-center text-primary">
                                             <BarChart className="mr-2 h-6 w-6" /> 
-                                            Comparación por: {unit}
+                                            {t.compare_chart_title_prefix} {unit}
                                         </CardTitle>
                                      </CardHeader>
                                      <CardContent>
@@ -255,3 +257,5 @@ export default function ComparePage() {
         </RoleBasedGuard>
     );
 }
+
+    
