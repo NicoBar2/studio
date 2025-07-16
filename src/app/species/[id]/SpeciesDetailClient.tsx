@@ -14,6 +14,7 @@ import {
   Turtle, Bird, Footprints, ShieldQuestion, Waves, Bug, type LucideIcon, HelpCircle, Sigma, MapPin, LoaderCircle, CalendarClock
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
 import dynamic from 'next/dynamic';
@@ -43,15 +44,24 @@ const iconMap: Record<string, LucideIcon> = {
   Default: HelpCircle,
 };
 
-const populationTrendTranslations: Record<Species['populationTrend'], string> = {
-  increasing: 'Creciente',
-  decreasing: 'Decreciente',
-  stable: 'Estable',
-  unknown: 'Desconocida',
+const populationTrendTranslations: Record<"es" | "en", Record<Species['populationTrend'], string>> = {
+  es: {
+    increasing: 'Creciente',
+    decreasing: 'Decreciente',
+    stable: 'Estable',
+    unknown: 'Desconocida',
+  },
+  en: {
+    increasing: 'Increasing',
+    decreasing: 'Decreasing',
+    stable: 'Stable',
+    unknown: 'Unknown',
+  }
 };
 
 export default function SpeciesDetailClient({ species }: SpeciesDetailClientProps) {
   const { role } = useAuth();
+  const { language, t } = useLanguage();
   const [summary, setSummary] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isSummaryPending, startSummaryTransition] = useTransition();
@@ -60,6 +70,8 @@ export default function SpeciesDetailClient({ species }: SpeciesDetailClientProp
   const { resolvedTheme } = useTheme();
   
   const IconComponent = iconMap[species.icon] || iconMap.Default;
+  const speciesName = t.getSpeciesName(species, language);
+  const speciesDescription = t.getSpeciesDescription(species, language);
   const scientificName = `${species.genus || ''} ${species.specificEpithet || ''}`.trim();
 
 
@@ -293,7 +305,7 @@ export default function SpeciesDetailClient({ species }: SpeciesDetailClientProp
     });
   };
 
-  const displayPopulationTrend = populationTrendTranslations[species.populationTrend] || species.populationTrend;
+  const displayPopulationTrend = populationTrendTranslations[language][species.populationTrend] || species.populationTrend;
   
   const presentOnIslands = GALAPAGOS_ISLANDS_NAMES
       .map(islandName => {
@@ -309,7 +321,7 @@ export default function SpeciesDetailClient({ species }: SpeciesDetailClientProp
           <CardHeader className="relative p-0">
             <Image
               src={getSpeciesImageUrl(species)}
-              alt={species.spanishCommonName}
+              alt={speciesName}
               width={1200}
               height={400}
               className="w-full h-64 md:h-96 object-cover"
@@ -320,14 +332,14 @@ export default function SpeciesDetailClient({ species }: SpeciesDetailClientProp
             <div className="absolute bottom-0 left-0 p-6 md:p-8">
               <div className="flex items-center mb-2">
                 <IconComponent className="h-12 w-12 text-accent mr-4" />
-                <h1 className="text-4xl md:text-5xl font-headline font-bold text-white">{species.spanishCommonName}</h1>
+                <h1 className="text-4xl md:text-5xl font-headline font-bold text-white">{speciesName}</h1>
               </div>
               <p className="text-xl italic text-gray-200">{scientificName}</p>
             </div>
             {(role === 'admin' || role === 'researcher') && (
               <Button asChild size="sm" className="absolute top-4 right-4 bg-accent text-accent-foreground hover:bg-accent/90">
                 <Link href={`/dashboard/edit/${species.id}`}>
-                  <Edit className="mr-2 h-4 w-4" /> Editar Datos
+                  <Edit className="mr-2 h-4 w-4" /> {language === 'es' ? 'Editar Datos' : 'Edit Data'}
                 </Link>
               </Button>
             )}
@@ -335,23 +347,23 @@ export default function SpeciesDetailClient({ species }: SpeciesDetailClientProp
           <CardContent className="p-6 md:p-8 space-y-6">
             <section>
               <h2 className="text-2xl font-headline font-semibold text-primary mb-3 flex items-center">
-                <Tag className="mr-2 h-6 w-6" /> Descripción
+                <Tag className="mr-2 h-6 w-6" /> {t.speciesDescription}
               </h2>
-              <p className="text-foreground leading-relaxed">{species.spanishDescription}</p>
+              <p className="text-foreground leading-relaxed">{speciesDescription}</p>
             </section>
             
             <Card>
                 <CardHeader>
-                    <CardTitle className="flex items-center text-xl text-primary"><Sigma className="mr-2 h-5 w-5" /> Clasificación Taxonómica</CardTitle>
+                    <CardTitle className="flex items-center text-xl text-primary"><Sigma className="mr-2 h-5 w-5" /> {t.taxonomicClassification}</CardTitle>
                 </CardHeader>
                 <CardContent className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 text-sm">
-                    {species.kingdom && <div><strong>Reino:</strong> {species.kingdom}</div>}
-                    {species.phylum && <div><strong>Filo:</strong> {species.phylum}</div>}
-                    {species.class && <div><strong>Clase:</strong> {species.class}</div>}
-                    {species.order && <div><strong>Orden:</strong> {species.order}</div>}
-                    {species.family && <div><strong>Familia:</strong> {species.family}</div>}
-                    {species.genus && <div><strong>Género:</strong> {species.genus}</div>}
-                    {species.specificEpithet && <div><strong>Especie:</strong> {species.specificEpithet}</div>}
+                    {species.kingdom && <div><strong>{language === 'es' ? 'Reino' : 'Kingdom'}:</strong> {species.kingdom}</div>}
+                    {species.phylum && <div><strong>{language === 'es' ? 'Filo' : 'Phylum'}:</strong> {species.phylum}</div>}
+                    {species.class && <div><strong>{language === 'es' ? 'Clase' : 'Class'}:</strong> {species.class}</div>}
+                    {species.order && <div><strong>{language === 'es' ? 'Orden' : 'Order'}:</strong> {species.order}</div>}
+                    {species.family && <div><strong>{language === 'es' ? 'Familia' : 'Family'}:</strong> {species.family}</div>}
+                    {species.genus && <div><strong>{language === 'es' ? 'Género' : 'Genus'}:</strong> {species.genus}</div>}
+                    {species.specificEpithet && <div><strong>{language === 'es' ? 'Especie' : 'Species'}:</strong> {species.specificEpithet}</div>}
                 </CardContent>
             </Card>
 
@@ -359,19 +371,19 @@ export default function SpeciesDetailClient({ species }: SpeciesDetailClientProp
             <div className="grid md:grid-cols-2 gap-6">
               <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center text-xl text-primary"><ShieldAlert className="mr-2 h-5 w-5" /> Conservación y Población</CardTitle>
+                  <CardTitle className="flex items-center text-xl text-primary"><ShieldAlert className="mr-2 h-5 w-5" /> {t.conservationAndPopulation}</CardTitle>
                   <CardDescription>
-                    Estado según la Unión Internacional para la Conservación de la Naturaleza (UICN).
+                    {language === 'es' ? 'Estado según la Unión Internacional para la Conservación de la Naturaleza (UICN).' : 'Status according to the International Union for Conservation of Nature (IUCN).'}
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-2">
-                  <p><strong>Estado UICN:</strong> <Badge variant={species.iucnStatus === 'En Peligro' || species.iucnStatus === 'En Peligro Crítico' ? 'destructive' : 'secondary'}>{species.iucnStatus}</Badge></p>
-                  <p><strong>Tendencia Poblacional:</strong> <span className={`font-medium ${species.populationTrend === 'decreasing' ? 'text-destructive' : species.populationTrend === 'increasing' ? 'text-green-600' : 'text-foreground'}`}>{displayPopulationTrend}</span></p>
+                  <p><strong>{t.iucnStatus}:</strong> <Badge variant={species.iucnStatus === 'En Peligro' || species.iucnStatus === 'En Peligro Crítico' ? 'destructive' : 'secondary'}>{species.iucnStatus}</Badge></p>
+                  <p><strong>{t.populationTrend}:</strong> <span className={`font-medium ${species.populationTrend === 'decreasing' ? 'text-destructive' : species.populationTrend === 'increasing' ? 'text-green-600' : 'text-foreground'}`}>{displayPopulationTrend}</span></p>
                 </CardContent>
               </Card>
               <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center text-xl text-primary"><Home className="mr-2 h-5 w-5" /> Hábitat</CardTitle>
+                  <CardTitle className="flex items-center text-xl text-primary"><Home className="mr-2 h-5 w-5" /> {t.habitat}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p>{species.habitat}</p>
@@ -381,7 +393,7 @@ export default function SpeciesDetailClient({ species }: SpeciesDetailClientProp
             
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center text-xl text-primary"><ListChecks className="mr-2 h-5 w-5" /> Estadísticas Clave</CardTitle>
+                <CardTitle className="flex items-center text-xl text-primary"><ListChecks className="mr-2 h-5 w-5" /> {t.keyStats}</CardTitle>
               </CardHeader>
               <CardContent>
                 <ul className="list-disc list-inside space-y-1">
@@ -394,7 +406,7 @@ export default function SpeciesDetailClient({ species }: SpeciesDetailClientProp
 
             <Card>
               <CardHeader>
-                  <CardTitle className="flex items-center text-xl text-primary"><AlertCircle className="mr-2 h-5 w-5" /> Amenazas Principales</CardTitle>
+                  <CardTitle className="flex items-center text-xl text-primary"><AlertCircle className="mr-2 h-5 w-5" /> {t.mainThreats}</CardTitle>
               </CardHeader>
               <CardContent>
                 <ul className="list-disc list-inside space-y-1">
@@ -407,7 +419,7 @@ export default function SpeciesDetailClient({ species }: SpeciesDetailClientProp
             
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center text-xl text-primary"><MapPin className="mr-2 h-5 w-5" /> Distribución Geográfica</CardTitle>
+                <CardTitle className="flex items-center text-xl text-primary"><MapPin className="mr-2 h-5 w-5" /> {t.geographicDistribution}</CardTitle>
               </CardHeader>
               <CardContent className="flex flex-wrap gap-2">
                 {presentOnIslands.length > 0 ? (
@@ -417,7 +429,7 @@ export default function SpeciesDetailClient({ species }: SpeciesDetailClientProp
                     </Badge>
                   ))
                 ) : (
-                  <p className="text-muted-foreground">No hay datos de distribución en islas específicas.</p>
+                  <p className="text-muted-foreground">{language === 'es' ? 'No hay datos de distribución en islas específicas.' : 'No distribution data for specific islands.'}</p>
                 )}
               </CardContent>
             </Card>
@@ -425,11 +437,11 @@ export default function SpeciesDetailClient({ species }: SpeciesDetailClientProp
             {(role === 'admin' || role === 'researcher') && species.createdAt && (
               <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center text-xl text-primary"><CalendarClock className="mr-2 h-5 w-5" /> Información de Registro</CardTitle>
-                  <CardDescription>Metadatos de la entrada en la plataforma.</CardDescription>
+                  <CardTitle className="flex items-center text-xl text-primary"><CalendarClock className="mr-2 h-5 w-5" /> {t.registrationInfo}</CardTitle>
+                  <CardDescription>{language === 'es' ? 'Metadatos de la entrada en la plataforma.' : 'Platform entry metadata.'}</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <p><strong>Fecha de Creación:</strong> {new Date(species.createdAt).toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                  <p><strong>{t.creationDate}:</strong> {new Date(species.createdAt).toLocaleDateString(language, { year: 'numeric', month: 'long', day: 'numeric' })}</p>
                 </CardContent>
               </Card>
             )}
@@ -437,15 +449,15 @@ export default function SpeciesDetailClient({ species }: SpeciesDetailClientProp
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center text-xl text-primary">
-                  <Brain className="mr-2 h-5 w-5" /> Resumen Generado por IA
+                  <Brain className="mr-2 h-5 w-5" /> {t.aiSummary}
                 </CardTitle>
                 <CardDescription>
-                  Obtén un resumen rápido del estado actual e importancia de esta especie.
+                  {t.aiSummaryDescription}
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <Button onClick={handleGenerateSummary} disabled={isSummaryPending} className="bg-primary hover:bg-primary/90">
-                  {isSummaryPending ? 'Generando...' : 'Generar Resumen con IA'}
+                  {isSummaryPending ? t.generating : t.generateAISummary}
                 </Button>
                 {isSummaryPending && (
                   <div className="mt-4 space-y-2">
@@ -462,9 +474,9 @@ export default function SpeciesDetailClient({ species }: SpeciesDetailClientProp
             {(role === 'researcher' || role === 'admin' || species.showHistoricalDataToPublic) && (
                <Card ref={chartCardRef}>
                   <CardHeader>
-                      <CardTitle className="flex items-center text-xl text-primary"><BarChart2 className="mr-2 h-5 w-5" /> Visualización de Datos Históricos</CardTitle>
+                      <CardTitle className="flex items-center text-xl text-primary"><BarChart2 className="mr-2 h-5 w-5" /> {t.historicalDataVisualization}</CardTitle>
                        <CardDescription>
-                         Gráficos de barras que muestran datos históricos de la población u otras métricas relevantes.
+                         {t.historicalDataGraphDesc}
                        </CardDescription>
                   </CardHeader>
                   <CardContent>
@@ -474,10 +486,11 @@ export default function SpeciesDetailClient({ species }: SpeciesDetailClientProp
                             dataKey="value" 
                             nameKey="year" 
                             unit={species.historicalData[0].unit || 'conteo'} 
-                            chartType="bar" 
+                            chartType="bar"
+                            lang={language}
                           />
                       ) : (
-                          <p className="text-muted-foreground">No hay datos históricos disponibles para visualización.</p>
+                          <p className="text-muted-foreground">{language === 'es' ? 'No hay datos históricos disponibles para visualización.' : 'No historical data available for visualization.'}</p>
                       )}
                   </CardContent>
               </Card>
@@ -491,12 +504,12 @@ export default function SpeciesDetailClient({ species }: SpeciesDetailClientProp
            {isPdfPending ? (
               <>
                 <LoaderCircle className="mr-2 h-5 w-5 animate-spin" />
-                Generando PDF...
+                {t.generatingPdf}
               </>
             ) : (
               <>
                 <Download className="mr-2 h-5 w-5" />
-                Descargar Informe en PDF
+                {t.downloadPdfReport}
               </>
             )}
         </Button>

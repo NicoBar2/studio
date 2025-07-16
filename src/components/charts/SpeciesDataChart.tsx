@@ -4,18 +4,20 @@
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis, Legend, LineChart, Line } from 'recharts';
 import { ChartContainer, ChartTooltipContent, ChartLegend, ChartLegendContent } from '@/components/ui/chart';
 import type { HistoricalDataPoint } from '@/lib/types';
-import { useTheme } from 'next-themes'; // Assuming next-themes is or could be used for dark mode
+import type { Language } from '@/contexts/LanguageContext';
+import { useTheme } from 'next-themes';
 
 type SpeciesDataChartProps = {
   data: HistoricalDataPoint[];
   dataKey: string; // e.g., "value"
   nameKey: string; // e.g., "year"
   unit: string;
+  lang: Language;
   chartType?: 'bar' | 'line';
 };
 
-export default function SpeciesDataChart({ data, dataKey, nameKey, unit, chartType = 'line' }: SpeciesDataChartProps) {
-  const { resolvedTheme } = useTheme(); // For potential theme-specific styling
+export default function SpeciesDataChart({ data, dataKey, nameKey, unit, lang, chartType = 'line' }: SpeciesDataChartProps) {
+  const { resolvedTheme } = useTheme();
   const isDarkMode = resolvedTheme === 'dark';
 
   const chartConfig = {
@@ -27,9 +29,10 @@ export default function SpeciesDataChart({ data, dataKey, nameKey, unit, chartTy
   
   const formattedData = data.map(item => ({
     ...item,
-    [nameKey]: String(item[nameKey]) // Ensure nameKey is string for XAxis
+    [nameKey]: String(item[nameKey])
   }));
 
+  const yAxisLabel = lang === 'es' ? `Valor (${unit})` : `Value (${unit})`;
 
   return (
     <ChartContainer config={chartConfig} className="w-full h-full">
@@ -44,7 +47,8 @@ export default function SpeciesDataChart({ data, dataKey, nameKey, unit, chartTy
             tickFormatter={(value) => value}
           />
           <YAxis
-            tickFormatter={(value) => `${value} ${unit}`}
+            label={{ value: yAxisLabel, angle: -90, position: 'insideLeft', style: { textAnchor: 'middle' } }}
+            tickFormatter={(value) => typeof value === 'number' ? value.toLocaleString(lang) : value}
           />
           <Tooltip content={<ChartTooltipContent />} />
           <Legend content={<ChartLegendContent />} />
@@ -66,7 +70,7 @@ export default function SpeciesDataChart({ data, dataKey, nameKey, unit, chartTy
           />
         </LineChart>
       ) : (
-        <BarChart data={formattedData} margin={{ top: 20, right: 20, bottom: 5, left: 10 }}>
+        <BarChart data={formattedData} margin={{ top: 20, right: 20, bottom: 5, left: 20 }}>
           <CartesianGrid strokeDasharray="3 3" vertical={false} />
           <XAxis
             dataKey={nameKey}
@@ -76,7 +80,8 @@ export default function SpeciesDataChart({ data, dataKey, nameKey, unit, chartTy
             tickFormatter={(value) => value}
           />
           <YAxis
-            tickFormatter={(value) => `${value} ${unit}`}
+            label={{ value: yAxisLabel, angle: -90, position: 'insideLeft', offset: -10, style: { textAnchor: 'middle' } }}
+            tickFormatter={(value) => typeof value === 'number' ? value.toLocaleString(lang) : value}
           />
           <Tooltip
             cursor={false}
@@ -85,8 +90,11 @@ export default function SpeciesDataChart({ data, dataKey, nameKey, unit, chartTy
                     <>
                         <div className="font-medium">{item.payload[nameKey]}</div>
                         <div className="text-muted-foreground">
-                            {unit}: {typeof value === 'number' ? value.toLocaleString() : value}
+                            {unit}: {typeof value === 'number' ? value.toLocaleString(lang) : value}
                         </div>
+                        {item.payload.description && (
+                          <div className="text-xs text-muted-foreground max-w-xs">{item.payload.description}</div>
+                        )}
                     </>
                 )} 
             />}

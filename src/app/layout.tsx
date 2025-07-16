@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { AuthProvider } from '@/contexts/AuthContext';
+import { LanguageProvider } from '@/contexts/LanguageContext';
 import SiteLayout from '@/components/layout/SiteLayout';
 import { ThemeProvider } from "next-themes";
 
@@ -34,8 +35,10 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <AuthProvider>
-            <SiteLayout>{children}</SiteLayout>
-            <Toaster />
+            <LanguageProvider>
+              <SiteLayout>{children}</SiteLayout>
+              <Toaster />
+            </LanguageProvider>
           </AuthProvider>
         </ThemeProvider>
       </body>

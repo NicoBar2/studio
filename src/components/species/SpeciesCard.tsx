@@ -1,4 +1,6 @@
 
+"use client";
+
 import Link from 'next/link';
 import Image from 'next/image';
 import type { Species } from '@/lib/types';
@@ -7,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Turtle, Bird, Footprints, ShieldQuestion, Waves, Bug, type LucideIcon, HelpCircle } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 type SpeciesCardProps = {
   species: Species;
@@ -23,9 +26,13 @@ const iconMap: Record<string, LucideIcon> = {
 };
 
 export default function SpeciesCard({ species }: SpeciesCardProps) {
+  const { language, t } = useLanguage();
   const imageUrl = getSpeciesImageUrl(species);
   const IconComponent = iconMap[species.icon] || iconMap.Default;
+  const speciesName = t.getSpeciesName(species, language);
+  const speciesDescription = t.getSpeciesDescription(species, language);
   const scientificName = `${species.genus || ''} ${species.specificEpithet || ''}`.trim();
+  const learnMoreText = language === 'es' ? 'Saber Más' : 'Learn More';
 
   return (
     <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col h-full">
@@ -33,7 +40,7 @@ export default function SpeciesCard({ species }: SpeciesCardProps) {
         <Image
           key={imageUrl} 
           src={imageUrl}
-          alt={species.spanishCommonName}
+          alt={speciesName}
           width={400}
           height={250}
           className="w-full h-48 object-cover"
@@ -43,10 +50,10 @@ export default function SpeciesCard({ species }: SpeciesCardProps) {
       <CardContent className="p-6 flex flex-col flex-grow">
         <div className="flex items-center mb-2">
           <IconComponent className="h-8 w-8 text-primary mr-3" />
-          <CardTitle className="text-2xl font-headline text-primary">{species.spanishCommonName}</CardTitle>
+          <CardTitle className="text-2xl font-headline text-primary">{speciesName}</CardTitle>
         </div>
         <CardDescription className="italic text-sm text-muted-foreground mb-3">{scientificName}</CardDescription>
-        <p className="text-sm text-foreground mb-4 line-clamp-3 flex-grow">{species.spanishDescription}</p>
+        <p className="text-sm text-foreground mb-4 line-clamp-3 flex-grow">{speciesDescription}</p>
 
         <div className="mb-4">
           <Badge variant={species.iucnStatus === 'En Peligro' || species.iucnStatus === 'En Peligro Crítico' ? 'destructive' : 'secondary'}>
@@ -60,7 +67,7 @@ export default function SpeciesCard({ species }: SpeciesCardProps) {
               href={`/species/${species.id}`} 
               className="flex items-center justify-center"
             >
-              Saber Más
+              {learnMoreText}
               <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
             </Link>
           </Button>
