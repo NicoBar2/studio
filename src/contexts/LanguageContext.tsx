@@ -34,6 +34,14 @@ type Translations = {
     role_researcher: string;
     role_tourist: string;
 
+    // Sidebar
+    sidebar_summary: string;
+    sidebar_generate_query: string;
+    sidebar_add_species: string;
+    sidebar_manage_researchers: string;
+    sidebar_import_species: string;
+    sidebar_public_site: string;
+
     // Login Page
     loginTitle: string;
     loginDesc: string;
@@ -232,6 +240,13 @@ const esTranslations: Translations = {
     role_researcher: "Investigador/a",
     role_tourist: "Turista",
 
+    sidebar_summary: "Resumen",
+    sidebar_generate_query: "Generar Consulta",
+    sidebar_add_species: "Añadir Especie",
+    sidebar_manage_researchers: "Gestionar Investigadores",
+    sidebar_import_species: "Importar Especies",
+    sidebar_public_site: "Sitio Público",
+
     loginTitle: "Acceder",
     loginDesc: "Investigadores verificados, si es su primer acceso, la contraseña que ingresen se establecerá como su nueva contraseña.",
     forgotPasswordLink: "¿Olvidaste tu contraseña?",
@@ -419,6 +434,13 @@ const enTranslations: Translations = {
     role_admin: "Administrator",
     role_researcher: "Researcher",
     role_tourist: "Tourist",
+
+    sidebar_summary: "Summary",
+    sidebar_generate_query: "Generate Query",
+    sidebar_add_species: "Add Species",
+    sidebar_manage_researchers: "Manage Researchers",
+    sidebar_import_species: "Import Species",
+    sidebar_public_site: "Public Site",
 
     loginTitle: "Login",
     loginDesc: "Verified researchers, if this is your first time logging in, the password you enter will be set as your new password.",

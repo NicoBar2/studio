@@ -5,6 +5,7 @@ import { Sidebar, SidebarProvider, SidebarMenu, SidebarMenuItem, SidebarMenuButt
 import { LayoutDashboard, Users, HomeIcon, FileUp, GitCompareArrows, PlusCircle, Webhook } from 'lucide-react';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function DashboardLayout({
   children,
@@ -12,6 +13,7 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const { role } = useAuth();
+  const { t } = useLanguage();
 
   return (
     <RoleBasedGuard allowedRoles={['admin', 'researcher']}>
@@ -21,35 +23,35 @@ export default function DashboardLayout({
             <SidebarHeader className="p-4 flex items-center justify-between">
               <Link href="/dashboard" className="flex items-center gap-2 font-headline text-lg font-semibold text-primary">
                 <LayoutDashboard className="h-6 w-6" />
-                <span className="group-data-[state=collapsed]:hidden">Panel</span>
+                <span className="group-data-[state=collapsed]:hidden">{t.dashboard}</span>
               </Link>
             </SidebarHeader>
 
             <div className="flex-1 overflow-y-auto">
               <SidebarMenu className="p-2">
                 <SidebarMenuItem>
-                  <SidebarMenuButton asChild variant="ghost" className="justify-start w-full" tooltip="Resumen">
+                  <SidebarMenuButton asChild variant="ghost" className="justify-start w-full" tooltip={t.sidebar_summary}>
                     <Link href="/dashboard">
                       <LayoutDashboard />
-                      <span className="group-data-[state=collapsed]:hidden">Resumen</span>
+                      <span className="group-data-[state=collapsed]:hidden">{t.sidebar_summary}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
                 
                 <SidebarMenuItem>
-                  <SidebarMenuButton asChild variant="ghost" className="justify-start w-full" tooltip="Generar Consulta">
+                  <SidebarMenuButton asChild variant="ghost" className="justify-start w-full" tooltip={t.sidebar_generate_query}>
                     <Link href="/dashboard/compare">
                       <GitCompareArrows />
-                      <span className="group-data-[state=collapsed]:hidden">Generar Consulta</span>
+                      <span className="group-data-[state=collapsed]:hidden">{t.sidebar_generate_query}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
                 
                 <SidebarMenuItem>
-                  <SidebarMenuButton asChild variant="ghost" className="justify-start w-full" tooltip="Añadir Especie">
+                  <SidebarMenuButton asChild variant="ghost" className="justify-start w-full" tooltip={t.sidebar_add_species}>
                     <Link href="/dashboard/add-species">
                       <PlusCircle />
-                      <span className="group-data-[state=collapsed]:hidden">Añadir Especie</span>
+                      <span className="group-data-[state=collapsed]:hidden">{t.sidebar_add_species}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -57,18 +59,18 @@ export default function DashboardLayout({
                 {role === 'admin' && (
                   <>
                     <SidebarMenuItem>
-                      <SidebarMenuButton asChild variant="ghost" className="justify-start w-full" tooltip="Gestionar Investigadores">
+                      <SidebarMenuButton asChild variant="ghost" className="justify-start w-full" tooltip={t.sidebar_manage_researchers}>
                         <Link href="/dashboard/admin/researchers">
                           <Users />
-                          <span className="group-data-[state=collapsed]:hidden">Gestionar Investigadores</span>
+                          <span className="group-data-[state=collapsed]:hidden">{t.sidebar_manage_researchers}</span>
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                     <SidebarMenuItem>
-                      <SidebarMenuButton asChild variant="ghost" className="justify-start w-full" tooltip="Importar especies">
+                      <SidebarMenuButton asChild variant="ghost" className="justify-start w-full" tooltip={t.sidebar_import_species}>
                         <Link href="/dashboard/admin/import">
                           <FileUp />
-                          <span className="group-data-[state=collapsed]:hidden">Importar especies</span>
+                          <span className="group-data-[state=collapsed]:hidden">{t.sidebar_import_species}</span>
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
@@ -76,10 +78,10 @@ export default function DashboardLayout({
                 )}
 
                 <SidebarMenuItem>
-                  <SidebarMenuButton asChild variant="ghost" className="justify-start w-full" tooltip="Sitio Público">
+                  <SidebarMenuButton asChild variant="ghost" className="justify-start w-full" tooltip={t.sidebar_public_site}>
                     <Link href="/">
                       <HomeIcon />
-                      <span className="group-data-[state=collapsed]:hidden">Sitio Público</span>
+                      <span className="group-data-[state=collapsed]:hidden">{t.sidebar_public_site}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
