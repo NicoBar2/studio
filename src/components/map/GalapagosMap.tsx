@@ -124,21 +124,25 @@ function getPathCenter(d: string): { x: number; y: number } {
     if (!d) return { x: 0, y: 0 };
     const points = d.replace(/[M,L,Z,C,A,Q,T,H,V,S]/gi, ' ').trim().split(/[\s,]+/).map(Number).filter(n => !isNaN(n));
     if(points.length === 0) return { x: 0, y: 0 };
-    let xSum = 0, ySum = 0;
+    
+    let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
     for (let i = 0; i < points.length; i += 2) {
-        xSum += points[i];
-        ySum += points[i+1];
+        minX = Math.min(minX, points[i]);
+        maxX = Math.max(maxX, points[i]);
+        minY = Math.min(minY, points[i+1]);
+        maxY = Math.max(maxY, points[i+1]);
     }
-    const numPoints = points.length / 2;
-    return { x: xSum / numPoints, y: ySum / numPoints };
+    return { x: minX + (maxX - minX) / 2, y: minY + (maxY - minY) / 2 };
 }
 
 function getPathArea(d: string): number {
     if (!d) return 0;
     const points = d.replace(/[M,L,Z,C,A,Q,T,H,V,S]/gi, ' ').trim().split(/[\s,]+/).map(Number).filter(n => !isNaN(n));
     if(points.length < 2) return 0;
+    
     let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
     for (let i = 0; i < points.length; i += 2) {
+        if(isNaN(points[i]) || isNaN(points[i+1])) continue;
         minX = Math.min(minX, points[i]);
         maxX = Math.max(maxX, points[i]);
         minY = Math.min(minY, points[i+1]);
