@@ -11,13 +11,13 @@ import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import dynamic from 'next/dynamic';
 import { Skeleton } from '@/components/ui/skeleton';
-import { AlertTriangle, BarChart, FileSearch, ArrowLeft, Filter, FilterX } from 'lucide-react';
+import { AlertTriangle, BarChart, FileSearch, ArrowLeft, Filter, FilterX, TableIcon } from 'lucide-react';
 import RoleBasedGuard from '@/components/auth/RoleBasedGuard';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useLanguage } from '@/contexts/LanguageContext';
-
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 const SpeciesComparisonChart = dynamic(() => import('@/components/charts/SpeciesComparisonChart'), {
     loading: () => (
@@ -82,18 +82,45 @@ export default function ComparePage() {
     }, [allSpecies, selectedSpeciesIds]);
 
     const chartsToDisplayByUnit = useMemo(() => {
-        const grouped: { [unit: string]: Species[] } = {};
+        const grouped: { [unit: string]: { species: Species[], tableData: any[] } } = {};
+        const minYear = yearFilter.min ? parseInt(yearFilter.min, 10) : -Infinity;
+        const maxYear = yearFilter.max ? parseInt(yearFilter.max, 10) : Infinity;
+    
         selectedSpecies.forEach(s => {
             if (s.historicalData && s.historicalData.length > 0) {
                 const unit = s.historicalData[0].unit || t.unitless;
                 if (!grouped[unit]) {
-                    grouped[unit] = [];
+                    grouped[unit] = { species: [], tableData: [] };
                 }
-                grouped[unit].push(s);
+                if (!grouped[unit].species.some(sp => sp.id === s.id)) {
+                    grouped[unit].species.push(s);
+                }
             }
         });
+    
+        for (const unit in grouped) {
+            const speciesInGroup = grouped[unit].species;
+            const allYears = new Set<number>();
+            speciesInGroup.forEach(s => {
+                s.historicalData.forEach(p => {
+                    if (p.year >= minYear && p.year <= maxYear) {
+                        allYears.add(p.year);
+                    }
+                });
+            });
+            const sortedYears = Array.from(allYears).sort((a, b) => a - b);
+    
+            grouped[unit].tableData = sortedYears.map(year => {
+                const row: { [key: string]: any } = { year };
+                speciesInGroup.forEach(s => {
+                    const dataPoint = s.historicalData.find(p => p.year === year);
+                    row[s.id] = dataPoint?.value ?? 'N/A';
+                });
+                return row;
+            });
+        }
         return grouped;
-    }, [selectedSpecies, t]);
+    }, [selectedSpecies, yearFilter, t]);
 
 
     const handleSpeciesSelection = (speciesId: string) => {
@@ -226,7 +253,7 @@ export default function ComparePage() {
                         </CardContent>
                     </Card>
 
-                    {/* RIGHT PANE: CHARTS */}
+                    {/* RIGHT PANE: CHARTS & TABLES */}
                     <div className="lg:col-span-3 space-y-6">
                         {isLoading ? (
                             <Skeleton className="h-[400px] w-full" />
@@ -237,7 +264,7 @@ export default function ComparePage() {
                                 <p className="text-muted-foreground mt-2">{t.compare_chart_placeholder_desc}</p>
                              </Card>
                          ) : (
-                             Object.entries(chartsToDisplayByUnit).map(([unit, speciesData]) => (
+                             Object.entries(chartsToDisplayByUnit).map(([unit, { species, tableData }]) => (
                                  <Card key={unit} className="shadow-lg">
                                      <CardHeader>
                                          <CardTitle className="flex items-center text-primary">
@@ -245,8 +272,39 @@ export default function ComparePage() {
                                             {t.compare_chart_title_prefix} {unit}
                                         </CardTitle>
                                      </CardHeader>
-                                     <CardContent>
-                                         <SpeciesComparisonChart species={speciesData} yearFilter={yearFilter} />
+                                     <CardContent className="space-y-4">
+                                         <SpeciesComparisonChart species={species} yearFilter={yearFilter} />
+                                        
+                                         <div>
+                                            <h4 className="font-semibold text-lg flex items-center mb-2">
+                                                <TableIcon className="mr-2 h-5 w-5" />
+                                                {t.visualize_table_title}
+                                            </h4>
+                                            <div className="border rounded-md">
+                                                <Table>
+                                                    <TableHeader>
+                                                        <TableRow>
+                                                            <TableHead>{t.year}</TableHead>
+                                                            {species.map(s => (
+                                                                <TableHead key={s.id} className="text-right">{t.getSpeciesName(s)}</TableHead>
+                                                            ))}
+                                                        </TableRow>
+                                                    </TableHeader>
+                                                    <TableBody>
+                                                        {tableData.map(row => (
+                                                            <TableRow key={row.year}>
+                                                                <TableCell className="font-medium">{row.year}</TableCell>
+                                                                {species.map(s => (
+                                                                    <TableCell key={s.id} className="text-right">
+                                                                        {typeof row[s.id] === 'number' ? row[s.id].toLocaleString() : row[s.id]}
+                                                                    </TableCell>
+                                                                ))}
+                                                            </TableRow>
+                                                        ))}
+                                                    </TableBody>
+                                                </Table>
+                                            </div>
+                                         </div>
                                      </CardContent>
                                  </Card>
                              ))
@@ -257,5 +315,3 @@ export default function ComparePage() {
         </RoleBasedGuard>
     );
 }
-
-    
