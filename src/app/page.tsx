@@ -36,11 +36,13 @@ export default function HomePage() {
   }, []);
 
 
-  const handleIslandClick = (islandName: string) => {
+  const handleIslandClick = (islandName: string | null) => {
     setSelectedIsland(islandName);
-    setTimeout(() => {
-      speciesListRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 100);
+    if(islandName) {
+        setTimeout(() => {
+          speciesListRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
+    }
   };
 
   const clearSelection = () => {
@@ -89,7 +91,7 @@ export default function HomePage() {
           <GalapagosMap onIslandClick={handleIslandClick} selectedIsland={selectedIsland} />
           {selectedIsland && (
             <div className="mt-6 text-center">
-              <Button onClick={clearSelection} variant="outline" size="lg">
+              <Button onClick={() => handleIslandClick(null)} variant="outline" size="lg">
                 <ListIcon className="mr-2 h-5 w-5" /> {language === 'es' ? 'Ver Todas las Especies / Limpiar Selección' : 'View All Species / Clear Selection'}
               </Button>
             </div>
@@ -115,7 +117,7 @@ export default function HomePage() {
                 <Select
                   value={selectedIsland || ''}
                   onValueChange={(value) => {
-                    handleIslandClick(value === 'all-islands' ? '' : value);
+                    handleIslandClick(value === 'all-islands' ? null : value);
                   }}
                 >
                   <SelectTrigger className="w-full sm:w-[220px] bg-input">

@@ -51,8 +51,8 @@ export default function DashboardPage() {
     fetchSpecies();
   }, []);
 
-  const handleIslandClick = (islandName: string) => {
-    setSelectedIsland(prev => prev === islandName ? null : islandName);
+  const handleIslandClick = (islandName: string | null) => {
+    setSelectedIsland(islandName);
   };
 
   const clearSelection = () => {
@@ -233,5 +233,3 @@ export default function DashboardPage() {
     </div>
   );
 }
-
-    
