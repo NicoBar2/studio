@@ -79,10 +79,10 @@ export default function HomePage() {
             <MapPinIcon className="h-8 w-8 text-primary" />
             <div>
               <CardTitle className="text-2xl md:text-3xl font-headline text-primary">
-                {language === 'es' ? 'Explorador Interactivo de Especies de Galápagos' : 'Interactive Galápagos Species Explorer'}
+                {t.public_map_title}
               </CardTitle>
               <CardDescription className="text-sm md:text-base">
-                {language === 'es' ? 'Selecciona una isla en el mapa o del desplegable para descubrir las especies que allí habitan, o explora todas las especies listadas abajo.' : 'Select an island on the map or from the dropdown to discover the species that live there, or explore all listed species below.'}
+                {t.public_map_description}
               </CardDescription>
             </div>
           </div>
@@ -92,7 +92,7 @@ export default function HomePage() {
           {selectedIsland && (
             <div className="mt-6 text-center">
               <Button onClick={() => handleIslandClick(null)} variant="outline" size="lg">
-                <ListIcon className="mr-2 h-5 w-5" /> {language === 'es' ? 'Ver Todas las Especies / Limpiar Selección' : 'View All Species / Clear Selection'}
+                <ListIcon className="mr-2 h-5 w-5" /> {t.public_clear_selection}
               </Button>
             </div>
           )}
@@ -104,11 +104,11 @@ export default function HomePage() {
             <h2 className="text-2xl font-headline font-semibold text-primary flex items-center">
                 {selectedIsland ? (
                     <>
-                        <MapPinIcon className="mr-2 h-6 w-6" /> {language === 'es' ? `Especies en ${selectedIsland}` : `Species on ${selectedIsland}`}
+                        <MapPinIcon className="mr-2 h-6 w-6" /> {t.public_species_in(selectedIsland)}
                     </>
                 ) : (
                     <>
-                        <ListIcon className="mr-2 h-6 w-6" /> {language === 'es' ? 'Todas las Especies Representativas' : 'All Representative Species'}
+                        <ListIcon className="mr-2 h-6 w-6" /> {t.public_all_species}
                     </>
                 )}
             </h2>
@@ -121,10 +121,10 @@ export default function HomePage() {
                   }}
                 >
                   <SelectTrigger className="w-full sm:w-[220px] bg-input">
-                    <SelectValue placeholder={language === 'es' ? "Filtrar por isla..." : "Filter by island..."} />
+                    <SelectValue placeholder={t.public_filter_by_island_placeholder} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all-islands">{language === 'es' ? 'Todas las Islas' : 'All Islands'}</SelectItem>
+                    <SelectItem value="all-islands">{t.allIslands}</SelectItem>
                     {GALAPAGOS_ISLANDS_NAMES.sort().map((islandName) => (
                       <SelectItem key={islandName} value={islandName}>
                         {islandName}
@@ -137,7 +137,7 @@ export default function HomePage() {
                   <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                   <Input 
                       type="search"
-                      placeholder={language === 'es' ? "Buscar por nombre, hábitat..." : "Search by name, habitat..."}
+                      placeholder={t.public_search_placeholder}
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                       className="pl-10 bg-input"
@@ -147,14 +147,14 @@ export default function HomePage() {
         </div>
          {selectedIsland && displayedSpecies.length > 0 && (
                  <Badge variant="secondary" className="text-sm mb-4 inline-block">
-                    {displayedSpecies.length} {language === 'es' ? (displayedSpecies.length === 1 ? 'especie encontrada' : 'especies encontradas') : (displayedSpecies.length === 1 ? 'species found' : 'species found')}
+                    {t.public_species_found_count(displayedSpecies.length)}
                     {language === 'es' ? ' en ' : ' on '} {selectedIsland}
                     {searchTerm && ` for "${searchTerm}"`}
                  </Badge>
             )}
         {!selectedIsland && searchTerm && displayedSpecies.length > 0 && (
             <Badge variant="secondary" className="text-sm mb-4 inline-block">
-                {displayedSpecies.length} {language === 'es' ? (displayedSpecies.length === 1 ? 'especie encontrada' : 'especies encontradas') : (displayedSpecies.length === 1 ? 'species found' : 'species found')}
+                {t.public_species_found_count(displayedSpecies.length)}
                 {language === 'es' ? ' para ' : ' for '} "{searchTerm}"
             </Badge>
         )}
@@ -177,20 +177,20 @@ export default function HomePage() {
               <InfoIcon className="h-12 w-12 text-muted-foreground mb-4" />
               <p className="text-lg font-medium text-foreground">
                 {searchTerm && selectedIsland 
-                    ? (language === 'es' ? `No se encontraron especies que coincidan con "${searchTerm}" en ${selectedIsland}.` : `No species matching "${searchTerm}" found on ${selectedIsland}.`)
+                    ? t.public_no_results_both(searchTerm, selectedIsland)
                     : searchTerm
-                        ? (language === 'es' ? `No se encontraron especies que coincidan con "${searchTerm}".` : `No species matching "${searchTerm}" found.`)
+                        ? t.public_no_results_search(searchTerm)
                         : selectedIsland 
-                            ? (language === 'es' ? `No se encontraron especies destacadas en ${selectedIsland} en nuestra base de datos actual.` : `No featured species found on ${selectedIsland} in our current database.`)
-                            : (language === 'es' ? 'No hay datos de especies disponibles para mostrar.' : 'No species data available to display.')
+                            ? t.public_no_results_island(selectedIsland)
+                            : t.public_no_results_all
                 }
               </p>
               <p className="text-muted-foreground mt-1">
-                {language === 'es' ? 'Intenta con otro término de búsqueda o ajusta los filtros.' : 'Try another search term or adjust the filters.'}
+                {t.public_try_different_filters}
               </p>
               { (searchTerm || selectedIsland) &&
                 <Button onClick={() => { setSearchTerm(''); setSelectedIsland(null);}} variant="link" className="mt-2">
-                  {language === 'es' ? 'Limpiar todos los filtros' : 'Clear all filters'}
+                  {t.clearAllFilters}
                 </Button>
               }
             </CardContent>

@@ -42,7 +42,7 @@ const GalapagosMap: React.FC<GalapagosMapProps> = ({ onIslandClick, selectedIsla
 
     return (
         <div className="w-full rounded-lg overflow-hidden border bg-background shadow-inner">
-            <svg viewBox="0 0 300 220" className="w-full h-auto" aria-label={t.dashboard_map_title}>
+            <svg viewBox="0 0 300 220" className="w-full h-auto" aria-label={t.mapAriaLabel}>
                 <defs>
                     <filter id="dropShadow" x="-20%" y="-20%" width="140%" height="140%">
                         <feGaussianBlur in="SourceAlpha" stdDeviation="1"/>

@@ -86,6 +86,21 @@ type Translations = {
     descriptionPlaceholder: string;
     addDataPoint: string;
 
+    // Public home page
+    public_map_title: string;
+    public_map_description: string;
+    public_clear_selection: string;
+    public_species_in: (island: string) => string;
+    public_all_species: string;
+    public_filter_by_island_placeholder: string;
+    public_search_placeholder: string;
+    public_species_found_count: (count: number) => string;
+    public_no_results_all: string;
+    public_no_results_island: (island: string) => string;
+    public_no_results_search: (term: string) => string;
+    public_no_results_both: (term: string, island: string) => string;
+    public_try_different_filters: string;
+
     // Dashboard
     dashboard_welcome: string;
     dashboard_description: string;
@@ -106,7 +121,7 @@ type Translations = {
     noSpeciesFound: string;
     tryDifferentFilters: string;
     clearAllFilters: string;
-
+    
     // Admin pages
     admin_create_researcher_title: string;
     admin_create_researcher_desc: string;
@@ -118,6 +133,9 @@ type Translations = {
     markVerified: string;
     markUnverified: string;
     noResearchersYet: string;
+
+    // Map component
+    mapAriaLabel: string;
     
     // Compare page
     compare_title: string;
@@ -264,6 +282,20 @@ const esTranslations: Translations = {
     descriptionPlaceholder: "Ej: Censo post-evento El Niño",
     addDataPoint: "Añadir Punto de Dato",
 
+    public_map_title: "Explorador Interactivo de Especies de Galápagos",
+    public_map_description: "Selecciona una isla en el mapa o del desplegable para descubrir las especies que allí habitan, o explora todas las especies listadas abajo.",
+    public_clear_selection: "Ver Todas las Especies / Limpiar Selección",
+    public_species_in: (island) => `Especies en ${island}`,
+    public_all_species: "Todas las Especies Representativas",
+    public_filter_by_island_placeholder: "Filtrar por isla...",
+    public_search_placeholder: "Buscar por nombre, hábitat...",
+    public_species_found_count: (count) => `${count} ${count === 1 ? 'especie encontrada' : 'especies encontradas'}`,
+    public_no_results_all: "No hay datos de especies disponibles para mostrar.",
+    public_no_results_island: (island) => `No se encontraron especies destacadas en ${island} en nuestra base de datos actual.`,
+    public_no_results_search: (term) => `No se encontraron especies que coincidan con "${term}".`,
+    public_no_results_both: (term, island) => `No se encontraron especies que coincidan con "${term}" en ${island}.`,
+    public_try_different_filters: "Intenta con otro término de búsqueda o ajusta los filtros.",
+
     dashboard_welcome: "¡Bienvenido/a",
     dashboard_description: "Gestiona, filtra y analiza los datos de las especies de Galápagos.",
     dashboard_map_title: "Mapa Interactivo y Filtros",
@@ -294,6 +326,8 @@ const esTranslations: Translations = {
     markVerified: "Marcar Verificado",
     markUnverified: "Marcar No Verificado",
     noResearchersYet: "No hay investigadores registrados todavía.",
+
+    mapAriaLabel: "Mapa interactivo de las Islas Galápagos",
 
     compare_title: "Genera tu Consulta",
     compare_description: "Utiliza los criterios de búsqueda para filtrar y seleccionar especies, y visualiza las comparaciones.",
@@ -436,6 +470,20 @@ const enTranslations: Translations = {
     descriptionPlaceholder: "e.g., Post-El Niño event census",
     addDataPoint: "Add Data Point",
 
+    public_map_title: "Interactive Galápagos Species Explorer",
+    public_map_description: "Select an island on the map or from the dropdown to discover the species that live there, or explore all listed species below.",
+    public_clear_selection: "View All Species / Clear Selection",
+    public_species_in: (island) => `Species on ${island}`,
+    public_all_species: "All Representative Species",
+    public_filter_by_island_placeholder: "Filter by island...",
+    public_search_placeholder: "Search by name, habitat...",
+    public_species_found_count: (count) => `${count} ${count === 1 ? 'species found' : 'species found'}`,
+    public_no_results_all: "No species data available to display.",
+    public_no_results_island: (island) => `No featured species found on ${island} in our current database.`,
+    public_no_results_search: (term) => `No species matching "${term}" found.`,
+    public_no_results_both: (term, island) => `No species matching "${term}" found on ${island}.`,
+    public_try_different_filters: "Try another search term or adjust the filters.",
+    
     dashboard_welcome: "Welcome",
     dashboard_description: "Manage, filter, and analyze data for Galápagos species.",
     dashboard_map_title: "Interactive Map and Filters",
@@ -466,6 +514,8 @@ const enTranslations: Translations = {
     markVerified: "Mark Verified",
     markUnverified: "Mark Unverified",
     noResearchersYet: "No researchers registered yet.",
+
+    mapAriaLabel: "Interactive map of the Galápagos Islands",
 
     compare_title: "Build Your Query",
     compare_description: "Use the search criteria to filter and select species, and visualize the comparisons.",
@@ -586,5 +636,3 @@ export const useLanguage = () => {
   }
   return context;
 };
-
-    
