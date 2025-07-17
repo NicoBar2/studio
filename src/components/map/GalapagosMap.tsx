@@ -41,54 +41,70 @@ const GalapagosMap: React.FC<GalapagosMapProps> = ({ onIslandClick, selectedIsla
     };
 
     return (
-        <div className="w-full">
+        <div className="w-full rounded-lg overflow-hidden border bg-background shadow-inner">
             <svg viewBox="0 0 300 220" className="w-full h-auto" aria-label={t.dashboard_map_title}>
-                 <rect width="300" height="220" className="fill-background" />
-                {GALAPAGOS_ISLANDS_NAMES.map(islandName => {
-                    const pathData = islandPaths[islandName];
-                    if (!pathData) return null; // FIX: Prevent rendering if path data is missing
+                <defs>
+                    <filter id="dropShadow" x="-20%" y="-20%" width="140%" height="140%">
+                        <feGaussianBlur in="SourceAlpha" stdDeviation="1"/>
+                        <feOffset dx="1" dy="1" result="offsetblur"/>
+                        <feComponentTransfer>
+                            <feFuncA type="linear" slope="0.3"/>
+                        </feComponentTransfer>
+                        <feMerge> 
+                            <feMergeNode/>
+                            <feMergeNode in="SourceGraphic"/> 
+                        </feMerge>
+                    </filter>
+                </defs>
 
-                    return (
-                        <path
-                            key={islandName}
-                            d={pathData}
-                            className={cn(
-                                "fill-muted-foreground/30 stroke-background stroke-[0.5] transition-all duration-200 cursor-pointer",
-                                "hover:fill-primary/80 hover:stroke-primary-foreground",
-                                selectedIsland === islandName && "fill-primary stroke-primary-foreground"
-                            )}
-                            onClick={() => handleClick(islandName)}
-                            id={`map-island-${islandName.replace(/ /g, '-')}`}
-                        >
-                            <title>{islandName}</title>
-                        </path>
-                    )
-                })}
+                <rect width="300" height="220" className="fill-blue-100 dark:fill-sky-900/40" />
+                
+                <g style={{ filter: 'url(#dropShadow)' }}>
+                    {GALAPAGOS_ISLANDS_NAMES.map(islandName => {
+                        const pathData = islandPaths[islandName];
+                        if (!pathData) return null;
+
+                        return (
+                            <path
+                                key={islandName}
+                                d={pathData}
+                                className={cn(
+                                    "fill-emerald-50/70 dark:fill-emerald-900/50 stroke-emerald-800/50 dark:stroke-emerald-300/40 stroke-[0.5] transition-all duration-200 cursor-pointer",
+                                    "hover:fill-accent/70 hover:stroke-accent-foreground",
+                                    selectedIsland === islandName && "fill-accent stroke-accent-foreground"
+                                )}
+                                onClick={() => handleClick(islandName)}
+                                id={`map-island-${islandName.replace(/ /g, '-')}`}
+                            >
+                                <title>{islandName}</title>
+                            </path>
+                        )
+                    })}
+                </g>
 
                  {/* Labels */}
                 {GALAPAGOS_ISLANDS_NAMES.map(islandName => {
                     const pathData = islandPaths[islandName];
-                    if (!pathData) return null; // FIX: Prevent rendering if path data is missing
+                    if (!pathData) return null;
 
                     const center = getPathCenter(pathData);
                     const isSelected = selectedIsland === islandName;
                     
-                    // Simple logic to adjust font size based on path 'size'
                     const pathArea = getPathArea(pathData);
-                    let fontSize = 'text-[4px]';
-                    if (pathArea > 1000) fontSize = 'text-[8px]';
-                    else if (pathArea > 300) fontSize = 'text-[6px]';
-                    if (islandName === "Isabela") fontSize = 'text-[10px]';
-
+                    let fontSize = '4px';
+                    if (pathArea > 2000) fontSize = '9px'; // Isabela
+                    else if (pathArea > 800) fontSize = '7px'; // Santa Cruz, San Cristobal
+                    else if (pathArea > 300) fontSize = '5px'; // Santiago, etc.
+                    
                     return (
                         <text
                             key={`label-${islandName}`}
                             x={center.x}
                             y={center.y}
+                            fontSize={fontSize}
                             className={cn(
-                                "pointer-events-none fill-foreground font-semibold transition-opacity duration-200",
-                                fontSize,
-                                isSelected ? "fill-primary-foreground" : "fill-foreground",
+                                "pointer-events-none font-headline font-semibold transition-colors duration-200",
+                                isSelected ? "fill-accent-foreground" : "fill-foreground/80 dark:fill-foreground/70",
                             )}
                             textAnchor="middle"
                             dominantBaseline="middle"
@@ -105,8 +121,9 @@ const GalapagosMap: React.FC<GalapagosMapProps> = ({ onIslandClick, selectedIsla
 
 // Helper functions to calculate properties of SVG paths
 function getPathCenter(d: string): { x: number; y: number } {
-    if (!d) return { x: 0, y: 0 }; // FIX: Added guard for undefined 'd'
+    if (!d) return { x: 0, y: 0 };
     const points = d.replace(/[M,L,Z,C,A,Q,T,H,V,S]/gi, ' ').trim().split(/[\s,]+/).map(Number).filter(n => !isNaN(n));
+    if(points.length === 0) return { x: 0, y: 0 };
     let xSum = 0, ySum = 0;
     for (let i = 0; i < points.length; i += 2) {
         xSum += points[i];
@@ -117,8 +134,9 @@ function getPathCenter(d: string): { x: number; y: number } {
 }
 
 function getPathArea(d: string): number {
-    if (!d) return 0; // FIX: Added guard for undefined 'd'
+    if (!d) return 0;
     const points = d.replace(/[M,L,Z,C,A,Q,T,H,V,S]/gi, ' ').trim().split(/[\s,]+/).map(Number).filter(n => !isNaN(n));
+    if(points.length < 2) return 0;
     let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
     for (let i = 0; i < points.length; i += 2) {
         minX = Math.min(minX, points[i]);
@@ -129,5 +147,6 @@ function getPathArea(d: string): number {
     return (maxX - minX) * (maxY - minY);
 }
 
-
 export default GalapagosMap;
+
+    
