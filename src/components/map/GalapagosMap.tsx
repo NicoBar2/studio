@@ -148,5 +148,3 @@ function getPathArea(d: string): number {
 }
 
 export default GalapagosMap;
-
-    
