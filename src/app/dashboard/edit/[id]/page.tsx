@@ -1,6 +1,6 @@
 
 "use client";
-import { getSpeciesById } from '@/lib/species';
+import { getSpeciesByIdAction } from '@/app/actions';
 import SpeciesEditForm from '@/components/species/SpeciesEditForm';
 import RoleBasedGuard from '@/components/auth/RoleBasedGuard';
 import { notFound } from 'next/navigation';
@@ -22,7 +22,7 @@ export default function EditSpeciesPage({ params }: EditSpeciesPageProps) {
 
   useEffect(() => {
     async function fetchSpecies() {
-      const data = await getSpeciesById(params.id);
+      const data = await getSpeciesByIdAction(params.id);
       setSpecies(data);
     }
     fetchSpecies();
@@ -62,5 +62,3 @@ export default function EditSpeciesPage({ params }: EditSpeciesPageProps) {
     </RoleBasedGuard>
   );
 }
-
-    

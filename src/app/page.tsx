@@ -2,7 +2,7 @@
 "use client"; 
 
 import { useState, useMemo, useEffect, useRef } from 'react';
-import { type Species } from '@/lib/species';
+import { type Species } from '@/lib/types';
 import { getSpeciesListAction } from '@/app/actions';
 import SpeciesCard from '@/components/species/SpeciesCard';
 import GalapagosMap from '@/components/map/GalapagosMap';

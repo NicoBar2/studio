@@ -1,6 +1,6 @@
 
 "use client";
-import { getSpeciesById } from '@/lib/species';
+import { getSpeciesByIdAction } from '@/app/actions';
 import SpeciesDetailClient from './SpeciesDetailClient';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
@@ -23,7 +23,7 @@ export default function SpeciesDetailPage({ params }: SpeciesDetailPageProps) {
   useEffect(() => {
     async function fetchSpecies() {
       setIsLoading(true);
-      const data = await getSpeciesById(params.id);
+      const data = await getSpeciesByIdAction(params.id);
       setSpecies(data);
       setIsLoading(false);
     }
@@ -63,5 +63,3 @@ export default function SpeciesDetailPage({ params }: SpeciesDetailPageProps) {
     </div>
   );
 }
-
-    

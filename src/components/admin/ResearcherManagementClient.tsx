@@ -46,7 +46,6 @@ export default function ResearcherManagementClient() {
   }, []);
   
   useEffect(() => {
-    // Check if the message is not the initial one to avoid showing toast on load
     if (formState.message && formState.message !== initialFormState.message) { 
       toast({
         title: formState.success ? t.success : t.error,
@@ -190,5 +189,3 @@ export default function ResearcherManagementClient() {
     </div>
   );
 }
-
-    

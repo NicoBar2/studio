@@ -3,27 +3,237 @@
 
 import { revalidatePath } from 'next/cache';
 import * as xlsx from 'xlsx';
-import { 
-  updateSpeciesData, 
-  addSpecies as addSpeciesToStore,
-  getSpeciesById,
-  getSpeciesList,
-  deleteSpeciesById as deleteSpeciesFromStore,
-} from '@/lib/species';
+import { promises as fs } from 'fs';
+import path from 'path';
 import type { Species, HistoricalDataPoint, SpeciesStat, ConservationStatus, UserRole, Researcher } from '@/lib/types';
-import { 
-  addResearcher as addResearcherToStore, 
-  getAllResearchers as getAllResearchersFromStore, 
-  deleteResearcherById as deleteResearcherByIdFromStore, 
-  updateResearcher as updateResearcherInStore,
-  getResearcherById as getResearcherByIdFromStore,
-  getResearcherByEmail,
-  setResearcherPassword
-} from '@/lib/researchers';
 import { getComparisonAnalysis, type CompareSpeciesInput } from '@/ai/flows/compareSpeciesFlow';
 import { z } from 'zod';
 import { redirect } from 'next/navigation';
 import bcrypt from 'bcryptjs';
+
+// --- Data Access Functions (moved from /lib) ---
+
+const speciesDbPath = path.join(process.cwd(), 'src', 'lib', 'data', 'species.json');
+const researchersDbPath = path.join(process.cwd(), 'src', 'lib', 'data', 'researchers.json');
+
+async function readJsonFile<T>(filePath: string): Promise<T[]> {
+    try {
+        await fs.access(filePath);
+        const data = await fs.readFile(filePath, 'utf-8');
+        return data ? JSON.parse(data) : [];
+    } catch (error) {
+        if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
+            await writeJsonFile(filePath, []);
+            return [];
+        }
+        console.error(`Failed to read from ${filePath}:`, error);
+        throw error; // Rethrow other errors
+    }
+}
+
+async function writeJsonFile<T>(filePath: string, data: T[]): Promise<void> {
+    try {
+        await fs.writeFile(filePath, JSON.stringify(data, null, 2), 'utf-8');
+    } catch (error) {
+        console.error(`Failed to write to ${filePath}:`, error);
+        throw error;
+    }
+}
+
+// -- Species Data Functions --
+
+async function getSpeciesList(): Promise<Species[]> {
+    return await readJsonFile<Species>(speciesDbPath);
+}
+
+async function getSpeciesById(id: string): Promise<Species | undefined> {
+  const speciesList = await getSpeciesList();
+  return speciesList.find(s => s.id === id);
+};
+
+async function updateSpeciesData(id: string, updatedData: Partial<Species>): Promise<boolean> {
+  const speciesList = await getSpeciesList();
+  const speciesIndex = speciesList.findIndex(s => s.id === id);
+  if (speciesIndex === -1) return false;
+
+  speciesList[speciesIndex] = { ...speciesList[speciesIndex], ...updatedData };
+  await writeJsonFile(speciesDbPath, speciesList);
+  return true;
+};
+
+async function addSpecies(newSpeciesData: Partial<Species>): Promise<Species> {
+    const speciesList = await getSpeciesList();
+    
+    if (!newSpeciesData.spanishCommonName || newSpeciesData.spanishCommonName.trim().length < 3) {
+        throw new Error("El nombre común en español es requerido y debe tener al menos 3 caracteres.");
+    }
+
+    const newId = newSpeciesData.id || newSpeciesData.spanishCommonName.trim().toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+
+    if (!newId) {
+        throw new Error("El nombre de la especie no es válido para generar un ID.");
+    }
+
+    if (speciesList.some(s => s.id === newId)) {
+        throw new Error(`La especie "${newSpeciesData.spanishCommonName}" ya existe en la base de datos.`);
+    }
+
+    const speciesToAdd: Species = {
+        ...newSpeciesData,
+        id: newId,
+        spanishCommonName: newSpeciesData.spanishCommonName,
+        genus: newSpeciesData.genus || '',
+        specificEpithet: newSpeciesData.specificEpithet || '',
+        iucnStatus: newSpeciesData.iucnStatus || 'Datos Insuficientes',
+        populationTrend: newSpeciesData.populationTrend || 'unknown',
+        spanishDescription: newSpeciesData.spanishDescription || `Descripción para ${newSpeciesData.spanishCommonName}.`,
+        habitat: newSpeciesData.habitat || '',
+        threats: newSpeciesData.threats || [],
+        imageUrl: newSpeciesData.imageUrl || 'https://placehold.co/600x400.png',
+        dataAiHint: newSpeciesData.dataAiHint || newSpeciesData.spanishCommonName.split(' ').slice(0, 2).join(' ').toLowerCase(),
+        icon: newSpeciesData.icon || 'Footprints',
+        keyStats: newSpeciesData.keyStats || [],
+        historicalData: newSpeciesData.historicalData || [],
+        showHistoricalDataToPublic: newSpeciesData.showHistoricalDataToPublic ?? false,
+        createdAt: new Date().toISOString(),
+        is_darwin: newSpeciesData.is_darwin ?? false,
+        is_espanola: newSpeciesData.is_espanola ?? false,
+        is_fernandina: newSpeciesData.is_fernandina ?? false,
+        is_floreana: newSpeciesData.is_floreana ?? false,
+        is_genovesa: newSpeciesData.is_genovesa ?? false,
+        is_isabela: newSpeciesData.is_isabela ?? false,
+        is_marchena: newSpeciesData.is_marchena ?? false,
+        is_pinta: newSpeciesData.is_pinta ?? false,
+        is_pinzon: newSpeciesData.is_pinzon ?? false,
+        is_san_cristobal: newSpeciesData.is_san_cristobal ?? false,
+        is_santa_cruz: newSpeciesData.is_santa_cruz ?? false,
+        is_santa_fe: newSpeciesData.is_santa_fe ?? false,
+        is_santiago: newSpeciesData.is_santiago ?? false,
+        is_north_seymour: newSpeciesData.is_north_seymour ?? false,
+        is_wolf: newSpeciesData.is_wolf ?? false,
+        is_unknown_island: newSpeciesData.is_unknown_island ?? false,
+        is_elizabeth_bay: newSpeciesData.is_elizabeth_bay ?? false,
+        is_far_northern: newSpeciesData.is_far_northern ?? false,
+        is_northern: newSpeciesData.is_northern ?? false,
+        is_south_eastern: newSpeciesData.is_south_eastern ?? false,
+        is_unknown_bioregion: newSpeciesData.is_unknown_bioregion ?? false,
+        is_western: newSpeciesData.is_western ?? false,
+    };
+
+    speciesList.push(speciesToAdd);
+    await writeJsonFile(speciesDbPath, speciesList);
+    return speciesToAdd;
+}
+
+async function deleteSpeciesById(id: string): Promise<boolean> {
+  let speciesList = await getSpeciesList();
+  const initialLength = speciesList.length;
+  speciesList = speciesList.filter(s => s.id !== id);
+  if (speciesList.length < initialLength) {
+    await writeJsonFile(speciesDbPath, speciesList);
+    return true;
+  }
+  return false;
+};
+
+// -- Researcher Data Functions --
+function generateId(): string {
+  return Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
+}
+
+async function addResearcher(name: string, email: string, institution?: string, specialization?: string): Promise<Researcher> {
+  if (!name || name.trim() === "") {
+    throw new Error("El nombre del investigador no puede estar vacío.");
+  }
+  if (!email || !email.trim().match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g)) {
+    throw new Error("Por favor, introduce un correo electrónico válido.");
+  }
+  
+  const researchers = await readJsonFile<Researcher>(researchersDbPath);
+  const lowerCaseEmail = email.trim().toLowerCase();
+
+  if (researchers.some(r => r.email === lowerCaseEmail)) {
+    throw new Error("Ya existe un investigador con este correo electrónico.");
+  }
+
+  const newResearcher: Researcher = {
+    id: generateId(),
+    name: name.trim(),
+    email: lowerCaseEmail,
+    institution: institution?.trim() || undefined,
+    specialization: specialization?.trim() || undefined,
+    isVerified: false,
+  };
+  
+  researchers.push(newResearcher);
+  await writeJsonFile(researchersDbPath, researchers);
+  return newResearcher;
+}
+
+async function getAllResearchers(): Promise<Researcher[]> {
+  const researchers = await readJsonFile<Researcher>(researchersDbPath);
+  return [...researchers].sort((a, b) => a.name.localeCompare(b.name));
+}
+
+async function getResearcherById(id: string): Promise<Researcher | undefined> {
+  const researchers = await readJsonFile<Researcher>(researchersDbPath);
+  return researchers.find(researcher => researcher.id === id);
+}
+
+async function getResearcherByEmail(email: string): Promise<Researcher | undefined> {
+  const researchers = await readJsonFile<Researcher>(researchersDbPath);
+  return researchers.find(researcher => researcher.email === email.toLowerCase());
+}
+
+async function updateResearcher(id: string, updates: Partial<Omit<Researcher, 'id' | 'password'>>): Promise<Researcher | null> {
+  const researchers = await readJsonFile<Researcher>(researchersDbPath);
+  const index = researchers.findIndex(r => r.id === id);
+  if (index === -1) {
+    return null;
+  }
+  
+  const currentResearcher = researchers[index];
+  if (updates.email && updates.email !== currentResearcher.email) {
+    const newEmail = updates.email.toLowerCase();
+    if (researchers.some(r => r.email === newEmail && r.id !== id)) {
+      throw new Error("Otro investigador ya usa este correo electrónico.");
+    }
+    updates.email = newEmail;
+  }
+
+  researchers[index] = { ...currentResearcher, ...updates };
+  await writeJsonFile(researchersDbPath, researchers);
+  return researchers[index];
+}
+
+async function setResearcherPassword(email: string, passwordToSet: string): Promise<Researcher | null> {
+  const researchers = await readJsonFile<Researcher>(researchersDbPath);
+  const researcherEmail = email.toLowerCase();
+  const index = researchers.findIndex(r => r.email === researcherEmail);
+  if (index === -1) {
+    return null; 
+  }
+  
+  const saltRounds = 10;
+  const hashedPassword = await bcrypt.hash(passwordToSet, saltRounds);
+  researchers[index].password = hashedPassword;
+  
+  await writeJsonFile(researchersDbPath, researchers);
+  return researchers[index];
+}
+
+async function deleteResearcherById(id: string): Promise<boolean> {
+  let researchers = await readJsonFile<Researcher>(researchersDbPath);
+  const initialLength = researchers.length;
+  researchers = researchers.filter(researcher => researcher.id !== id);
+  if (researchers.length < initialLength) {
+    await writeJsonFile(researchersDbPath, researchers);
+    return true;
+  }
+  return false;
+}
+
+// --- Server Actions ---
 
 // Placeholder for AI insight generation
 async function generateSpeciesInsight(speciesName: string, speciesData: string): Promise<string> {
@@ -262,7 +472,7 @@ export async function addSpeciesAction(prevState: any, formData: FormData): Prom
     }
 
 
-    const newSpecies = await addSpeciesToStore(newSpeciesData);
+    const newSpecies = await addSpecies(newSpeciesData);
 
     revalidatePath('/'); 
     revalidatePath('/dashboard');
@@ -293,7 +503,7 @@ export async function deleteSpeciesAction(prevState: any, formData: FormData): P
       return { success: false, message: "Especie no encontrada." };
     }
     
-    const success = await deleteSpeciesFromStore(speciesId);
+    const success = await deleteSpeciesById(speciesId);
 
     if (success) {
       revalidatePath('/');
@@ -329,7 +539,7 @@ export async function createResearcherAction(
   }
 
   try {
-    const newResearcher = await addResearcherToStore(researcherName, email.toLowerCase(), institution, specialization);
+    const newResearcher = await addResearcher(researcherName, email.toLowerCase(), institution, specialization);
     revalidatePath('/dashboard/admin/researchers');
     return { 
         success: true, 
@@ -345,7 +555,7 @@ export async function createResearcherAction(
 
 export async function getResearchersAction(): Promise<Researcher[]> {
   try {
-    const researchers = await getAllResearchersFromStore();
+    const researchers = await getAllResearchers();
     return researchers;
   } catch (error) {
     console.error("Error obteniendo investigadores:", error);
@@ -369,7 +579,7 @@ export async function deleteResearcherAction(
   }
 
   try {
-    const deleted = await deleteResearcherByIdFromStore(researcherId);
+    const deleted = await deleteResearcherById(researcherId);
     if (deleted) {
       revalidatePath('/dashboard/admin/researchers');
       return { success: true, message: "Investigador eliminado correctamente.", deletedResearcherId: researcherId };
@@ -401,12 +611,12 @@ export async function toggleResearcherVerificationAction(
   try {
     await new Promise(resolve => setTimeout(resolve, 500)); 
 
-    const researcher = await getResearcherByIdFromStore(researcherId);
+    const researcher = await getResearcherById(researcherId);
     if (!researcher) {
       return { success: false, message: "Investigador no encontrado." };
     }
 
-    const updatedResearcher = await updateResearcherInStore(researcherId, { isVerified: !researcher.isVerified });
+    const updatedResearcher = await updateResearcher(researcherId, { isVerified: !researcher.isVerified });
     if (updatedResearcher) {
       revalidatePath('/dashboard/admin/researchers');
       const verificationStatusMessage = updatedResearcher.isVerified
@@ -439,12 +649,8 @@ export async function requestPasswordResetAction(
     const researcher = await getResearcherByEmail(email);
 
     if (researcher) {
-      // In a real app, this is where you'd generate a secure token,
-      // save it with an expiration date, and send an email with a reset link.
       console.log(`Password reset requested for ${email}. In a real app, an email would be sent with a reset link.`);
     }
-
-    // Always return a generic success message to prevent user enumeration.
     return { 
       success: true, 
       message: "Si existe una cuenta asociada a este correo, recibirás un enlace para restablecer tu contraseña. Por favor, revisa tu bandeja de entrada." 
@@ -460,7 +666,7 @@ const resetPasswordSchema = z.object({
   confirmPassword: z.string(),
 }).refine(data => data.password === data.confirmPassword, {
   message: "Las contraseñas no coinciden.",
-  path: ["confirmPassword"], // path of error
+  path: ["confirmPassword"], 
 });
 
 
@@ -476,7 +682,6 @@ export async function resetPasswordAction(
   });
 
   if (!parsed.success) {
-    // Flatten errors to a simple message string
     const errorMessage = parsed.error.issues.map(issue => issue.message).join(' ');
     return { success: false, message: errorMessage };
   }
@@ -486,7 +691,6 @@ export async function resetPasswordAction(
   try {
     const researcher = await getResearcherByEmail(email);
     if (!researcher) {
-        // We check again here just in case, but the primary check is in AuthContext/request
         return { success: false, message: "No se encontró ningún investigador con ese correo electrónico." };
     }
     
@@ -497,7 +701,6 @@ export async function resetPasswordAction(
     return { success: false, message: "Ocurrió un error al actualizar la contraseña." };
   }
   
-  // On success, redirect to login page. The page itself will show the toast.
   redirect('/login?reset=success');
 }
 
@@ -592,7 +795,6 @@ export async function importSpeciesDataAction(
           await updateSpeciesData(id, speciesData);
           updatedCount++;
         } else {
-          // Set defaults for new species only
            const hintString = spanishName.split(' ').slice(0, 2).join(' ').toLowerCase();
           const newSpeciesDefaults: Partial<Species> = {
               imageUrl: 'https://placehold.co/600x400.png',
@@ -605,7 +807,7 @@ export async function importSpeciesDataAction(
               threats: [],
               showHistoricalDataToPublic: false
           };
-          await addSpeciesToStore({ ...newSpeciesDefaults, ...speciesData });
+          await addSpecies({ ...newSpeciesDefaults, ...speciesData });
           addedCount++;
         }
       } catch (e) {
@@ -639,7 +841,6 @@ const ADMIN_CREDENTIALS = {
 export async function loginAction(email: string, password: string): Promise<{ success: boolean; error?: string; role?: UserRole; userEmail?: string, message?: string }> {
   const lowerEmail = email.toLowerCase();
 
-  // Admin Login
   if (lowerEmail === ADMIN_CREDENTIALS.email) {
     if (password === ADMIN_CREDENTIALS.pass) {
       return { success: true, role: ADMIN_CREDENTIALS.role, userEmail: lowerEmail, message: 'Inicio de sesión como administrador/a exitoso.' };
@@ -648,7 +849,6 @@ export async function loginAction(email: string, password: string): Promise<{ su
     }
   }
 
-  // Researcher Login / Password Setup
   const researcher = await getResearcherByEmail(lowerEmail);
 
   if (!researcher) {
@@ -659,9 +859,7 @@ export async function loginAction(email: string, password: string): Promise<{ su
     return { success: false, error: 'Cuenta de investigador no verificada. Por favor, contacta a un administrador.' };
   }
 
-  // Researcher is verified
   if (!researcher.password) {
-    // First-time password setup for a verified researcher
     if (!password || password.length < MIN_PASSWORD_LENGTH) {
       return { success: false, error: `La contraseña debe tener al menos ${MIN_PASSWORD_LENGTH} caracteres para la configuración inicial.` };
     }
@@ -673,7 +871,6 @@ export async function loginAction(email: string, password: string): Promise<{ su
       return { success: false, error: 'No se pudo configurar la contraseña. Inténtalo de nuevo.' };
     }
   } else {
-    // Researcher has an existing password, normal login
     const passwordMatch = await bcrypt.compare(password, researcher.password);
     if (passwordMatch) {
       return { success: true, role: 'researcher', userEmail: lowerEmail, message: 'Inicio de sesión como investigador/a exitoso.' };
