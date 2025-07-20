@@ -11,7 +11,7 @@ import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import dynamic from 'next/dynamic';
 import { Skeleton } from '@/components/ui/skeleton';
-import { AlertTriangle, BarChart, FileSearch, ArrowLeft, Filter, FilterX, TableIcon } from 'lucide-react';
+import { BarChart, FileSearch, ArrowLeft, Filter, FilterX, TableIcon } from 'lucide-react';
 import RoleBasedGuard from '@/components/auth/RoleBasedGuard';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
@@ -101,20 +101,24 @@ export default function ComparePage() {
         for (const unit in grouped) {
             const speciesInGroup = grouped[unit].species;
             const allYears = new Set<number>();
+            const dataByYear: { [year: number]: { [speciesId: string]: any } } = {};
+    
             speciesInGroup.forEach(s => {
                 s.historicalData.forEach(p => {
                     if (p.year >= minYear && p.year <= maxYear) {
                         allYears.add(p.year);
+                        if (!dataByYear[p.year]) dataByYear[p.year] = {};
+                        dataByYear[p.year][s.id] = p.value;
                     }
                 });
             });
+    
             const sortedYears = Array.from(allYears).sort((a, b) => a - b);
     
             grouped[unit].tableData = sortedYears.map(year => {
                 const row: { [key: string]: any } = { year };
                 speciesInGroup.forEach(s => {
-                    const dataPoint = s.historicalData.find(p => p.year === year);
-                    row[s.id] = dataPoint?.value ?? 'N/A';
+                    row[s.id] = dataByYear[year]?.[s.id] ?? 'N/A';
                 });
                 return row;
             });
