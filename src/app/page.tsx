@@ -15,6 +15,7 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { GALAPAGOS_ISLANDS_NAMES } from '@/lib/utils';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useRouter } from 'next/navigation';
 
 
 export default function HomePage() {
@@ -24,6 +25,7 @@ export default function HomePage() {
   const [searchTerm, setSearchTerm] = useState<string>('');
   const speciesListRef = useRef<HTMLElement>(null);
   const { language, t } = useLanguage();
+  const router = useRouter();
   
   useEffect(() => {
     const fetchSpecies = async () => {
@@ -37,11 +39,8 @@ export default function HomePage() {
 
 
   const handleIslandClick = (islandName: string | null) => {
-    setSelectedIsland(islandName);
-    if(islandName) {
-        setTimeout(() => {
-          speciesListRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }, 100);
+    if (islandName) {
+      router.push(`/islas/${encodeURIComponent(islandName)}`);
     }
   };
 
@@ -89,50 +88,15 @@ export default function HomePage() {
         </CardHeader>
         <CardContent className="p-4 md:p-6">
           <GalapagosMap onIslandClick={handleIslandClick} selectedIsland={selectedIsland} />
-          {selectedIsland && (
-            <div className="mt-6 text-center">
-              <Button onClick={() => handleIslandClick(null)} variant="outline" size="lg">
-                <ListIcon className="mr-2 h-5 w-5" /> {t.public_clear_selection}
-              </Button>
-            </div>
-          )}
         </CardContent>
       </Card>
 
       <section ref={speciesListRef} className="mt-8">
         <div className="flex flex-col sm:flex-row items-center justify-between mb-6 gap-4">
             <h2 className="text-2xl font-headline font-semibold text-primary flex items-center">
-                {selectedIsland ? (
-                    <>
-                        <MapPinIcon className="mr-2 h-6 w-6" /> {t.public_species_in(selectedIsland)}
-                    </>
-                ) : (
-                    <>
-                        <ListIcon className="mr-2 h-6 w-6" /> {t.public_all_species}
-                    </>
-                )}
+                <ListIcon className="mr-2 h-6 w-6" /> {t.public_all_species}
             </h2>
             <div className="flex flex-col sm:flex-row w-full sm:w-auto gap-4 items-center">
-              <div className="w-full sm:w-auto">
-                <Select
-                  value={selectedIsland || ''}
-                  onValueChange={(value) => {
-                    handleIslandClick(value === 'all-islands' ? null : value);
-                  }}
-                >
-                  <SelectTrigger className="w-full sm:w-[220px] bg-input">
-                    <SelectValue placeholder={t.public_filter_by_island_placeholder} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all-islands">{t.allIslands}</SelectItem>
-                    {GALAPAGOS_ISLANDS_NAMES.sort().map((islandName) => (
-                      <SelectItem key={islandName} value={islandName}>
-                        {islandName}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
               <div className="relative w-full sm:w-auto sm:max-w-xs">
                   <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                   <Input 
@@ -145,19 +109,6 @@ export default function HomePage() {
               </div>
             </div>
         </div>
-         {selectedIsland && displayedSpecies.length > 0 && (
-                 <Badge variant="secondary" className="text-sm mb-4 inline-block">
-                    {t.public_species_found_count(displayedSpecies.length)}
-                    {language === 'es' ? ' en ' : ' on '} {selectedIsland}
-                    {searchTerm && ` for "${searchTerm}"`}
-                 </Badge>
-            )}
-        {!selectedIsland && searchTerm && displayedSpecies.length > 0 && (
-            <Badge variant="secondary" className="text-sm mb-4 inline-block">
-                {t.public_species_found_count(displayedSpecies.length)}
-                {language === 'es' ? ' para ' : ' for '} "{searchTerm}"
-            </Badge>
-        )}
 
         {isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -176,23 +127,11 @@ export default function HomePage() {
             <CardContent className="flex flex-col items-center">
               <InfoIcon className="h-12 w-12 text-muted-foreground mb-4" />
               <p className="text-lg font-medium text-foreground">
-                {searchTerm && selectedIsland 
-                    ? t.public_no_results_both(searchTerm, selectedIsland)
-                    : searchTerm
-                        ? t.public_no_results_search(searchTerm)
-                        : selectedIsland 
-                            ? t.public_no_results_island(selectedIsland)
-                            : t.public_no_results_all
-                }
+                {t.public_no_results_search(searchTerm)}
               </p>
               <p className="text-muted-foreground mt-1">
                 {t.public_try_different_filters}
               </p>
-              { (searchTerm || selectedIsland) &&
-                <Button onClick={() => { setSearchTerm(''); setSelectedIsland(null);}} variant="link" className="mt-2">
-                  {t.clearAllFilters}
-                </Button>
-              }
             </CardContent>
           </Card>
         )}
