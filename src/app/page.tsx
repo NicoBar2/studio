@@ -5,23 +5,23 @@ import { useState, useMemo, useEffect, useRef } from 'react';
 import { type Species } from '@/lib/types';
 import { getSpeciesListAction } from '@/app/actions';
 import SpeciesCard from '@/components/species/SpeciesCard';
-import GalapagosMap from '@/components/map/GalapagosMap';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { MapPinIcon, ListIcon, InfoIcon, SearchIcon } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { GALAPAGOS_ISLANDS_NAMES } from '@/lib/utils';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useRouter } from 'next/navigation';
+import dynamic from 'next/dynamic';
 
+const InteractiveMap = dynamic(() => import('@/components/map/InteractiveMap'), {
+  loading: () => <Skeleton className="h-[500px] w-full" />,
+  ssr: false
+});
 
 export default function HomePage() {
   const [speciesList, setSpeciesList] = useState<Species[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedIsland, setSelectedIsland] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const speciesListRef = useRef<HTMLElement>(null);
   const { language, t } = useLanguage();
@@ -37,24 +37,14 @@ export default function HomePage() {
     fetchSpecies();
   }, []);
 
-
   const handleIslandClick = (islandName: string | null) => {
     if (islandName) {
       router.push(`/islas/${encodeURIComponent(islandName)}`);
     }
   };
 
-  const clearSelection = () => {
-    setSelectedIsland(null);
-  };
-
   const displayedSpecies = useMemo(() => {
     let filteredSpecies = speciesList;
-
-    if (selectedIsland) {
-        const islandKey = `is_${selectedIsland.toLowerCase().replace(/ /g, '_').normalize("NFD").replace(/[\u0300-\u036f]/g, "")}` as keyof Species;
-        filteredSpecies = filteredSpecies.filter(species => species[islandKey]);
-    }
 
     if (searchTerm) {
       const lowercasedTerm = searchTerm.toLowerCase();
@@ -67,8 +57,8 @@ export default function HomePage() {
         (species.habitat.toLowerCase().includes(lowercasedTerm))
       );
     }
-    return filteredSpecies;
-  }, [speciesList, selectedIsland, searchTerm]);
+    return filteredSpecies.sort((a,b) => t.getSpeciesName(a).localeCompare(t.getSpeciesName(b)));
+  }, [speciesList, searchTerm, t]);
 
   return (
     <div className="space-y-8">
@@ -86,8 +76,8 @@ export default function HomePage() {
             </div>
           </div>
         </CardHeader>
-        <CardContent className="p-4 md:p-6">
-          <GalapagosMap onIslandClick={handleIslandClick} selectedIsland={selectedIsland} />
+        <CardContent className="p-0 md:p-0 h-[500px] w-full">
+           <InteractiveMap onIslandClick={handleIslandClick} />
         </CardContent>
       </Card>
 

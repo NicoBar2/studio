@@ -5,6 +5,8 @@ import { AuthProvider } from '@/contexts/AuthContext';
 import { LanguageProvider } from '@/contexts/LanguageContext';
 import SiteLayout from '@/components/layout/SiteLayout';
 import { ThemeProvider } from "next-themes";
+import 'leaflet/dist/leaflet.css';
+
 
 export const metadata: Metadata = {
   title: 'Galápagos DataLens',
