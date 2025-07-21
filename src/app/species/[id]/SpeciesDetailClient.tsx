@@ -287,7 +287,7 @@ export default function SpeciesDetailClient({ species }: SpeciesDetailClientProp
                   <p><strong>{t.creationDate}:</strong> {new Date(species.createdAt).toLocaleDateString(language, { year: 'numeric', month: 'long', day: 'numeric' })}</p>
                 </CardContent>
               </Card>
-            </Card>
+            )}
 
             <Card>
               <CardHeader>
@@ -333,7 +333,7 @@ export default function SpeciesDetailClient({ species }: SpeciesDetailClientProp
                             lang={language}
                           />
                       ) : (
-                          <p className="text-muted-foreground">{language === 'es' ? 'No hay datos históricos disponibles para visualización.' : 'No historical data available for visualization.'}</p>
+                          <p className="text-muted-foreground">{language === 'es' ? 'No hay datos históricos disponibles para visualización.' : 'No hay datos históricos disponibles para visualización.'}</p>
                       )}
                   </CardContent>
               </Card>
@@ -379,6 +379,10 @@ export default function SpeciesDetailClient({ species }: SpeciesDetailClientProp
                 <div className="flex items-center space-x-2">
                     <Checkbox id="includeChart" checked={pdfOptions.includeChart} onCheckedChange={(checked) => handlePdfOptionChange('includeChart', !!checked)} />
                     <Label htmlFor="includeChart">Gráfico Histórico</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                    <Checkbox id="includeDistribution" checked={pdfOptions.includeDistribution} onCheckedChange={(checked) => handlePdfOptionChange('includeDistribution', !!checked)} />
+                    <Label htmlFor="includeDistribution">Distribución</Label>
                 </div>
             </div>
             <AlertDialogFooter>
