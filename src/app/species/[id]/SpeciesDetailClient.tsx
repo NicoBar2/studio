@@ -19,8 +19,7 @@ import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
 import dynamic from 'next/dynamic';
 import { useTheme } from 'next-themes';
-import type PDFDocument from 'pdfkit';
-import blobStream from 'blob-stream';
+import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 
 
@@ -63,18 +62,6 @@ const populationTrendTranslations: Record<"es" | "en", Record<Species['populatio
   }
 };
 
-async function fetchImageAsBuffer(url: string): Promise<ArrayBuffer | null> {
-    try {
-        const response = await fetch(url);
-        if (!response.ok) return null;
-        const buffer = await response.arrayBuffer();
-        return buffer;
-    } catch (e) {
-        console.error("Error fetching image for PDF:", e);
-        return null;
-    }
-}
-
 
 export default function SpeciesDetailClient({ species }: SpeciesDetailClientProps) {
   const { role } = useAuth();
@@ -83,8 +70,7 @@ export default function SpeciesDetailClient({ species }: SpeciesDetailClientProp
   const [error, setError] = useState<string | null>(null);
   const [isSummaryPending, startSummaryTransition] = useTransition();
   const [isPdfPending, startPdfTransition] = useTransition();
-  const chartCardRef = useRef<HTMLDivElement>(null);
-  const { resolvedTheme } = useTheme();
+  const reportRef = useRef<HTMLDivElement>(null);
   
   const IconComponent = iconMap[species.icon] || iconMap.Default;
   const speciesName = t.getSpeciesName(species, language);
@@ -107,123 +93,54 @@ export default function SpeciesDetailClient({ species }: SpeciesDetailClientProp
 
   const handleDownloadPdf = () => {
     startPdfTransition(async () => {
-      const PDFDocument = (await import('pdfkit')).default;
-      
-      const doc = new PDFDocument({
-        size: 'A4',
-        margins: { top: 50, bottom: 50, left: 72, right: 72 },
-        layout: 'portrait',
-        info: {
-          Title: `${species.spanishCommonName} Report`,
-          Author: 'Galápagos DataLens',
-        }
+      const reportElement = reportRef.current;
+      if (!reportElement) return;
+
+      const canvas = await html2canvas(reportElement, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: resolvedTheme === 'dark' ? '#1a202c' : '#ffffff',
       });
-      const stream = doc.pipe(blobStream());
-
-      // --- PDF Content ---
-      doc.fontSize(24).font('Helvetica-Bold').text(species.spanishCommonName, { align: 'center' });
-      if (scientificName) {
-        doc.fontSize(14).font('Helvetica-Oblique').text(scientificName, { align: 'center' });
-      }
-      doc.moveDown(2);
-
-      // --- Image ---
-      const imageUrl = getSpeciesImageUrl(species);
-      const imageBuffer = await fetchImageAsBuffer(imageUrl);
-      if (imageBuffer) {
-        doc.image(imageBuffer, {
-          fit: [450, 250],
-          align: 'center',
-          valign: 'center'
-        });
-        doc.moveDown(2);
-      }
-
-      // --- Description Section ---
-      doc.fontSize(16).font('Helvetica-Bold').text('Descripción', { underline: true }).moveDown(0.5);
-      doc.fontSize(11).font('Helvetica').text(species.spanishDescription || 'N/A', { align: 'justify' });
-      doc.moveDown(1.5);
-
-      // --- Details Section ---
-      const addDetail = (label: string, value: string | undefined) => {
-          if (!value) return;
-          doc.fontSize(11).font('Helvetica-Bold').text(`${label}: `, { continued: true }).font('Helvetica').text(value);
-          doc.moveDown(0.5);
-      }
-
-      addDetail('Estado UICN', species.iucnStatus);
-      addDetail('Tendencia Poblacional', displayPopulationTrend);
-      addDetail('Hábitat Principal', species.habitat);
-      doc.moveDown(1);
       
-      // --- Key Stats ---
-      if(species.keyStats && species.keyStats.length > 0) {
-        doc.fontSize(16).font('Helvetica-Bold').text('Estadísticas Clave', { underline: true }).moveDown(0.5);
-        species.keyStats.forEach(stat => {
-            doc.fontSize(11).font('Helvetica').list([`${stat.label}: ${stat.value} ${stat.unit || ''}`], { bulletRadius: 1.5 });
-        });
-        doc.moveDown(1.5);
-      }
-
-      // --- Threats ---
-      if(species.threats && species.threats.length > 0) {
-        doc.fontSize(16).font('Helvetica-Bold').text('Amenazas Principales', { underline: true }).moveDown(0.5);
-        doc.fontSize(11).font('Helvetica').list(species.threats, { bulletRadius: 1.5 });
-        doc.moveDown(1.5);
-      }
-
-      // --- Distribution ---
-       const presentOnIslands = GALAPAGOS_ISLANDS_NAMES
-          .map(islandName => ({ name: islandName, present: species[`is_${islandName.toLowerCase().replace(/ /g, '_').normalize("NFD").replace(/[\u0300-\u036f]/g, "")}` as keyof Species] }))
-          .filter(island => island.present);
-          
-      if(presentOnIslands.length > 0) {
-          doc.fontSize(16).font('Helvetica-Bold').text('Distribución Geográfica', { underline: true }).moveDown(0.5);
-          const islandList = presentOnIslands.map(i => i.name).join(', ');
-          doc.fontSize(11).font('Helvetica').text(islandList);
-          doc.moveDown(1.5);
-      }
-      
-      // --- Historical Data Chart ---
-      const chartElement = chartCardRef.current;
-      const shouldRenderChart = (role === 'researcher' || role === 'admin' || species.showHistoricalDataToPublic) && species.historicalData && species.historicalData.length > 0;
-
-      if(shouldRenderChart && chartElement) {
-        doc.addPage();
-        doc.fontSize(16).font('Helvetica-Bold').text('Visualización de Datos Históricos', { underline: true }).moveDown(1);
-        
-        try {
-            const canvas = await html2canvas(chartElement, { 
-                scale: 2,
-                backgroundColor: resolvedTheme === 'dark' ? '#222d40' : '#f4f6f8'
-            });
-            const chartImgData = canvas.toDataURL('image/png');
-            const imageBuffer = await fetchImageAsBuffer(chartImgData);
-
-            if (imageBuffer) {
-                doc.image(imageBuffer, { fit: [450, 250], align: 'center' });
-            }
-        } catch(e) {
-            console.error("Error generating chart canvas for PDF:", e);
-        }
-      }
-
-      // --- Finalize PDF ---
-      doc.end();
-
-      stream.on('finish', () => {
-        const blob = stream.toBlob('application/pdf');
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `${species.spanishCommonName.toLowerCase().replace(/\s+/g, '_')}_informe.pdf`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF({
+        orientation: 'p',
+        unit: 'px',
+        format: 'a4'
       });
+
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+      const canvasWidth = canvas.width;
+      const canvasHeight = canvas.height;
+      const ratio = canvasWidth / canvasHeight;
+      const imgWidth = pdfWidth;
+      const imgHeight = imgWidth / ratio;
+      
+      let heightLeft = canvasHeight;
+      let position = 0;
+
+      // We convert canvas pixels to PDF pixels for correct slicing
+      const pxPerPdfUnit = canvasWidth / pdfWidth;
+      const pdfCanvasHeight = canvasHeight / pxPerPdfUnit;
+
+
+      pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfCanvasHeight);
+      heightLeft -= pdfHeight * pxPerPdfUnit;
+
+      while (heightLeft > 0) {
+        position = -(pdf.internal.pages.length) * pdfHeight * pxPerPdfUnit;
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfCanvasHeight);
+        heightLeft -= pdfHeight * pxPerPdfUnit;
+      }
+      
+      pdf.save(`${species.spanishCommonName.toLowerCase().replace(/\s+/g, '_')}_informe.pdf`);
     });
   };
+
+
+  const { resolvedTheme } = useTheme();
 
   const displayPopulationTrend = populationTrendTranslations[language][species.populationTrend] || species.populationTrend;
   
@@ -235,8 +152,8 @@ export default function SpeciesDetailClient({ species }: SpeciesDetailClientProp
       .filter(island => island.present);
 
   return (
-    <div className="space-y-8">
-      <div> 
+    <>
+      <div ref={reportRef} className="space-y-8 bg-background p-4 print:p-0"> 
         <Card className="overflow-hidden shadow-lg">
           <CardHeader className="relative p-0">
             <Image
@@ -392,7 +309,7 @@ export default function SpeciesDetailClient({ species }: SpeciesDetailClientProp
             </Card>
 
             {(role === 'researcher' || role === 'admin' || species.showHistoricalDataToPublic) && (
-               <Card ref={chartCardRef}>
+               <Card>
                   <CardHeader>
                       <CardTitle className="flex items-center text-xl text-primary"><BarChart2 className="mr-2 h-5 w-5" /> {t.historicalDataVisualization}</CardTitle>
                        <CardDescription>
@@ -434,6 +351,6 @@ export default function SpeciesDetailClient({ species }: SpeciesDetailClientProp
             )}
         </Button>
       </div>
-    </div>
+    </>
   );
 }

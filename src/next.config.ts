@@ -25,23 +25,6 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  webpack: (config, { isServer }) => {
-    // This is to solve the 'fs' module not found error from 'fontkit' which is a dependency of 'pdfkit'.
-    // We are telling Webpack to not resolve 'fs' module on the client side.
-    if (!isServer) {
-        config.resolve.fallback = {
-            ...config.resolve.fallback,
-            fs: false,
-        };
-    }
-    
-    // This handles a similar issue with canvas, another optional dependency for pdfkit
-    config.externals.push({
-      canvas: 'canvas',
-    });
-
-    return config;
-  },
 };
 
 export default nextConfig;
