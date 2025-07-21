@@ -1,5 +1,4 @@
 
-"use client";
 import { getSpeciesByIdAction } from '@/app/actions';
 import SpeciesEditForm from '@/components/species/SpeciesEditForm';
 import RoleBasedGuard from '@/components/auth/RoleBasedGuard';
@@ -7,43 +6,29 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
-import { useEffect, useState } from 'react';
-import type { Species } from '@/lib/types';
-import { useLanguage } from '@/contexts/LanguageContext';
 import { Skeleton } from '@/components/ui/skeleton';
+import { getTranslations } from '@/contexts/LanguageContext';
 
 type EditSpeciesPageProps = {
   params: { id: string };
 };
 
-export default function EditSpeciesPage({ params }: EditSpeciesPageProps) {
-  const [species, setSpecies] = useState<Species | undefined | null>(undefined);
-  const { t } = useLanguage();
-
-  useEffect(() => {
-    async function fetchSpecies() {
-      const data = await getSpeciesByIdAction(params.id);
-      setSpecies(data);
+export async function generateMetadata({ params }: EditSpeciesPageProps) {
+    const t = getTranslations('es'); // Default language for metadata
+    const species = await getSpeciesByIdAction(params.id);
+    if (!species) {
+        return {
+            title: t.speciesNotFound
+        }
     }
-    fetchSpecies();
-  }, [params.id]);
-
-  useEffect(() => {
-    if (species) {
-      document.title = `${t.edit} ${t.getSpeciesName(species)} | Galápagos DataLens`;
-    } else if (species === null) {
-      document.title = t.speciesNotFound;
+    return {
+        title: `${t.edit} ${t.getSpeciesName(species)} | Galápagos DataLens`
     }
-  }, [species, t]);
+}
 
-  if (species === undefined) {
-    return (
-      <div className="space-y-6">
-        <Skeleton className="h-10 w-48" />
-        <Skeleton className="h-96 w-full" />
-      </div>
-    );
-  }
+export default async function EditSpeciesPage({ params }: EditSpeciesPageProps) {
+  const species = await getSpeciesByIdAction(params.id);
+  const t = getTranslations('es'); // Or detect locale
 
   if (!species) {
     notFound();

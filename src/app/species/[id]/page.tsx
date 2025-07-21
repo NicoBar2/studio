@@ -1,54 +1,35 @@
 
-"use client";
 import { getSpeciesByIdAction } from '@/app/actions';
 import SpeciesDetailClient from './SpeciesDetailClient';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
-import { useLanguage } from '@/contexts/LanguageContext';
-import { useEffect, useState } from 'react';
-import { Species } from '@/lib/types';
-import { Skeleton } from '@/components/ui/skeleton';
+import { getTranslations } from '@/contexts/LanguageContext';
 
 type SpeciesDetailPageProps = {
   params: { id: string };
 };
 
-export default function SpeciesDetailPage({ params }: SpeciesDetailPageProps) {
-  const { language, t } = useLanguage();
-  const [species, setSpecies] = useState<Species | null | undefined>(undefined);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    async function fetchSpecies() {
-      setIsLoading(true);
-      const data = await getSpeciesByIdAction(params.id);
-      setSpecies(data);
-      setIsLoading(false);
+export async function generateMetadata({ params }: SpeciesDetailPageProps) {
+    const t = getTranslations('es'); // Default language for metadata
+    const species = await getSpeciesByIdAction(params.id);
+    if (!species) {
+        return {
+            title: t.speciesNotFound
+        }
     }
-    fetchSpecies();
-  }, [params.id]);
-  
-  useEffect(() => {
-    if (species) {
-      document.title = `${t.getSpeciesName(species)} | Galápagos DataLens`;
-    } else if (species === null) {
-      document.title = t.speciesNotFound;
+    return {
+        title: `${t.getSpeciesName(species)} | Galápagos DataLens`
     }
-  }, [species, t]);
+}
 
 
-  if (isLoading || species === undefined) {
-    return (
-        <div className="container mx-auto px-4 py-8">
-            <Skeleton className="h-10 w-64 mb-6" />
-            <Skeleton className="h-[500px] w-full" />
-        </div>
-    );
-  }
+export default async function SpeciesDetailPage({ params }: SpeciesDetailPageProps) {
+  const species = await getSpeciesByIdAction(params.id);
+  const t = getTranslations('es'); // Defaulting to Spanish for server-side text
 
-  if (species === null) {
+  if (!species) {
     notFound();
   }
 

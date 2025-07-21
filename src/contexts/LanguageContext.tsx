@@ -609,6 +609,11 @@ const translations: Record<Language, Translations> = {
     en: enTranslations,
 };
 
+// New function to get translations on the server
+export function getTranslations(lang: Language): Translations {
+    return translations[lang] || translations['es'];
+}
+
 type LanguageContextType = {
   language: Language;
   setLanguage: (language: Language) => void;
