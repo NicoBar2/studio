@@ -1,3 +1,4 @@
+
 {
   "name": "galapagos-datalens",
   "version": "0.1.0",
@@ -36,6 +37,7 @@
     "@radix-ui/react-toast": "^1.2.6",
     "@radix-ui/react-tooltip": "^1.1.8",
     "bcryptjs": "^2.4.3",
+    "blob-stream": "^0.1.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^3.6.0",
@@ -43,12 +45,12 @@
     "firebase": "^11.8.1",
     "genkit": "^1.8.0",
     "html2canvas": "^1.4.1",
-    "jspdf": "^2.5.1",
     "leaflet": "^1.9.4",
     "lucide-react": "^0.475.0",
     "next": "15.3.3",
     "next-themes": "^0.3.0",
     "patch-package": "^8.0.0",
+    "pdfkit": "^0.15.0",
     "react": "^18.3.1",
     "react-day-picker": "^8.10.1",
     "react-dom": "^18.3.1",
@@ -62,8 +64,10 @@
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
+    "@types/blob-stream": "^0.1.33",
     "@types/leaflet": "^1.9.12",
     "@types/node": "^20",
+    "@types/pdfkit": "^0.13.4",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "genkit-cli": "^1.8.0",

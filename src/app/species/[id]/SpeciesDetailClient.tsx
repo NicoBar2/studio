@@ -19,6 +19,10 @@ import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
 import dynamic from 'next/dynamic';
 import { useTheme } from 'next-themes';
+import PDFDocument from 'pdfkit';
+import blobStream from 'blob-stream';
+import html2canvas from 'html2canvas';
+
 
 const SpeciesDataChart = dynamic(() => import('@/components/charts/SpeciesDataChart'), {
   loading: () => (
@@ -59,6 +63,19 @@ const populationTrendTranslations: Record<"es" | "en", Record<Species['populatio
   }
 };
 
+async function fetchImageAsBuffer(url: string): Promise<ArrayBuffer | null> {
+    try {
+        const response = await fetch(url);
+        if (!response.ok) return null;
+        const buffer = await response.arrayBuffer();
+        return buffer;
+    } catch (e) {
+        console.error("Error fetching image for PDF:", e);
+        return null;
+    }
+}
+
+
 export default function SpeciesDetailClient({ species }: SpeciesDetailClientProps) {
   const { role } = useAuth();
   const { language, t } = useLanguage();
@@ -90,218 +107,119 @@ export default function SpeciesDetailClient({ species }: SpeciesDetailClientProp
 
   const handleDownloadPdf = () => {
     startPdfTransition(async () => {
-      const { default: jsPDF } = await import('jspdf');
-      const { default: html2canvas } = await import('html2canvas');
-      
-      const doc = new jsPDF({
-        orientation: 'p',
-        unit: 'mm',
-        format: 'a4'
+      const doc = new PDFDocument({
+        size: 'A4',
+        margins: { top: 50, bottom: 50, left: 72, right: 72 },
+        layout: 'portrait',
+        info: {
+          Title: `${species.spanishCommonName} Report`,
+          Author: 'Galápagos DataLens',
+        }
       });
+      const stream = doc.pipe(blobStream());
 
-      const pageHeight = doc.internal.pageSize.getHeight();
-      const pageWidth = doc.internal.pageSize.getWidth();
-      const margin = 15;
-      let y = margin; // Posición Y actual en el documento
-
-      // Función para añadir una página si es necesario
-      const addPageIfNeeded = () => {
-          if (y > pageHeight - 20) { // Comprobar si se necesita una nueva página, con margen para el pie de página
-              doc.addPage();
-              y = margin;
-          }
-      }
-
-      // Función para añadir un título principal
-      const addTitle = (text: string) => {
-        addPageIfNeeded();
-        doc.setFontSize(22);
-        doc.setFont('helvetica', 'bold');
-        doc.text(text, pageWidth / 2, y, { align: 'center' });
-        y += 10;
-      };
-
-      // Función para añadir un subtítulo
-      const addSubtitle = (text: string) => {
-        addPageIfNeeded();
-        doc.setFontSize(14);
-        doc.setFont('helvetica', 'italic');
-        doc.text(text, pageWidth / 2, y, { align: 'center' });
-        y += 15;
-      };
-
-      // Función para encabezados de sección
-      const addSectionHeader = (text: string) => {
-        y += 5; // Espacio antes del encabezado
-        addPageIfNeeded();
-        doc.setFontSize(16);
-        doc.setFont('helvetica', 'bold');
-        doc.text(text, margin, y);
-        y += 7;
-        doc.setLineWidth(0.5);
-        doc.line(margin, y - 4, pageWidth - margin, y - 4); // Subrayado
-      };
-      
-      // Función para el texto del cuerpo, maneja el ajuste de línea y saltos de página
-      const addBodyText = (text: string | null | undefined, options: { isListItem?: boolean } = {}) => {
-          if (!text) return;
-          addPageIfNeeded();
-          doc.setFontSize(11);
-          doc.setFont('helvetica', 'normal');
-          const prefix = options.isListItem ? '- ' : '';
-          const lines = doc.splitTextToSize(prefix + text, pageWidth - margin * 2 - (options.isListItem ? 3 : 0));
-          
-          for(const line of lines) {
-              if (y > pageHeight - 15) { // Comprobar por cada línea
-                  doc.addPage();
-                  y = margin;
-              }
-              doc.text(line, margin + (options.isListItem ? 3 : 0), y);
-              y += 6;
-          }
-      }
-      
-      // Función para una línea de clave-valor
-      const addKeyValueLine = (key: string, value: string | null | undefined) => {
-          if (!value) return;
-          const fullText = `${key}: ${value}`;
-          addBodyText(fullText);
-      }
-
-
-      // --- Contenido del PDF ---
-
-      // 1. Título y Subtítulo
-      addTitle(species.spanishCommonName);
+      // --- PDF Content ---
+      doc.fontSize(24).font('Helvetica-Bold').text(species.spanishCommonName, { align: 'center' });
       if (scientificName) {
-        addSubtitle(scientificName);
+        doc.fontSize(14).font('Helvetica-Oblique').text(scientificName, { align: 'center' });
       }
+      doc.moveDown(2);
 
-      // 2. Imagen
-      try {
-        const imageUrl = getSpeciesImageUrl(species);
-        const response = await fetch(imageUrl);
-        const blob = await response.blob();
-        const reader = new FileReader();
-        const dataUrl = await new Promise<string>((resolve, reject) => {
-            reader.onloadend = () => resolve(reader.result as string);
-            reader.onerror = reject;
-            reader.readAsDataURL(blob);
+      // --- Image ---
+      const imageUrl = getSpeciesImageUrl(species);
+      const imageBuffer = await fetchImageAsBuffer(imageUrl);
+      if (imageBuffer) {
+        doc.image(imageBuffer, {
+          fit: [450, 250],
+          align: 'center',
+          valign: 'center'
         });
-        
-        const imgProps = doc.getImageProperties(dataUrl);
-        const imgWidth = pageWidth - margin * 2;
-        let imgHeight = (imgProps.height * imgWidth) / imgProps.width;
-
-        const maxImgHeight = pageHeight * 0.4; // Limitar la altura de la imagen al 40% de la página
-        if(imgHeight > maxImgHeight) {
-            imgHeight = maxImgHeight;
-        }
-
-        if (y + imgHeight > pageHeight - 15) {
-            doc.addPage();
-            y = margin;
-        }
-        doc.addImage(dataUrl, 'PNG', margin, y, imgWidth, imgHeight, undefined, 'FAST');
-        y += imgHeight + 10;
-      } catch (e) {
-          console.error("No se pudo añadir la imagen al PDF:", e);
+        doc.moveDown(2);
       }
 
-      // 3. Descripción
-      addSectionHeader('Descripción');
-      addBodyText(species.spanishDescription);
-      y+= 5;
+      // --- Description Section ---
+      doc.fontSize(16).font('Helvetica-Bold').text('Descripción', { underline: true }).moveDown(0.5);
+      doc.fontSize(11).font('Helvetica').text(species.spanishDescription || 'N/A', { align: 'justify' });
+      doc.moveDown(1.5);
 
-      // 4. Detalles Principales
-      addSectionHeader('Datos Principales');
-      addKeyValueLine('Estado UICN', species.iucnStatus);
-      addKeyValueLine('Tendencia Poblacional', displayPopulationTrend);
-      addKeyValueLine('Hábitat Principal', species.habitat);
-      y+= 5;
-
-      // 5. Estadísticas Clave
-      if (species.keyStats && species.keyStats.length > 0) {
-        addSectionHeader('Estadísticas Clave');
-        species.keyStats.forEach(stat => {
-            addBodyText(`${stat.label}: ${stat.value} ${stat.unit || ''}`, {isListItem: true});
-        });
-        y+=5;
+      // --- Details Section ---
+      const addDetail = (label: string, value: string | undefined) => {
+          if (!value) return;
+          doc.fontSize(11).font('Helvetica-Bold').text(`${label}: `, { continued: true }).font('Helvetica').text(value);
+          doc.moveDown(0.5);
       }
 
-      // 6. Amenazas
-      if (species.threats && species.threats.length > 0) {
-        addSectionHeader('Amenazas Principales');
-        species.threats.forEach(threat => {
-            addBodyText(threat, {isListItem: true});
-        });
-        y+=5;
-      }
+      addDetail('Estado UICN', species.iucnStatus);
+      addDetail('Tendencia Poblacional', displayPopulationTrend);
+      addDetail('Hábitat Principal', species.habitat);
+      doc.moveDown(1);
       
-      // 7. Distribución
-      const presentOnIslands = GALAPAGOS_ISLANDS_NAMES
+      // --- Key Stats ---
+      if(species.keyStats && species.keyStats.length > 0) {
+        doc.fontSize(16).font('Helvetica-Bold').text('Estadísticas Clave', { underline: true }).moveDown(0.5);
+        species.keyStats.forEach(stat => {
+            doc.fontSize(11).font('Helvetica').list([`${stat.label}: ${stat.value} ${stat.unit || ''}`], { bulletRadius: 1.5 });
+        });
+        doc.moveDown(1.5);
+      }
+
+      // --- Threats ---
+      if(species.threats && species.threats.length > 0) {
+        doc.fontSize(16).font('Helvetica-Bold').text('Amenazas Principales', { underline: true }).moveDown(0.5);
+        doc.fontSize(11).font('Helvetica').list(species.threats, { bulletRadius: 1.5 });
+        doc.moveDown(1.5);
+      }
+
+      // --- Distribution ---
+       const presentOnIslands = GALAPAGOS_ISLANDS_NAMES
           .map(islandName => ({ name: islandName, present: species[`is_${islandName.toLowerCase().replace(/ /g, '_').normalize("NFD").replace(/[\u0300-\u036f]/g, "")}` as keyof Species] }))
           .filter(island => island.present);
           
       if(presentOnIslands.length > 0) {
-          addSectionHeader('Distribución Geográfica');
+          doc.fontSize(16).font('Helvetica-Bold').text('Distribución Geográfica', { underline: true }).moveDown(0.5);
           const islandList = presentOnIslands.map(i => i.name).join(', ');
-          addBodyText(islandList);
+          doc.fontSize(11).font('Helvetica').text(islandList);
+          doc.moveDown(1.5);
       }
-
-      // 8. Gráfico de Datos Históricos
+      
+      // --- Historical Data Chart ---
       const chartElement = chartCardRef.current;
       const shouldRenderChart = (role === 'researcher' || role === 'admin' || species.showHistoricalDataToPublic) && species.historicalData && species.historicalData.length > 0;
 
-      if (shouldRenderChart && chartElement) {
-        addSectionHeader('Visualización de Datos Históricos');
-        y += 5;
-
-        if (y > pageHeight - 80) { // Rough estimate for chart height
-            doc.addPage();
-            y = margin;
-        }
+      if(shouldRenderChart && chartElement) {
+        doc.addPage();
+        doc.fontSize(16).font('Helvetica-Bold').text('Visualización de Datos Históricos', { underline: true }).moveDown(1);
         
-        const canvas = await html2canvas(chartElement, { 
-            scale: 2,
-            backgroundColor: resolvedTheme === 'dark' ? '#222d40' : '#f4f6f8'
-        });
-        const chartImgData = canvas.toDataURL('image/png');
-        const chartImgWidth = pageWidth - margin * 2;
-        const chartImgHeight = (canvas.height * chartImgWidth) / canvas.width;
+        try {
+            const canvas = await html2canvas(chartElement, { 
+                scale: 2,
+                backgroundColor: resolvedTheme === 'dark' ? '#222d40' : '#f4f6f8'
+            });
+            const chartImgData = canvas.toDataURL('image/png');
+            const imageBuffer = await fetchImageAsBuffer(chartImgData);
 
-        if (y + chartImgHeight > pageHeight - 15) {
-            doc.addPage();
-            y = margin;
+            if (imageBuffer) {
+                doc.image(imageBuffer, { fit: [450, 250], align: 'center' });
+            }
+        } catch(e) {
+            console.error("Error generating chart canvas for PDF:", e);
         }
-
-        doc.addImage(chartImgData, 'PNG', margin, y, chartImgWidth, chartImgHeight);
-        y += chartImgHeight + 10;
       }
 
+      // --- Finalize PDF ---
+      doc.end();
 
-      // --- Fin del Contenido ---
-
-      // Añadir pie de página con números de página a todas las páginas
-      const pageCount = doc.internal.getNumberOfPages();
-      for (let i = 1; i <= pageCount; i++) {
-        doc.setPage(i);
-        doc.setFontSize(9);
-        doc.setFont('helvetica', 'italic');
-        doc.text(
-          `Informe generado por Galápagos DataLens`,
-          margin,
-          pageHeight - 8
-        );
-        doc.text(
-          `Página ${i} de ${pageCount}`,
-          pageWidth - margin,
-          pageHeight - 8,
-          { align: 'right' }
-        );
-      }
-
-      doc.save(`${species.spanishCommonName.toLowerCase().replace(/\s+/g, '_')}_informe.pdf`);
+      stream.on('finish', () => {
+        const blob = stream.toBlob('application/pdf');
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${species.spanishCommonName.toLowerCase().replace(/\s+/g, '_')}_informe.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      });
     });
   };
 
