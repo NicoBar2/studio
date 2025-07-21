@@ -21,7 +21,7 @@ import { GALAPAGOS_ISLANDS_NAMES } from '@/lib/utils';
 import { Label } from '@/components/ui/label';
 import dynamic from 'next/dynamic';
 
-const GalapagosMap = dynamic(() => import('@/components/map/GalapagosMap'), {
+const InteractiveMap = dynamic(() => import('@/components/map/InteractiveMap'), {
   loading: () => <Skeleton className="h-[400px] w-full" />,
   ssr: false,
 });
@@ -117,7 +117,7 @@ export default function DashboardPage() {
         </CardHeader>
         <CardContent className="p-4 md:p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 h-[400px]">
-            <GalapagosMap onIslandClick={handleIslandClick} selectedIsland={selectedIsland} />
+             <InteractiveMap onIslandClick={handleIslandClick} selectedIsland={selectedIsland} dashboardMode={true} />
           </div>
           <div className="lg:col-span-1 space-y-4">
              <div className="space-y-2">

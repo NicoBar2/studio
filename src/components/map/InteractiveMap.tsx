@@ -1,12 +1,13 @@
 
 "use client";
 
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useEffect } from 'react';
 
 // Fix for default icon issue with Leaflet and Webpack
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -18,7 +19,9 @@ L.Icon.Default.mergeOptions({
 
 
 type InteractiveMapProps = {
-  onIslandClick: (islandName: string) => void;
+  onIslandClick: (islandName: string | null) => void;
+  selectedIsland?: string | null;
+  dashboardMode?: boolean; // New prop to differentiate behavior
 };
 
 const islandCoordinates: { name: string; position: [number, number] }[] = [
@@ -39,34 +42,65 @@ const islandCoordinates: { name: string; position: [number, number] }[] = [
     { name: 'Darwin', position: [1.66, -91.99] },
 ];
 
-const InteractiveMap = ({ onIslandClick }: InteractiveMapProps) => {
+function MapEffect({ selectedIsland }: { selectedIsland: string | null | undefined }) {
+  const map = useMap();
+  useEffect(() => {
+    if (selectedIsland) {
+      const island = islandCoordinates.find(i => i.name === selectedIsland);
+      if(island) {
+        map.flyTo(island.position, 8);
+      }
+    } else {
+        map.flyTo([-0.95, -90.96], 7);
+    }
+  }, [selectedIsland, map]);
+
+  return null;
+}
+
+const InteractiveMap = ({ onIslandClick, selectedIsland, dashboardMode = false }: InteractiveMapProps) => {
   const position: [number, number] = [-0.95, -90.96]; // Center of Galapagos
-  const { t, language } = useLanguage();
+  const { t } = useLanguage();
   const router = useRouter();
 
-  const handlePopupClick = (islandName: string) => {
-    router.push(`/islas/${encodeURIComponent(islandName)}`);
+  const handleIslandInteraction = (islandName: string) => {
+    if (dashboardMode) {
+      onIslandClick(islandName);
+    } else {
+      router.push(`/islas/${encodeURIComponent(islandName)}`);
+    }
   };
 
   return (
-    <MapContainer center={position} zoom={7} scrollWheelZoom={true} className="h-full w-full">
+    <MapContainer center={position} zoom={7} scrollWheelZoom={true} className="h-full w-full rounded-lg">
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
+      <MapEffect selectedIsland={selectedIsland} />
       {islandCoordinates.map((island) => (
-        <Marker key={island.name} position={island.position}>
+        <Marker 
+            key={island.name} 
+            position={island.position}
+            eventHandlers={{
+                click: () => {
+                    handleIslandInteraction(island.name);
+                },
+            }}
+        >
           <Popup>
             <div className="text-center">
               <h3 className="font-bold">{island.name}</h3>
-              <Button
-                size="sm"
-                variant="link"
-                className="p-0 h-auto"
-                onClick={() => handlePopupClick(island.name)}
-              >
-                {language === 'es' ? 'Ver Especies' : 'View Species'}
-              </Button>
+              {!dashboardMode && (
+                <Button
+                  size="sm"
+                  variant="link"
+                  className="p-0 h-auto"
+                  onClick={() => handleIslandInteraction(island.name)}
+                >
+                  {t.viewPublicPage}
+                </Button>
+              )}
             </div>
           </Popup>
         </Marker>
