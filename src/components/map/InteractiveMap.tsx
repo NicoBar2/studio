@@ -7,7 +7,7 @@ import L from 'leaflet';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useEffect, useMemo } from 'react';
+import { useEffect } from 'react';
 
 // Fix for default icon issue with Leaflet and Webpack
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -71,7 +71,7 @@ const InteractiveMap = ({ onIslandClick, selectedIsland, dashboardMode = false }
     }
   };
 
-  const displayMap = useMemo(() => (
+  return (
     <MapContainer center={position} zoom={7} scrollWheelZoom={true} className="h-full w-full rounded-lg">
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -106,12 +106,6 @@ const InteractiveMap = ({ onIslandClick, selectedIsland, dashboardMode = false }
         </Marker>
       ))}
     </MapContainer>
-  ), [selectedIsland, dashboardMode, t, onIslandClick, router]);
-
-  return (
-    <>
-      {displayMap}
-    </>
   );
 };
 
