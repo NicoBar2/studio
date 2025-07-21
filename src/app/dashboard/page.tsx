@@ -15,11 +15,17 @@ import { useEffect, useState, useMemo } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import DeleteSpeciesButton from '@/components/dashboard/DeleteSpeciesButton';
 import { Badge } from '@/components/ui/badge';
-import GalapagosMap from '@/components/map/GalapagosMap';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { GALAPAGOS_ISLANDS_NAMES } from '@/lib/utils';
 import { Label } from '@/components/ui/label';
+import dynamic from 'next/dynamic';
+
+const GalapagosMap = dynamic(() => import('@/components/map/GalapagosMap'), {
+  loading: () => <Skeleton className="h-[400px] w-full" />,
+  ssr: false,
+});
+
 
 const iconMap: Record<string, LucideIcon> = {
   Turtle,
@@ -110,7 +116,7 @@ export default function DashboardPage() {
           </div>
         </CardHeader>
         <CardContent className="p-4 md:p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2">
+          <div className="lg:col-span-2 h-[400px]">
             <GalapagosMap onIslandClick={handleIslandClick} selectedIsland={selectedIsland} />
           </div>
           <div className="lg:col-span-1 space-y-4">
