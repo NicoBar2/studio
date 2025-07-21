@@ -1,13 +1,11 @@
 
 "use client";
 
-import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
-import 'leaflet/dist/leaflet.css';
-import L from 'leaflet';
-import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import { useLanguage } from '@/contexts/LanguageContext';
 import { useEffect, useRef } from 'react';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+import { useRouter } from 'next/navigation';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 // Fix for default icon issue with Leaflet and Webpack
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -42,28 +40,12 @@ const islandCoordinates: { name: string; position: [number, number] }[] = [
     { name: 'Darwin', position: [1.66, -91.99] },
 ];
 
-function MapEffect({ selectedIsland }: { selectedIsland: string | null | undefined }) {
-  const map = useMap();
-
-  useEffect(() => {
-    if (selectedIsland) {
-      const island = islandCoordinates.find(i => i.name === selectedIsland);
-      if (island) {
-        map.flyTo(island.position, 8);
-      }
-    } else {
-      map.flyTo([-0.95, -90.96], 7);
-    }
-  }, [selectedIsland, map]);
-
-  return null;
-}
-
 const InteractiveMap = ({ onIslandClick, selectedIsland, dashboardMode = false }: InteractiveMapProps) => {
-  const position: [number, number] = [-0.95, -90.96]; // Center of Galapagos
+  const mapContainerRef = useRef<HTMLDivElement>(null);
+  const mapRef = useRef<L.Map | null>(null);
   const { t } = useLanguage();
   const router = useRouter();
-
+  
   const handleIslandInteraction = (islandName: string) => {
     if (dashboardMode) {
       onIslandClick(islandName);
@@ -72,41 +54,70 @@ const InteractiveMap = ({ onIslandClick, selectedIsland, dashboardMode = false }
     }
   };
 
+
+  useEffect(() => {
+    if (mapContainerRef.current && !mapRef.current) { 
+      const map = L.map(mapContainerRef.current, {
+          center: [-0.95, -90.96],
+          zoom: 7,
+          scrollWheelZoom: true,
+      });
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      }).addTo(map);
+
+      islandCoordinates.forEach((island) => {
+        const marker = L.marker(island.position).addTo(map);
+        const popupContent = `
+          <div class="text-center font-sans">
+            <h3 class="font-bold">${island.name}</h3>
+            ${!dashboardMode ? `<button class="leaflet-popup-button" data-island-name="${island.name}">${t.viewPublicPage}</button>` : ''}
+          </div>
+        `;
+        marker.bindPopup(popupContent);
+      });
+      
+      map.on('popupopen', (e) => {
+          const button = e.popup.getElement()?.querySelector('.leaflet-popup-button');
+          if (button) {
+            button.addEventListener('click', (ev) => {
+                const islandName = (ev.target as HTMLElement).dataset.islandName;
+                if(islandName) {
+                    handleIslandInteraction(islandName);
+                }
+            });
+          }
+      });
+      
+      mapRef.current = map;
+    }
+
+    return () => {
+      if (mapRef.current) {
+        mapRef.current.remove();
+        mapRef.current = null;
+      }
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); 
+
+
+  useEffect(() => {
+    if (mapRef.current) {
+      if (selectedIsland) {
+        const island = islandCoordinates.find(i => i.name === selectedIsland);
+        if (island) {
+          mapRef.current.flyTo(island.position, 8);
+        }
+      } else {
+        mapRef.current.flyTo([-0.95, -90.96], 7);
+      }
+    }
+  }, [selectedIsland]);
+
   return (
-    <MapContainer center={position} zoom={7} scrollWheelZoom={true} className="h-full w-full rounded-lg">
-      <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
-      {islandCoordinates.map((island) => (
-        <Marker 
-            key={island.name} 
-            position={island.position}
-            eventHandlers={{
-                click: () => {
-                    handleIslandInteraction(island.name);
-                },
-            }}
-        >
-          <Popup>
-            <div className="text-center">
-              <h3 className="font-bold">{island.name}</h3>
-              {!dashboardMode && (
-                <Button
-                  size="sm"
-                  variant="link"
-                  className="p-0 h-auto"
-                  onClick={() => handleIslandInteraction(island.name)}
-                >
-                  {t.viewPublicPage}
-                </Button>
-              )}
-            </div>
-          </Popup>
-        </Marker>
-      ))}
-       <MapEffect selectedIsland={selectedIsland} />
-    </MapContainer>
+    <div ref={mapContainerRef} className="h-full w-full rounded-lg"></div>
   );
 };
 
