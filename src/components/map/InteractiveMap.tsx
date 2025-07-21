@@ -7,7 +7,7 @@ import L from 'leaflet';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 // Fix for default icon issue with Leaflet and Webpack
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -42,7 +42,7 @@ const islandCoordinates: { name: string; position: [number, number] }[] = [
     { name: 'Darwin', position: [1.66, -91.99] },
 ];
 
-function MapEvents({ selectedIsland }: { selectedIsland: string | null | undefined }) {
+function MapEffect({ selectedIsland }: { selectedIsland: string | null | undefined }) {
   const map = useMap();
 
   useEffect(() => {
@@ -105,7 +105,7 @@ const InteractiveMap = ({ onIslandClick, selectedIsland, dashboardMode = false }
           </Popup>
         </Marker>
       ))}
-       <MapEvents selectedIsland={selectedIsland} />
+       <MapEffect selectedIsland={selectedIsland} />
     </MapContainer>
   );
 };
