@@ -7,6 +7,7 @@ import { promises as fs } from 'fs';
 import path from 'path';
 import type { Species, HistoricalDataPoint, SpeciesStat, ConservationStatus, UserRole, Researcher } from '@/lib/types';
 import { getComparisonAnalysis, type CompareSpeciesInput } from '@/ai/flows/compareSpeciesFlow';
+import { generatePdfFlow } from '@/ai/flows/generatePdfFlow';
 import { z } from 'zod';
 import { redirect } from 'next/navigation';
 import bcrypt from 'bcryptjs';
@@ -910,4 +911,17 @@ export async function generateComparisonAnalysisAction(
     console.error("Error generando análisis comparativo:", error);
     return { error: "Ocurrió un error al contactar al servicio de IA para el análisis." };
   }
+}
+
+export async function generatePdfAction(speciesId: string): Promise<{pdfBase64?: string, error?: string}> {
+    try {
+        const { pdfBase64, error } = await generatePdfFlow(speciesId);
+        if (error) {
+            return { error };
+        }
+        return { pdfBase64 };
+    } catch (e) {
+        console.error("Error executing generatePdfFlow:", e);
+        return { error: 'Failed to generate PDF due to a server error.' };
+    }
 }

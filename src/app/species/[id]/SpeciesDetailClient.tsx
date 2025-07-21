@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useState, useTransition, useRef } from 'react';
-import { getAISummary } from '@/app/actions';
+import { getAISummary, generatePdfAction } from '@/app/actions';
 import { 
   AlertCircle, Brain, Edit, BarChart2, Tag, TrendingUp, ShieldAlert, Home, ListChecks, Download,
   Turtle, Bird, Footprints, ShieldQuestion, Waves, Bug, type LucideIcon, HelpCircle, Sigma, MapPin, LoaderCircle, CalendarClock
@@ -19,8 +19,6 @@ import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
 import dynamic from 'next/dynamic';
 import { useTheme } from 'next-themes';
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
 
 
 const SpeciesDataChart = dynamic(() => import('@/components/charts/SpeciesDataChart'), {
@@ -70,7 +68,6 @@ export default function SpeciesDetailClient({ species }: SpeciesDetailClientProp
   const [error, setError] = useState<string | null>(null);
   const [isSummaryPending, startSummaryTransition] = useTransition();
   const [isPdfPending, startPdfTransition] = useTransition();
-  const reportRef = useRef<HTMLDivElement>(null);
   
   const IconComponent = iconMap[species.icon] || iconMap.Default;
   const speciesName = t.getSpeciesName(species, language);
@@ -93,49 +90,31 @@ export default function SpeciesDetailClient({ species }: SpeciesDetailClientProp
 
   const handleDownloadPdf = () => {
     startPdfTransition(async () => {
-      const reportElement = reportRef.current;
-      if (!reportElement) return;
+        const { pdfBase64, error } = await generatePdfAction(species.id);
 
-      const canvas = await html2canvas(reportElement, {
-        scale: 2,
-        useCORS: true,
-        backgroundColor: resolvedTheme === 'dark' ? '#1a202c' : '#ffffff',
-      });
-      
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF({
-        orientation: 'p',
-        unit: 'px',
-        format: 'a4'
-      });
+        if (error) {
+            console.error('PDF Generation Error:', error);
+            // You might want to show a toast notification here
+            return;
+        }
 
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = pdf.internal.pageSize.getHeight();
-      const canvasWidth = canvas.width;
-      const canvasHeight = canvas.height;
-      const ratio = canvasWidth / canvasHeight;
-      const imgWidth = pdfWidth;
-      const imgHeight = imgWidth / ratio;
-      
-      let heightLeft = canvasHeight;
-      let position = 0;
+        if (pdfBase64) {
+            const byteCharacters = atob(pdfBase64);
+            const byteNumbers = new Array(byteCharacters.length);
+            for (let i = 0; i < byteCharacters.length; i++) {
+                byteNumbers[i] = byteCharacters.charCodeAt(i);
+            }
+            const byteArray = new Uint8Array(byteNumbers);
+            const blob = new Blob([byteArray], { type: 'application/pdf' });
 
-      // We convert canvas pixels to PDF pixels for correct slicing
-      const pxPerPdfUnit = canvasWidth / pdfWidth;
-      const pdfCanvasHeight = canvasHeight / pxPerPdfUnit;
-
-
-      pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfCanvasHeight);
-      heightLeft -= pdfHeight * pxPerPdfUnit;
-
-      while (heightLeft > 0) {
-        position = -(pdf.internal.pages.length) * pdfHeight * pxPerPdfUnit;
-        pdf.addPage();
-        pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfCanvasHeight);
-        heightLeft -= pdfHeight * pxPerPdfUnit;
-      }
-      
-      pdf.save(`${species.spanishCommonName.toLowerCase().replace(/\s+/g, '_')}_informe.pdf`);
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            const fileName = `${species.spanishCommonName.toLowerCase().replace(/\s+/g, '_')}_informe.pdf`;
+            link.download = fileName;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
     });
   };
 
@@ -153,7 +132,7 @@ export default function SpeciesDetailClient({ species }: SpeciesDetailClientProp
 
   return (
     <>
-      <div ref={reportRef} className="space-y-8 bg-background p-4 print:p-0"> 
+      <div className="space-y-8 bg-background p-4 print:p-0"> 
         <Card className="overflow-hidden shadow-lg">
           <CardHeader className="relative p-0">
             <Image
@@ -281,7 +260,7 @@ export default function SpeciesDetailClient({ species }: SpeciesDetailClientProp
                   <p><strong>{t.creationDate}:</strong> {new Date(species.createdAt).toLocaleDateString(language, { year: 'numeric', month: 'long', day: 'numeric' })}</p>
                 </CardContent>
               </Card>
-            )}
+            </Card>
 
             <Card>
               <CardHeader>
