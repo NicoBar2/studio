@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
-import { getTranslations } from '@/contexts/LanguageContext';
+import { getTranslations } from '@/lib/translations';
 
 type EditSpeciesPageProps = {
   params: { id: string };

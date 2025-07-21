@@ -5,7 +5,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
-import { getTranslations } from '@/contexts/LanguageContext';
+import { getTranslations } from '@/lib/translations';
 
 type SpeciesDetailPageProps = {
   params: { id: string };
