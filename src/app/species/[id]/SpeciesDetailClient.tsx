@@ -19,7 +19,7 @@ import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
 import dynamic from 'next/dynamic';
 import { useTheme } from 'next-themes';
-import PDFDocument from 'pdfkit';
+import type PDFDocument from 'pdfkit';
 import blobStream from 'blob-stream';
 import html2canvas from 'html2canvas';
 
@@ -107,6 +107,8 @@ export default function SpeciesDetailClient({ species }: SpeciesDetailClientProp
 
   const handleDownloadPdf = () => {
     startPdfTransition(async () => {
+      const PDFDocument = (await import('pdfkit')).default;
+      
       const doc = new PDFDocument({
         size: 'A4',
         margins: { top: 50, bottom: 50, left: 72, right: 72 },
