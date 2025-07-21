@@ -21,7 +21,7 @@ L.Icon.Default.mergeOptions({
 type InteractiveMapProps = {
   onIslandClick: (islandName: string | null) => void;
   selectedIsland?: string | null;
-  dashboardMode?: boolean; // New prop to differentiate behavior
+  dashboardMode?: boolean; 
 };
 
 const islandCoordinates: { name: string; position: [number, number] }[] = [
@@ -42,16 +42,17 @@ const islandCoordinates: { name: string; position: [number, number] }[] = [
     { name: 'Darwin', position: [1.66, -91.99] },
 ];
 
-function MapEffect({ selectedIsland }: { selectedIsland: string | null | undefined }) {
+function MapEvents({ selectedIsland }: { selectedIsland: string | null | undefined }) {
   const map = useMap();
+
   useEffect(() => {
     if (selectedIsland) {
       const island = islandCoordinates.find(i => i.name === selectedIsland);
-      if(island) {
+      if (island) {
         map.flyTo(island.position, 8);
       }
     } else {
-        map.flyTo([-0.95, -90.96], 7);
+      map.flyTo([-0.95, -90.96], 7);
     }
   }, [selectedIsland, map]);
 
@@ -77,7 +78,6 @@ const InteractiveMap = ({ onIslandClick, selectedIsland, dashboardMode = false }
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      <MapEffect selectedIsland={selectedIsland} />
       {islandCoordinates.map((island) => (
         <Marker 
             key={island.name} 
@@ -105,6 +105,7 @@ const InteractiveMap = ({ onIslandClick, selectedIsland, dashboardMode = false }
           </Popup>
         </Marker>
       ))}
+       <MapEvents selectedIsland={selectedIsland} />
     </MapContainer>
   );
 };
