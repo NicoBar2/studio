@@ -7,7 +7,7 @@ import { promises as fs } from 'fs';
 import path from 'path';
 import type { Species, HistoricalDataPoint, SpeciesStat, ConservationStatus, UserRole, Researcher } from '@/lib/types';
 import { getComparisonAnalysis, type CompareSpeciesInput } from '@/ai/flows/compareSpeciesFlow';
-import { generatePdfFlow } from '@/ai/flows/generatePdfFlow';
+import { generatePdfFlow, type GeneratePdfInput } from '@/ai/flows/generatePdfFlow';
 import { z } from 'zod';
 import { redirect } from 'next/navigation';
 import bcrypt from 'bcryptjs';
@@ -913,9 +913,9 @@ export async function generateComparisonAnalysisAction(
   }
 }
 
-export async function generatePdfAction(speciesId: string): Promise<{pdfBase64?: string, error?: string}> {
+export async function generatePdfAction(input: GeneratePdfInput): Promise<{pdfBase64?: string, error?: string}> {
     try {
-        const { pdfBase64, error } = await generatePdfFlow(speciesId);
+        const { pdfBase64, error } = await generatePdfFlow(input);
         if (error) {
             return { error };
         }

@@ -12,7 +12,21 @@ import PDFDocument from 'pdfkit';
 import { PassThrough } from 'stream';
 import fetch from 'node-fetch';
 
-const GeneratePdfInputSchema = z.string().describe('The ID of the species.');
+const PdfOptionsSchema = z.object({
+  includeDescription: z.boolean().default(true),
+  includeConservation: z.boolean().default(true),
+  includeHabitat: z.boolean().default(true),
+  includeThreats: z.boolean().default(true),
+  includeChart: z.boolean().default(true),
+  includeDistribution: z.boolean().default(true),
+});
+export type PdfOptions = z.infer<typeof PdfOptionsSchema>;
+
+
+const GeneratePdfInputSchema = z.object({
+  speciesId: z.string().describe('The ID of the species.'),
+  options: PdfOptionsSchema,
+});
 export type GeneratePdfInput = z.infer<typeof GeneratePdfInputSchema>;
 
 const GeneratePdfOutputSchema = z.object({
@@ -37,7 +51,11 @@ async function drawChart(doc: PDFKit.PDFDocument, species: Species) {
     }
 
     const chartX = 72;
-    const chartY = doc.y + 270;
+    const chartY = doc.y > 400 ? 700 : doc.y + 270;
+    if (doc.y > 400) doc.addPage();
+    doc.moveDown(2);
+
+
     const chartWidth = 450;
     const chartHeight = 200;
     const barGap = 10;
@@ -86,7 +104,7 @@ const generatePdfFlowFn = ai.defineFlow(
     inputSchema: GeneratePdfInputSchema,
     outputSchema: GeneratePdfOutputSchema,
   },
-  async (speciesId) => {
+  async ({ speciesId, options }) => {
     const species = await getSpeciesByIdAction(speciesId);
 
     if (!species) {
@@ -127,6 +145,7 @@ const generatePdfFlowFn = ai.defineFlow(
         doc.fontSize(12).fillColor('#111827').font('Helvetica');
 
         const addSection = (title: string, content: string | string[]) => {
+            if (!content || (Array.isArray(content) && content.length === 0)) return;
             if (doc.y > 650) doc.addPage();
             doc.moveDown();
             doc.fontSize(14).fillColor('#1F2937').font('Helvetica-Bold').text(title);
@@ -139,33 +158,42 @@ const generatePdfFlowFn = ai.defineFlow(
             }
         };
 
-        addSection('Descripción', species.spanishDescription);
+        if (options.includeDescription) {
+            addSection('Descripción', species.spanishDescription);
+        }
         
         if (doc.y > 500) doc.addPage();
         
-        // Stats and Status in two columns
         const columnY = doc.y;
-        doc.fontSize(14).fillColor('#1F2937').font('Helvetica-Bold').text('Estado de Conservación');
-        doc.moveDown(0.5);
-        doc.fontSize(10).fillColor('#374151').font('Helvetica')
-            .text(`Estado UICN: ${species.iucnStatus}`)
-            .text(`Tendencia Poblacional: ${species.populationTrend}`);
+        let columnHeight = 0;
+        let leftColumnHeight = 0;
+        let rightColumnHeight = 0;
 
-        doc.y = columnY;
-        doc.fontSize(14).fillColor('#1F2937').font('Helvetica-Bold').text('Hábitat', 300, columnY);
-        doc.moveDown(0.5);
-        doc.fontSize(10).fillColor('#374151').font('Helvetica').text(species.habitat, 300, doc.y, { width: 200, align: 'justify' });
-        
-        doc.y = Math.max(doc.y, columnY + 60);
+        if (options.includeConservation) {
+            doc.fontSize(14).fillColor('#1F2937').font('Helvetica-Bold').text('Estado de Conservación', 72, columnY);
+            doc.moveDown(0.5);
+            doc.fontSize(10).fillColor('#374151').font('Helvetica')
+                .text(`Estado UICN: ${species.iucnStatus}`)
+                .text(`Tendencia Poblacional: ${species.populationTrend}`);
+            leftColumnHeight = doc.y - columnY;
+        }
 
-        if (species.threats && species.threats.length > 0) {
+        if (options.includeHabitat) {
+            doc.y = columnY;
+            doc.fontSize(14).fillColor('#1F2937').font('Helvetica-Bold').text('Hábitat', 300, columnY);
+            doc.moveDown(0.5);
+            doc.fontSize(10).fillColor('#374151').font('Helvetica').text(species.habitat, 300, doc.y, { width: 200, align: 'justify' });
+            rightColumnHeight = doc.y - columnY;
+        }
+
+        doc.y = columnY + Math.max(leftColumnHeight, rightColumnHeight) + 20;
+
+        if (options.includeThreats) {
             addSection('Amenazas Principales', species.threats);
         }
 
         // Chart
-        if (species.historicalData && species.historicalData.length > 0) {
-            if (doc.y > 400) doc.addPage();
-            doc.moveDown(2);
+        if (options.includeChart && species.historicalData && species.historicalData.length > 0) {
             await drawChart(doc, species);
         }
 
@@ -182,6 +210,6 @@ const generatePdfFlowFn = ai.defineFlow(
 );
 
 
-export async function generatePdfFlow(speciesId: string): Promise<GeneratePdfOutput> {
-    return generatePdfFlowFn(speciesId);
+export async function generatePdfFlow(input: GeneratePdfInput): Promise<GeneratePdfOutput> {
+    return generatePdfFlowFn(input);
 }
