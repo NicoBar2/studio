@@ -674,11 +674,16 @@ export async function requestPasswordResetAction(
 }
 
 
-const MIN_PASSWORD_LENGTH = 6;
+const MIN_PASSWORD_LENGTH = 8;
+const passwordSchema = z.string()
+    .min(MIN_PASSWORD_LENGTH, { message: `La contraseña debe tener al menos ${MIN_PASSWORD_LENGTH} caracteres.` })
+    .regex(/[A-Z]/, { message: 'La contraseña debe contener al menos una letra mayúscula.' })
+    .regex(/[a-z]/, { message: 'La contraseña debe contener al menos una letra minúscula.' })
+    .regex(/[0-9]/, { message: 'La contraseña debe contener al menos un número.' });
 
 const resetPasswordSchema = z.object({
   email: z.string().email({ message: "Por favor, introduce un correo electrónico válido." }),
-  password: z.string().min(MIN_PASSWORD_LENGTH, { message: `La contraseña debe tener al menos ${MIN_PASSWORD_LENGTH} caracteres.` }),
+  password: passwordSchema,
   confirmPassword: z.string(),
 }).refine(data => data.password === data.confirmPassword, {
   message: "Las contraseñas no coinciden.",
@@ -876,8 +881,9 @@ export async function loginAction(email: string, password: string): Promise<{ su
   }
 
   if (!researcher.password) {
-    if (!password || password.length < MIN_PASSWORD_LENGTH) {
-      return { success: false, error: `La contraseña debe tener al menos ${MIN_PASSWORD_LENGTH} caracteres para la configuración inicial.` };
+    const passwordValidation = passwordSchema.safeParse(password);
+    if (!passwordValidation.success) {
+      return { success: false, error: passwordValidation.error.issues.map(i => i.message).join(' ') };
     }
     
     const updatedResearcher = await setResearcherPassword(lowerEmail, password);
@@ -940,5 +946,7 @@ export async function generatePdfAction(input: GeneratePdfInput): Promise<{pdfBa
         return { error: 'Failed to generate PDF due to a server error.' };
     }
 }
+
+    
 
     

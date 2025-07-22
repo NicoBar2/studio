@@ -131,7 +131,11 @@ function LoginForm() {
           required
           className="bg-input"
         />
-        <p className="text-xs text-muted-foreground">La contraseña debe tener al menos 6 caracteres.</p>
+        <ul className="text-xs text-muted-foreground list-disc list-inside mt-1">
+            <li>Mínimo 8 caracteres</li>
+            <li>Al menos una mayúscula y una minúscula</li>
+            <li>Al menos un número</li>
+        </ul>
       </div>
        <div className="text-sm">
           <Link href="/forgot-password" className="font-medium text-primary hover:underline flex items-center gap-1">
@@ -236,3 +240,5 @@ export default function LoginPage() {
     </div>
   );
 }
+
+    
