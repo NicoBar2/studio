@@ -123,6 +123,7 @@ function LoginForm() {
           required
           className="bg-input"
         />
+        <p className="text-xs text-muted-foreground">La contraseña debe tener al menos 6 caracteres.</p>
       </div>
        <div className="text-sm">
           <Link href="/forgot-password" className="font-medium text-primary hover:underline flex items-center gap-1">
@@ -165,10 +166,12 @@ function RegisterForm() {
        <div className="space-y-2">
         <Label htmlFor="researcherName">Nombre Completo</Label>
         <Input id="researcherName" name="researcherName" placeholder="Ej: Dra. Jane Goodall" required />
+        <p className="text-xs text-muted-foreground">Debe contener solo letras y al menos un nombre y un apellido.</p>
       </div>
       <div className="space-y-2">
         <Label htmlFor="register-email">Correo Electrónico</Label>
         <Input id="register-email" name="email" type="email" placeholder="tu@email.com" required />
+        <p className="text-xs text-muted-foreground">Utiliza un correo electrónico institucional si es posible.</p>
       </div>
       <div className="space-y-2">
         <Label htmlFor="institution">Institución (Opcional)</Label>
@@ -195,3 +198,5 @@ export default function LoginPage() {
     </div>
   );
 }
+
+    

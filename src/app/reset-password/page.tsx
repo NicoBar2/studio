@@ -74,6 +74,7 @@ export default function ResetPasswordPage() {
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                 <Input id="password" name="password" type="password" placeholder="••••••••" required className="pl-10" />
               </div>
+              <p className="text-xs text-muted-foreground">La contraseña debe tener al menos 6 caracteres.</p>
             </div>
 
             <div className="space-y-2">
@@ -96,3 +97,5 @@ export default function ResetPasswordPage() {
     </div>
   );
 }
+
+    

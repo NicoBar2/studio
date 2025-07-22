@@ -928,3 +928,5 @@ export async function generatePdfAction(input: GeneratePdfInput): Promise<{pdfBa
         return { error: 'Failed to generate PDF due to a server error.' };
     }
 }
+
+    
