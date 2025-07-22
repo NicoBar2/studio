@@ -8,8 +8,16 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { AlertTriangle, UserPlus, KeyRound } from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { AlertTriangle, UserPlus, KeyRound, CheckCircle } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { createResearcherAction } from '@/app/actions';
 import type { Researcher } from '@/lib/types';
@@ -146,45 +154,67 @@ const initialRegisterState = {
 function RegisterForm() {
   const { toast } = useToast();
   const formRef = useRef<HTMLFormElement>(null);
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
   const [state, formAction, isPending] = useActionState(createResearcherAction, initialRegisterState);
 
   useEffect(() => {
     if (state.message) {
-      toast({
-        title: state.success ? '¡Éxito!' : 'Error de Registro',
-        description: state.message,
-        variant: state.success ? 'default' : 'destructive',
-      });
       if (state.success) {
+        setShowSuccessDialog(true);
         formRef.current?.reset();
+      } else {
+        toast({
+          title: 'Error de Registro',
+          description: state.message,
+          variant: 'destructive',
+        });
       }
     }
   }, [state, toast]);
 
   return (
-    <form ref={formRef} action={formAction} className="space-y-4">
-       <div className="space-y-2">
-        <Label htmlFor="researcherName">Nombre Completo</Label>
-        <Input id="researcherName" name="researcherName" placeholder="Ej: Dra. Jane Goodall" required />
-        <p className="text-xs text-muted-foreground">Debe contener solo letras y al menos un nombre y un apellido.</p>
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="register-email">Correo Electrónico</Label>
-        <Input id="register-email" name="email" type="email" placeholder="tu@email.com" required />
-        <p className="text-xs text-muted-foreground">Utiliza un correo electrónico institucional si es posible.</p>
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="institution">Institución (Opcional)</Label>
-        <Input id="institution" name="institution" placeholder="Ej: Universidad de Galápagos" />
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="specialization">Especialización (Opcional)</Label>
-        <Input id="specialization" name="specialization" placeholder="Ej: Biología Marina" />
-      </div>
-      <Button type="submit" className="w-full bg-primary hover:bg-primary/90" disabled={isPending}>
-        {isPending ? 'Registrando...' : 'Crear Cuenta'}
-      </Button>
-    </form>
+    <>
+      <form ref={formRef} action={formAction} className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="researcherName">Nombre Completo</Label>
+          <Input id="researcherName" name="researcherName" placeholder="Ej: Dra. Jane Goodall" required />
+          <p className="text-xs text-muted-foreground">Debe contener solo letras y al menos un nombre y un apellido.</p>
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="register-email">Correo Electrónico</Label>
+          <Input id="register-email" name="email" type="email" placeholder="tu@email.com" required />
+          <p className="text-xs text-muted-foreground">Utiliza un correo electrónico institucional si es posible.</p>
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="institution">Institución (Opcional)</Label>
+          <Input id="institution" name="institution" placeholder="Ej: Universidad de Galápagos" />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="specialization">Especialización (Opcional)</Label>
+          <Input id="specialization" name="specialization" placeholder="Ej: Biología Marina" />
+        </div>
+        <Button type="submit" className="w-full bg-primary hover:bg-primary/90" disabled={isPending}>
+          {isPending ? 'Registrando...' : 'Crear Cuenta'}
+        </Button>
+      </form>
+
+      <AlertDialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center">
+                <CheckCircle className="mr-2 h-6 w-6 text-green-600" />
+                ¡Registro Enviado!
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {state.message}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogAction onClick={() => setShowSuccessDialog(false)}>
+            Entendido
+          </AlertDialogAction>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }
 
@@ -198,5 +228,3 @@ export default function LoginPage() {
     </div>
   );
 }
-
-    
