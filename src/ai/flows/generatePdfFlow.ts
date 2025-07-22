@@ -49,13 +49,14 @@ async function drawChart(doc: PDFKit.PDFDocument, species: Species) {
     if (!species.historicalData || species.historicalData.length === 0) {
         return; // No data to draw
     }
+    
+    // Check if there's enough space for the chart, add a new page if not
+    if (doc.y > 450) doc.addPage();
 
-    const chartX = 72;
-    const chartY = doc.y > 400 ? 700 : doc.y + 270;
-    if (doc.y > 400) doc.addPage();
     doc.moveDown(2);
-
-
+    const chartX = 72;
+    const chartY = doc.y + 270;
+    
     const chartWidth = 450;
     const chartHeight = 200;
     const barGap = 10;
@@ -141,20 +142,24 @@ const generatePdfFlowFn = ai.defineFlow(
             }
         }
         
-        // Sections
         doc.fontSize(12).fillColor('#111827').font('Helvetica');
 
         const addSection = (title: string, content: string | string[]) => {
             if (!content || (Array.isArray(content) && content.length === 0)) return;
-            if (doc.y > 650) doc.addPage();
+            // Check if there's enough space, add a new page if not
+            const contentHeight = Array.isArray(content) ? content.length * 15 + 40 : doc.heightOfString(content, { width: 468 }) + 40;
+            if (doc.y + contentHeight > doc.page.height - doc.page.margins.bottom) {
+                doc.addPage();
+            }
+
             doc.moveDown();
             doc.fontSize(14).fillColor('#1F2937').font('Helvetica-Bold').text(title);
             doc.moveDown(0.5);
             doc.fontSize(10).fillColor('#374151').font('Helvetica');
             if (Array.isArray(content)) {
-                doc.list(content, { bulletRadius: 1.5 });
+                doc.list(content, { bulletRadius: 1.5, textIndent: 10, bulletIndent: 10 });
             } else {
-                doc.text(content, { align: 'justify' });
+                doc.text(content, { align: 'justify', width: 468 });
             }
         };
 
@@ -162,31 +167,33 @@ const generatePdfFlowFn = ai.defineFlow(
             addSection('Descripción', species.spanishDescription);
         }
         
-        if (doc.y > 500) doc.addPage();
-        
-        const columnY = doc.y;
-        let columnHeight = 0;
-        let leftColumnHeight = 0;
-        let rightColumnHeight = 0;
+        // Column layout for Conservation and Habitat
+        if (options.includeConservation || options.includeHabitat) {
+            if (doc.y > 600) doc.addPage();
+            doc.moveDown(2);
+            const columnY = doc.y;
+            let leftColumnHeight = 0;
+            let rightColumnHeight = 0;
 
-        if (options.includeConservation) {
-            doc.fontSize(14).fillColor('#1F2937').font('Helvetica-Bold').text('Estado de Conservación', 72, columnY);
-            doc.moveDown(0.5);
-            doc.fontSize(10).fillColor('#374151').font('Helvetica')
-                .text(`Estado UICN: ${species.iucnStatus}`)
-                .text(`Tendencia Poblacional: ${species.populationTrend}`);
-            leftColumnHeight = doc.y - columnY;
+            if (options.includeConservation) {
+                doc.fontSize(14).fillColor('#1F2937').font('Helvetica-Bold').text('Estado de Conservación', 72, columnY);
+                doc.moveDown(0.5);
+                const conservationText = `Estado UICN: ${species.iucnStatus}\n` +
+                                       `Tendencia Poblacional: ${species.populationTrend}`;
+                doc.fontSize(10).fillColor('#374151').font('Helvetica').text(conservationText, {width: 200});
+                leftColumnHeight = doc.y - columnY;
+            }
+
+            if (options.includeHabitat) {
+                doc.y = columnY; // Reset Y for the right column
+                doc.fontSize(14).fillColor('#1F2937').font('Helvetica-Bold').text('Hábitat', 320, columnY);
+                doc.moveDown(0.5);
+                doc.fontSize(10).fillColor('#374151').font('Helvetica').text(species.habitat, 320, doc.y, { width: 200, align: 'justify' });
+                rightColumnHeight = doc.y - columnY;
+            }
+            // Position cursor below the tallest column
+            doc.y = columnY + Math.max(leftColumnHeight, rightColumnHeight) + 20;
         }
-
-        if (options.includeHabitat) {
-            doc.y = columnY;
-            doc.fontSize(14).fillColor('#1F2937').font('Helvetica-Bold').text('Hábitat', 300, columnY);
-            doc.moveDown(0.5);
-            doc.fontSize(10).fillColor('#374151').font('Helvetica').text(species.habitat, 300, doc.y, { width: 200, align: 'justify' });
-            rightColumnHeight = doc.y - columnY;
-        }
-
-        doc.y = columnY + Math.max(leftColumnHeight, rightColumnHeight) + 20;
 
         if (options.includeThreats) {
             addSection('Amenazas Principales', species.threats);
