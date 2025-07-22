@@ -7,7 +7,7 @@ import { deleteResearcherAction, toggleResearcherVerificationAction } from '@/ap
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
-import { Trash2, Users, Mail, Building, Award, CheckCircle, XCircle, ShieldCheck } from 'lucide-react';
+import { Trash2, Users, Mail, Building, Award, CheckCircle, XCircle, ShieldCheck, Fingerprint } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 
@@ -88,6 +88,9 @@ export default function ResearcherItem({ researcher, onDelete, onVerificationCha
           <p className="text-sm text-muted-foreground flex items-center gap-2">
             <Mail className="h-4 w-4" /> {researcher.email}
           </p>
+          <p className="text-sm text-muted-foreground flex items-center gap-2">
+              <Fingerprint className="h-4 w-4" /> {researcher.orcid}
+          </p>
           {researcher.institution && (
             <p className="text-sm text-muted-foreground flex items-center gap-2">
               <Building className="h-4 w-4" /> {researcher.institution}
@@ -136,5 +139,3 @@ export default function ResearcherItem({ researcher, onDelete, onVerificationCha
     </li>
   );
 }
-
-    

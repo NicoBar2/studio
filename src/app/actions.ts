@@ -142,12 +142,15 @@ function generateId(): string {
   return Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
 }
 
-async function addResearcher(name: string, email: string, institution?: string, specialization?: string): Promise<Researcher> {
+async function addResearcher(name: string, email: string, orcid: string, institution?: string, specialization?: string): Promise<Researcher> {
   if (!name || name.trim() === "") {
     throw new Error("El nombre del investigador no puede estar vacío.");
   }
   if (!email || !email.trim().match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g)) {
     throw new Error("Por favor, introduce un correo electrónico válido.");
+  }
+  if (!orcid.match(/^\d{4}-\d{4}-\d{4}-\d{3}[0-9X]$/)) {
+      throw new Error("El formato del ORCID ID no es válido. Debe ser XXXX-XXXX-XXXX-XXXX.");
   }
   
   const researchers = await readJsonFile<Researcher>(researchersDbPath);
@@ -156,11 +159,16 @@ async function addResearcher(name: string, email: string, institution?: string, 
   if (researchers.some(r => r.email === lowerCaseEmail)) {
     throw new Error("Ya existe un investigador con este correo electrónico.");
   }
+  
+  if (researchers.some(r => r.orcid === orcid)) {
+      throw new Error("Este ORCID ID ya ha sido registrado.");
+  }
 
   const newResearcher: Researcher = {
     id: generateId(),
     name: name.trim(),
     email: lowerCaseEmail,
+    orcid: orcid,
     institution: institution?.trim() || undefined,
     specialization: specialization?.trim() || undefined,
     isVerified: false,
@@ -526,6 +534,7 @@ export async function createResearcherAction(
 ): Promise<{ success: boolean; message: string; researcher?: Researcher }> {
   const researcherName = formData.get('researcherName') as string;
   const email = formData.get('email') as string;
+  const orcid = formData.get('orcid') as string;
   const institution = formData.get('institution') as string | undefined;
   const specialization = formData.get('specialization') as string | undefined;
 
@@ -541,9 +550,12 @@ export async function createResearcherAction(
   if (!email || !email.trim().match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g)) {
     return { success: false, message: "Por favor, introduce un correo electrónico válido." };
   }
+  if (!orcid || !orcid.match(/^\d{4}-\d{4}-\d{4}-\d{3}[0-9X]$/)) {
+      return { success: false, message: "El formato del ORCID ID no es válido. Debe ser XXXX-XXXX-XXXX-XXXX." };
+  }
 
   try {
-    const newResearcher = await addResearcher(researcherName, email.toLowerCase(), institution, specialization);
+    const newResearcher = await addResearcher(researcherName, email.toLowerCase(), orcid, institution, specialization);
     revalidatePath('/dashboard/admin/researchers');
     return { 
         success: true, 
