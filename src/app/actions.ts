@@ -532,6 +532,9 @@ export async function createResearcherAction(
   if (!researcherName || researcherName.trim().length < 3) {
     return { success: false, message: "El nombre del investigador debe tener al menos 3 caracteres." };
   }
+  if (!/^[a-zA-Z\s]+$/.test(researcherName)) {
+    return { success: false, message: "El nombre del investigador solo debe contener letras y espacios." };
+  }
   if (researcherName.trim().split(' ').filter(word => word.length > 0).length < 2) {
     return { success: false, message: "El nombre del investigador debe contener al menos un nombre y un apellido." };
   }
