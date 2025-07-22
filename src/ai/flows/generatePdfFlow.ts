@@ -55,7 +55,8 @@ async function drawChart(doc: PDFKit.PDFDocument, species: Species) {
 
     doc.moveDown(2);
     const chartX = 72;
-    const chartY = doc.y + 270;
+    // Position chart relative to current Y, not a fixed value
+    const chartY = doc.y + 270 > 750 ? (doc.addPage(), 342) : doc.y + 270;
     
     const chartWidth = 450;
     const chartHeight = 200;
@@ -125,7 +126,7 @@ const generatePdfFlowFn = ai.defineFlow(
         doc.moveDown(2);
 
         // Image
-        if (!species.imageUrl.includes('placehold.co')) {
+        if (species.imageUrl && !species.imageUrl.includes('placehold.co')) {
             try {
                 const imageResponse = await fetch(species.imageUrl);
                 if (imageResponse.ok) {
