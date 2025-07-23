@@ -18,6 +18,7 @@ import Link from 'next/link';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { GALAPAGOS_ISLANDS_NAMES } from '@/lib/utils';
 
 const SpeciesComparisonChart = dynamic(() => import('@/components/charts/SpeciesComparisonChart'), {
     loading: () => (
@@ -35,6 +36,7 @@ export default function ComparePage() {
     const { t } = useLanguage();
     
     const [familyFilter, setFamilyFilter] = useState('');
+    const [islandFilter, setIslandFilter] = useState<string>('');
     const [yearFilter, setYearFilter] = useState<{ min: string; max: string }>({ min: '', max: '' });
 
 
@@ -59,9 +61,18 @@ export default function ComparePage() {
     }, [allSpecies]);
 
     const filteredSpeciesList = useMemo(() => {
-        if (!familyFilter) return allSpecies;
-        return allSpecies.filter(s => s.family && s.family.toLowerCase() === familyFilter.toLowerCase());
-    }, [allSpecies, familyFilter]);
+        return allSpecies.filter(species => {
+            const familyMatch = !familyFilter || (species.family && species.family.toLowerCase() === familyFilter.toLowerCase());
+            
+            let islandMatch = true;
+            if (islandFilter) {
+                const islandKey = `is_${islandFilter.toLowerCase().replace(/ /g, '_').normalize("NFD").replace(/[\u0300-\u036f]/g, "")}` as keyof Species;
+                islandMatch = !!species[islandKey];
+            }
+            
+            return familyMatch && islandMatch;
+        });
+    }, [allSpecies, familyFilter, islandFilter]);
 
     const speciesToSelectByUnit = useMemo(() => {
         const grouped: { [unit: string]: Species[] } = {};
@@ -138,6 +149,7 @@ export default function ComparePage() {
     
     const clearFilters = () => {
         setFamilyFilter('');
+        setIslandFilter('');
         setYearFilter({ min: '', max: '' });
     };
 
@@ -171,6 +183,25 @@ export default function ComparePage() {
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
+                             <div className="space-y-2">
+                                <Label htmlFor="islandFilter">{t.dashboard_filter_island}</Label>
+                                <Select
+                                    value={islandFilter}
+                                    onValueChange={(value) => setIslandFilter(value === 'all' ? '' : value)}
+                                >
+                                    <SelectTrigger id="islandFilter" className="bg-input">
+                                        <SelectValue placeholder={t.dashboard_select_island_placeholder} />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="all">{t.allIslands}</SelectItem>
+                                        {GALAPAGOS_ISLANDS_NAMES.sort().map(island => (
+                                            <SelectItem key={island} value={island}>
+                                                {island}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
                             <div className="space-y-2">
                                 <Label htmlFor="familyFilter">{t.compare_filter_family}</Label>
                                 <Select
