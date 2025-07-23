@@ -25,6 +25,7 @@ export type Translations = {
     cancel: string;
     confirmDelete: string;
     deleteWarning: (name: string) => string;
+    collaborators: string;
     
     // Header
     role_admin: string;
@@ -105,6 +106,12 @@ export type Translations = {
     public_no_results_search: (term: string) => string;
     public_no_results_both: (term: string, island: string) => string;
     public_try_different_filters: string;
+
+    // Collaborators Page
+    collaborators_title: string;
+    collaborators_description: string;
+    collaborators_no_results: string;
+    collaborators_check_back: string;
 
     // Dashboard
     dashboard_welcome: string;
@@ -232,6 +239,7 @@ const esTranslations: Translations = {
     cancel: "Cancelar",
     confirmDelete: "Sí, eliminar",
     deleteWarning: (name) => `Estás a punto de eliminar permanentemente la especie ${name}. Esta acción no se puede deshacer.`,
+    collaborators: "Colaboradores",
     
     role_admin: "Administrador/a",
     role_researcher: "Investigador/a",
@@ -307,6 +315,11 @@ const esTranslations: Translations = {
     public_no_results_search: (term) => `No se encontraron especies que coincidan con "${term}".`,
     public_no_results_both: (term, island) => `No se encontraron especies que coincidan con "${term}" en ${island}.`,
     public_try_different_filters: "Intenta con otro término de búsqueda o ajusta los filtros.",
+
+    collaborators_title: "Nuestros Colaboradores",
+    collaborators_description: "Un reconocimiento a los investigadores verificados que contribuyen a esta plataforma.",
+    collaborators_no_results: "Actualmente no hay investigadores colaboradores para mostrar.",
+    collaborators_check_back: "Vuelve a consultar más tarde.",
 
     dashboard_welcome: "¡Bienvenido/a",
     dashboard_description: "Gestiona, filtra y analiza los datos de las especies de Galápagos.",
@@ -427,6 +440,7 @@ const enTranslations: Translations = {
     cancel: "Cancel",
     confirmDelete: "Yes, delete",
     deleteWarning: (name) => `You are about to permanently delete the species ${name}. This action cannot be undone.`,
+    collaborators: "Collaborators",
 
     role_admin: "Administrator",
     role_researcher: "Researcher",
@@ -503,6 +517,11 @@ const enTranslations: Translations = {
     public_no_results_both: (term, island) => `No species matching "${term}" found on ${island}.`,
     public_try_different_filters: "Try another search term or adjust the filters.",
     
+    collaborators_title: "Our Collaborators",
+    collaborators_description: "A recognition of the verified researchers who contribute to this platform.",
+    collaborators_no_results: "There are currently no collaborating researchers to display.",
+    collaborators_check_back: "Please check back later.",
+
     dashboard_welcome: "Welcome",
     dashboard_description: "Manage, filter, and analyze data for Galápagos species.",
     dashboard_map_title: "Interactive Map and Filters",

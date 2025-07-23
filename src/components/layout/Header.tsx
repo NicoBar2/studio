@@ -2,7 +2,7 @@
 
 "use client";
 import Link from 'next/link';
-import { MountainIcon, LogIn, LogOut, UserCircle, Languages, LayoutGrid } from 'lucide-react';
+import { MountainIcon, LogIn, LogOut, UserCircle, Languages, LayoutGrid, Users } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
@@ -41,6 +41,13 @@ export default function Header() {
             prefetch={false}
           >
             {t.species}
+          </Link>
+          <Link
+            href="/colaboradores"
+            className="text-sm font-medium hover:text-primary transition-colors"
+            prefetch={false}
+          >
+            {t.collaborators}
           </Link>
 
           {isLoading ? (
