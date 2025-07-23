@@ -11,6 +11,8 @@ import { generatePdfFlow, type GeneratePdfInput } from '@/ai/flows/generatePdfFl
 import { z } from 'zod';
 import { redirect } from 'next/navigation';
 import bcrypt from 'bcryptjs';
+import fetch from 'node-fetch';
+
 
 // --- Data Access Functions (moved from /lib) ---
 
@@ -143,37 +145,17 @@ function generateId(): string {
 }
 
 async function addResearcher(name: string, email: string, orcid: string, institution?: string, specialization?: string): Promise<Researcher> {
-  if (!name || name.trim() === "") {
-    throw new Error("El nombre del investigador no puede estar vacío.");
-  }
-  if (!email || !email.trim().match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g)) {
-    throw new Error("Por favor, introduce un correo electrónico válido.");
-  }
-  if (!orcid.match(/^\d{4}-\d{4}-\d{4}-\d{3}[0-9X]$/)) {
-      throw new Error("El formato del ORCID ID no es válido. Debe ser XXXX-XXXX-XXXX-XXXX.");
-  }
-  
-  const researchers = await readJsonFile<Researcher>(researchersDbPath);
-  const lowerCaseEmail = email.trim().toLowerCase();
-
-  if (researchers.some(r => r.email === lowerCaseEmail)) {
-    throw new Error("Ya existe un investigador con este correo electrónico.");
-  }
-  
-  if (researchers.some(r => r.orcid === orcid)) {
-      throw new Error("Este ORCID ID ya ha sido registrado.");
-  }
-
   const newResearcher: Researcher = {
     id: generateId(),
     name: name.trim(),
-    email: lowerCaseEmail,
+    email: email.trim().toLowerCase(),
     orcid: orcid,
     institution: institution?.trim() || undefined,
     specialization: specialization?.trim() || undefined,
     isVerified: false,
   };
   
+  const researchers = await readJsonFile<Researcher>(researchersDbPath);
   researchers.push(newResearcher);
   await writeJsonFile(researchersDbPath, researchers);
   return newResearcher;
@@ -554,8 +536,35 @@ export async function createResearcherAction(
       return { success: false, message: "El formato del ORCID ID no es válido. Debe ser XXXX-XXXX-XXXX-XXXX." };
   }
 
+  const researchers = await readJsonFile<Researcher>(researchersDbPath);
+  const lowerCaseEmail = email.trim().toLowerCase();
+
+  if (researchers.some(r => r.email === lowerCaseEmail)) {
+    return { success: false, message: "Ya existe un investigador con este correo electrónico." };
+  }
+  
+  if (researchers.some(r => r.orcid === orcid)) {
+      return { success: false, message: "Este ORCID ID ya ha sido registrado." };
+  }
+
   try {
-    const newResearcher = await addResearcher(researcherName, email.toLowerCase(), orcid, institution, specialization);
+    const orcidApiUrl = `https://pub.orcid.org/v3.0/${orcid}`;
+    const response = await fetch(orcidApiUrl, { headers: { 'Accept': 'application/json' } });
+    
+    if (!response.ok) {
+        if(response.status === 404) {
+             return { success: false, message: "El ORCID ID proporcionado no es válido o no existe." };
+        }
+        return { success: false, message: "No se pudo verificar el ORCID ID en este momento. Inténtelo más tarde." };
+    }
+  } catch (error) {
+    console.error("ORCID API validation error:", error);
+    return { success: false, message: "Error de red al validar el ORCID ID. Verifique su conexión." };
+  }
+
+
+  try {
+    const newResearcher = await addResearcher(researcherName, lowerCaseEmail, orcid, institution, specialization);
     revalidatePath('/dashboard/admin/researchers');
     return { 
         success: true, 
@@ -947,6 +956,3 @@ export async function generatePdfAction(input: GeneratePdfInput): Promise<{pdfBa
     }
 }
 
-    
-
-    
