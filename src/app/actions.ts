@@ -1000,6 +1000,7 @@ export async function updateMyProfileAction(prevState: any, formData: FormData):
 
         if (updatedResearcher) {
             revalidatePath('/dashboard/profile');
+            revalidatePath('/dashboard/admin/researchers');
             return { success: true, message: 'Perfil actualizado correctamente.' };
         } else {
             return { success: false, message: 'No se pudo actualizar el perfil.' };
