@@ -1,9 +1,9 @@
 
 "use client";
 
-import { useActionState, useEffect, useRef } from 'react';
+import { useActionState, useEffect, useRef, Suspense } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { resetPasswordAction } from '@/app/actions';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -28,7 +28,7 @@ function SubmitButton() {
   );
 }
 
-export default function ResetPasswordPage() {
+function ResetPasswordForm({ emailFromQuery }: { emailFromQuery: string | null }) {
   const [state, formAction] = useActionState(resetPasswordAction, initialState);
   const { toast } = useToast();
   const router = useRouter();
@@ -45,10 +45,9 @@ export default function ResetPasswordPage() {
         // Success is handled by redirect in the server action
     }
   }, [state, toast, router]);
-
+  
   return (
-    <div className="flex items-center justify-center min-h-[calc(100vh-10rem)]">
-      <Card className="w-full max-w-md shadow-xl">
+    <Card className="w-full max-w-md shadow-xl">
         <CardHeader>
           <CardTitle className="flex items-center text-2xl font-headline text-primary">
             <KeyRound className="mr-2 h-6 w-6" />
@@ -64,7 +63,7 @@ export default function ResetPasswordPage() {
               <Label htmlFor="email">Correo Electrónico</Label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                <Input id="email" name="email" type="email" placeholder="tu@email.com" required className="pl-10" />
+                <Input id="email" name="email" type="email" placeholder="tu@email.com" required className="pl-10" defaultValue={emailFromQuery || ''}/>
               </div>
             </div>
 
@@ -98,6 +97,23 @@ export default function ResetPasswordPage() {
             </div>
         </CardContent>
       </Card>
+  )
+}
+
+
+function ResetPasswordPageContent() {
+  const searchParams = useSearchParams();
+  const email = searchParams.get('email');
+  return <ResetPasswordForm emailFromQuery={email} />;
+}
+
+
+export default function ResetPasswordPage() {
+  return (
+    <div className="flex items-center justify-center min-h-[calc(100vh-10rem)]">
+        <Suspense fallback={<div>Cargando...</div>}>
+            <ResetPasswordPageContent />
+        </Suspense>
     </div>
   );
 }

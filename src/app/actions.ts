@@ -13,6 +13,7 @@ import { z } from 'zod';
 import { redirect } from 'next/navigation';
 import bcrypt from 'bcryptjs';
 import fetch from 'node-fetch';
+import { Resend } from 'resend';
 
 
 // --- Data Access Functions (moved from /lib) ---
@@ -636,27 +637,45 @@ export async function toggleResearcherVerificationAction(
   }
 
   try {
-    await new Promise(resolve => setTimeout(resolve, 500)); 
-
     const researcher = await getResearcherById(researcherId);
     if (!researcher) {
       return { success: false, message: "Investigador no encontrado." };
     }
 
     const updatedResearcher = await updateResearcher(researcherId, { isVerified: !researcher.isVerified });
-    if (updatedResearcher) {
-      revalidatePath('/dashboard/admin/researchers');
-      const verificationStatusMessage = updatedResearcher.isVerified
-        ? `Verificación de ${updatedResearcher.name} completada. Se ha enviado un correo de confirmación (simulado).`
-        : `Verificación de ${updatedResearcher.name} revocada.`;
-      return { 
-        success: true, 
-        message: verificationStatusMessage,
-        updatedResearcher 
-      };
-    } else {
+    if (!updatedResearcher) {
       return { success: false, message: "Error al actualizar el estado de verificación." };
     }
+
+    let message;
+    if (updatedResearcher.isVerified) {
+      message = `Verificación de ${updatedResearcher.name} completada.`;
+      
+      if (process.env.RESEND_API_KEY && process.env.RESEND_FROM_EMAIL) {
+        const resend = new Resend(process.env.RESEND_API_KEY);
+        try {
+          await resend.emails.send({
+            from: process.env.RESEND_FROM_EMAIL,
+            to: updatedResearcher.email,
+            subject: '¡Tu cuenta en Galápagos DataLens ha sido verificada!',
+            html: `<h1>¡Bienvenido/a a Galápagos DataLens!</h1><p>Hola ${updatedResearcher.name},</p><p>Tu cuenta ha sido verificada por un administrador. Ya puedes iniciar sesión y comenzar a contribuir.</p><p>Para iniciar sesión por primera vez, utiliza tu correo electrónico y establece tu contraseña.</p><p>Gracias por unirte a nuestra comunidad.</p><p>El equipo de Galápagos DataLens</p>`,
+          });
+          message += ` Se ha enviado un correo de confirmación.`;
+        } catch (emailError) {
+          console.error("Resend email error:", emailError);
+          message += ` No se pudo enviar el correo de confirmación.`;
+        }
+      } else {
+        message += ` El envío de correo no está configurado.`;
+      }
+
+    } else {
+      message = `Verificación de ${updatedResearcher.name} revocada.`;
+    }
+
+    revalidatePath('/dashboard/admin/researchers');
+    return { success: true, message, updatedResearcher };
+
   } catch (error) {
     console.error("Error cambiando estado de verificación:", error);
     const errorMessage = error instanceof Error ? error.message : "Error desconocido.";
@@ -675,9 +694,26 @@ export async function requestPasswordResetAction(
 
     const researcher = await getResearcherByEmail(email);
 
-    if (researcher) {
-      console.log(`Password reset requested for ${email}. In a real app, an email would be sent with a reset link.`);
+    if (researcher && process.env.RESEND_API_KEY && process.env.RESEND_FROM_EMAIL) {
+      const resend = new Resend(process.env.RESEND_API_KEY);
+      const resetUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/reset-password?email=${encodeURIComponent(email)}`;
+
+      try {
+        await resend.emails.send({
+          from: process.env.RESEND_FROM_EMAIL,
+          to: email,
+          subject: 'Restablece tu contraseña de Galápagos DataLens',
+          html: `<p>Hola ${researcher.name},</p>
+                 <p>Recibimos una solicitud para restablecer tu contraseña. Haz clic en el siguiente enlace para continuar:</p>
+                 <a href="${resetUrl}">Restablecer Contraseña</a>
+                 <p>Si no solicitaste esto, puedes ignorar este correo.</p>`,
+        });
+      } catch (emailError) {
+        console.error("Password reset email error:", emailError);
+        return { success: false, message: "No se pudo enviar el correo de restablecimiento. Por favor, inténtalo más tarde." };
+      }
     }
+    
     return { 
       success: true, 
       message: "Si existe una cuenta asociada a este correo, recibirás un enlace para restablecer tu contraseña. Por favor, revisa tu bandeja de entrada." 
@@ -1001,6 +1037,7 @@ export async function updateMyProfileAction(prevState: any, formData: FormData):
         if (updatedResearcher) {
             revalidatePath('/dashboard/profile');
             revalidatePath('/dashboard/admin/researchers');
+            revalidatePath('/colaboradores');
             return { success: true, message: 'Perfil actualizado correctamente.' };
         } else {
             return { success: false, message: 'No se pudo actualizar el perfil.' };
