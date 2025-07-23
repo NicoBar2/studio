@@ -59,7 +59,7 @@ export default function ForgotPasswordPage() {
             </div>
 
             {state.message && (
-              <Alert variant={state.success ? 'default' : 'destructive'} className={state.success ? "bg-green-50 border-green-200" : ""}>
+              <Alert variant={state.success ? 'default' : 'destructive'} className={state.success ? "bg-green-100 border-green-200 text-green-900 dark:bg-green-900/30 dark:text-green-200 dark:border-green-800 [&>svg]:text-green-600 dark:[&>svg]:text-green-400" : ""}>
                  {state.success ? <CheckCircle className="h-4 w-4" /> : <AlertTriangle className="h-4 w-4" />}
                 <AlertTitle>{state.success ? 'Solicitud Enviada' : 'Error'}</AlertTitle>
                 <AlertDescription>
@@ -80,5 +80,3 @@ export default function ForgotPasswordPage() {
     </div>
   );
 }
-
-    
