@@ -298,27 +298,31 @@ export async function saveSpeciesData(prevState: any, formData: FormData): Promi
   }
 
   try {
-     const historicalDataJSON = formData.get('historicalData') as string;
+    const historicalDataJSON = formData.get('historicalData') as string;
     let historicalData: HistoricalDataPoint[] = [];
 
     if (historicalDataJSON) {
-      try {
-        const parsed = JSON.parse(historicalDataJSON);
-        if (Array.isArray(parsed)) {
-          historicalData = parsed
-            .map(p => ({
-              year: Number(p.year),
-              value: Number(p.value),
-              unit: String(p.unit || '').trim(),
-              description: String(p.description || '').trim(),
-            }))
-            .filter(p => p.year && !isNaN(p.value) && p.unit) 
-            .sort((a, b) => a.year - b.year);
+        try {
+            const parsedData = JSON.parse(historicalDataJSON);
+            if (Array.isArray(parsedData)) {
+                historicalData = parsedData.map((p: any) => {
+                    const values: Record<string, number> = p.values || {};
+                    const totalValue = Object.values(values).reduce((sum, val) => sum + val, 0);
+
+                    return {
+                        year: Number(p.year),
+                        unit: String(p.unit || '').trim(),
+                        description: String(p.description || '').trim(),
+                        values: values,
+                        value: totalValue,
+                    };
+                }).filter((p: any) => p.year && p.unit)
+                  .sort((a: any, b: any) => a.year - b.year);
+            }
+        } catch (e) {
+            console.error("Error parsing historical data:", e);
+            return { success: false, message: "Los datos históricos tienen un formato inválido." };
         }
-      } catch (e) {
-        console.error("Error parsing historical data:", e);
-        return { success: false, message: "Los datos históricos tienen un formato inválido." };
-      }
     }
 
 
@@ -405,23 +409,27 @@ export async function addSpeciesAction(prevState: any, formData: FormData): Prom
     let historicalData: HistoricalDataPoint[] = [];
 
     if (historicalDataJSON) {
-      try {
-        const parsed = JSON.parse(historicalDataJSON);
-        if (Array.isArray(parsed)) {
-          historicalData = parsed
-            .map(p => ({
-              year: Number(p.year),
-              value: Number(p.value),
-              unit: String(p.unit || '').trim(),
-              description: String(p.description || '').trim(),
-            }))
-            .filter(p => p.year && !isNaN(p.value) && p.unit) 
-            .sort((a, b) => a.year - b.year);
+        try {
+            const parsedData = JSON.parse(historicalDataJSON);
+            if (Array.isArray(parsedData)) {
+                historicalData = parsedData.map((p: any) => {
+                    const values: Record<string, number> = p.values || {};
+                    const totalValue = Object.values(values).reduce((sum, val) => sum + val, 0);
+
+                    return {
+                        year: Number(p.year),
+                        unit: String(p.unit || '').trim(),
+                        description: String(p.description || '').trim(),
+                        values: values,
+                        value: totalValue,
+                    };
+                }).filter((p: any) => p.year && p.unit)
+                  .sort((a: any, b: any) => a.year - b.year);
+            }
+        } catch (e) {
+            console.error("Error parsing historical data:", e);
+            return { success: false, message: "Los datos históricos tienen un formato inválido." };
         }
-      } catch (e) {
-        console.error("Error parsing historical data:", e);
-        return { success: false, message: "Los datos históricos tienen un formato inválido." };
-      }
     }
 
     const newSpeciesData: Partial<Species> = {
@@ -694,7 +702,7 @@ export async function requestPasswordResetAction(
 
     const researcher = await getResearcherByEmail(email);
 
-    if (researcher && process.env.RESEND_API_KEY && process.env.RESEND_FROM_EMAIL) {
+    if (researcher && process.env.RESEND_API_KEY && process.env.RESEND_FROM_EMAIL && process.env.NEXT_PUBLIC_BASE_URL) {
       const resend = new Resend(process.env.RESEND_API_KEY);
       const resetUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/reset-password?email=${encodeURIComponent(email)}`;
 
@@ -969,7 +977,7 @@ export async function generateComparisonAnalysisAction(
       spanishCommonName: s.spanishCommonName,
       iucnStatus: s.iucnStatus,
       populationTrend: s.populationTrend,
-      historicalData: s.historicalData,
+      historicalData: s.historicalData.map(p => ({...p, value: p.value})), // use totalValue
     }));
     
     const analysis = await getComparisonAnalysis(flowInput);

@@ -21,6 +21,7 @@ export type HistoricalDataPoint = {
   value: number;
   unit: string;
   description?: string;
+  values?: Record<string, number>; // e.g. { is_isabela: 100, is_santa_cruz: 50 }
 };
 
 // Expanded Species type based on detailed column list

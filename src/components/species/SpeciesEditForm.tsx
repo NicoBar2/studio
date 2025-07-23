@@ -2,7 +2,7 @@
 "use client";
 import { getSpeciesImageUrl, GALAPAGOS_ISLANDS_NAMES } from '@/lib/utils'; 
 import type { Species, ConservationStatus, HistoricalDataPoint } from '@/lib/types';
-import { useActionState, useState, useEffect, type ChangeEvent, useRef } from 'react';
+import { useActionState, useState, useEffect, type ChangeEvent, useRef, useCallback } from 'react';
 import { useFormStatus } from 'react-dom';
 import { saveSpeciesData } from '@/app/actions';
 import { Button } from '@/components/ui/button';
@@ -65,12 +65,18 @@ export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
   const { toast } = useToast();
   const router = useRouter();
   const { role, userEmail } = useAuth();
-  const currentYear = new Date().getFullYear();
 
   const [imagePreview, setImagePreview] = useState<string | null>(getSpeciesImageUrl(species));
   const [imageFileValue, setImageFileValue] = useState<string>(getSpeciesImageUrl(species));
   const [showPublicDataChecked, setShowPublicDataChecked] = useState(!!species.showHistoricalDataToPublic);
   const [historicalData, setHistoricalData] = useState<HistoricalDataPoint[]>(species.historicalData || []);
+  const [islandPresence, setIslandPresence] = useState<Record<string, boolean>>(() => {
+    const initialPresence: Record<string, boolean> = {};
+    islandKeys.forEach(island => {
+        initialPresence[island.id as string] = !!species[island.id];
+    });
+    return initialPresence;
+  });
 
   const prevMessageRef = useRef<string | undefined>();
 
@@ -88,14 +94,22 @@ export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
     }
   }, [state, toast, router]);
 
-  useEffect(() => {
-    const currentImageUrl = getSpeciesImageUrl(species);
+  const resetFormState = useCallback((s: Species) => {
+    const currentImageUrl = getSpeciesImageUrl(s);
     setImagePreview(currentImageUrl);
     setImageFileValue(currentImageUrl);
-    setShowPublicDataChecked(!!species.showHistoricalDataToPublic);
-    setHistoricalData(species.historicalData || []);
-  }, [species]);
+    setShowPublicDataChecked(!!s.showHistoricalDataToPublic);
+    setHistoricalData(s.historicalData || []);
+    const initialPresence: Record<string, boolean> = {};
+    islandKeys.forEach(island => {
+        initialPresence[island.id as string] = !!s[island.id];
+    });
+    setIslandPresence(initialPresence);
+  }, []);
 
+  useEffect(() => {
+    resetFormState(species);
+  }, [species, resetFormState]);
 
   const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -114,22 +128,25 @@ export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
     }
   };
 
-  const handleHistoricalDataChange = (index: number, field: keyof HistoricalDataPoint, value: string | number) => {
+  const handleHistoricalDataChange = (index: number, islandId: string, value: string) => {
       const newData = [...historicalData];
       const point = { ...newData[index] };
-      
-      if (field === 'year' || field === 'value') {
-          point[field] = Number(value) || 0;
-      } else {
-          (point as any)[field] = String(value);
+      if (!point.values) {
+        point.values = {};
       }
+      point.values[islandId] = Number(value) || 0;
       newData[index] = point;
       setHistoricalData(newData);
+      
+      // Update island presence if value is > 0 and it's not already checked
+      if (Number(value) > 0 && !islandPresence[islandId]) {
+        setIslandPresence(prev => ({...prev, [islandId]: true}));
+      }
   };
 
   const addHistoricalDataPoint = () => {
       const lastUnit = historicalData.length > 0 ? historicalData[historicalData.length - 1].unit : '';
-      setHistoricalData([...historicalData, { year: new Date().getFullYear(), value: 0, unit: lastUnit, description: '' }]);
+      setHistoricalData([...historicalData, { year: new Date().getFullYear(), value: 0, unit: lastUnit, description: '', values: {} }]);
   };
 
   const removeHistoricalDataPoint = (index: number) => {
@@ -225,7 +242,8 @@ export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
                         <Checkbox 
                           id={island.id as string} 
                           name={island.id as string} 
-                          defaultChecked={!!species[island.id]}
+                          checked={islandPresence[island.id as string] || false}
+                          onCheckedChange={(checked) => setIslandPresence(prev => ({...prev, [island.id as string]: !!checked}))}
                         />
                         <Label htmlFor={island.id as string} className="text-sm font-normal">{island.label}</Label>
                       </div>
@@ -310,74 +328,90 @@ export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
               <AccordionTrigger className="text-xl font-headline">Datos Históricos</AccordionTrigger>
               <AccordionContent className="space-y-4 pt-4">
                 <div className="space-y-3">
-                  {historicalData.map((point, index) => {
-                    const isReadOnly = role === 'researcher' && point.year !== currentYear;
-                    const tooltipText = isReadOnly ? "Solo los administradores pueden editar datos de años anteriores." : "";
-
-                    return (
-                      <div key={index} title={tooltipText} className={cn("flex flex-col gap-2 p-3 border rounded-md bg-muted/50 transition-opacity", isReadOnly && "opacity-60 cursor-not-allowed")}>
-                        <div className="grid grid-cols-[1fr_1fr_1fr_auto] gap-2 items-end">
-                          <div>
-                            <Label htmlFor={`year-${index}`} className="text-xs font-semibold">Año</Label>
-                            <Input
-                              id={`year-${index}`}
-                              type="number"
-                              value={point.year}
-                              onChange={(e) => handleHistoricalDataChange(index, 'year', e.target.value)}
-                              placeholder="Año"
-                              className="mt-1"
-                              disabled={isReadOnly}
-                            />
+                  {historicalData.map((point, index) => (
+                      <div key={index} className="p-4 border rounded-lg bg-muted/50 space-y-4">
+                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                               <div>
+                                  <Label htmlFor={`year-${index}`} className="text-sm font-semibold">Año</Label>
+                                  <Input
+                                    id={`year-${index}`}
+                                    type="number"
+                                    value={point.year}
+                                    onChange={(e) => {
+                                      const newHistoricalData = [...historicalData];
+                                      newHistoricalData[index].year = Number(e.target.value);
+                                      setHistoricalData(newHistoricalData);
+                                    }}
+                                    placeholder="Año"
+                                    className="mt-1"
+                                  />
+                               </div>
+                               <div>
+                                  <Label htmlFor={`unit-${index}`} className="text-sm font-semibold">Unidad</Label>
+                                  <Input
+                                    id={`unit-${index}`}
+                                    value={point.unit}
+                                     onChange={(e) => {
+                                      const newHistoricalData = [...historicalData];
+                                      newHistoricalData[index].unit = e.target.value;
+                                      setHistoricalData(newHistoricalData);
+                                    }}
+                                    placeholder="Unidad (ej. individuos)"
+                                    className="mt-1"
+                                  />
+                               </div>
+                               <div className="flex items-end">
+                                <Button
+                                  type="button"
+                                  variant="destructive"
+                                  size="sm"
+                                  onClick={() => removeHistoricalDataPoint(index)}
+                                  className="w-full sm:w-auto"
+                                >
+                                  <Trash2 className="mr-2 h-4 w-4" />
+                                  Eliminar Año
+                                </Button>
+                              </div>
                           </div>
                           <div>
-                            <Label htmlFor={`value-${index}`} className="text-xs font-semibold">Valor</Label>
+                            <Label htmlFor={`description-${index}`} className="text-sm font-semibold">Descripción (Opcional)</Label>
                             <Input
-                              id={`value-${index}`}
-                              type="number"
-                              value={point.value}
-                              onChange={(e) => handleHistoricalDataChange(index, 'value', e.target.value)}
-                              placeholder="Valor"
-                              className="mt-1"
-                              disabled={isReadOnly}
+                                id={`description-${index}`}
+                                value={point.description || ''}
+                                onChange={(e) => {
+                                    const newHistoricalData = [...historicalData];
+                                    newHistoricalData[index].description = e.target.value;
+                                    setHistoricalData(newHistoricalData);
+                                }}
+                                placeholder="Ej: Censo post-evento El Niño"
+                                className="mt-1"
                             />
                           </div>
-                          <div>
-                            <Label htmlFor={`unit-${index}`} className="text-xs font-semibold">Unidad</Label>
-                            <Input
-                              id={`unit-${index}`}
-                              value={point.unit}
-                              onChange={(e) => handleHistoricalDataChange(index, 'unit', e.target.value)}
-                              placeholder="Unidad"
-                              className="mt-1"
-                              disabled={isReadOnly}
-                            />
+                          <div className="space-y-2 pt-2">
+                             <Label className="text-sm font-semibold">Valores por Isla</Label>
+                             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                                {Object.entries(islandPresence)
+                                    .filter(([, present]) => present)
+                                    .map(([islandId]) => {
+                                        const island = islandKeys.find(key => key.id === islandId);
+                                        return (
+                                            <div key={islandId}>
+                                                <Label htmlFor={`${islandId}-${index}`} className="text-xs">{island?.label}</Label>
+                                                <Input
+                                                    id={`${islandId}-${index}`}
+                                                    type="number"
+                                                    value={point.values?.[islandId] || ''}
+                                                    onChange={(e) => handleHistoricalDataChange(index, islandId, e.target.value)}
+                                                    className="mt-1 h-8"
+                                                    placeholder="0"
+                                                />
+                                            </div>
+                                        );
+                                })}
+                              </div>
                           </div>
-                          {!isReadOnly && (
-                            <Button
-                              type="button"
-                              variant="destructive"
-                              size="icon"
-                              onClick={() => removeHistoricalDataPoint(index)}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                              <span className="sr-only">Eliminar</span>
-                            </Button>
-                          )}
-                        </div>
-                        <div>
-                          <Label htmlFor={`description-${index}`} className="text-xs font-semibold">Descripción (Opcional)</Label>
-                          <Input
-                            id={`description-${index}`}
-                            value={point.description || ''}
-                            onChange={(e) => handleHistoricalDataChange(index, 'description', e.target.value)}
-                            placeholder="Ej: Censo post-evento El Niño"
-                            className="mt-1"
-                            disabled={isReadOnly}
-                          />
-                        </div>
                       </div>
-                    );
-                  })}
+                    ))}
                 </div>
                 <Button
                   type="button"
@@ -386,7 +420,7 @@ export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
                   className="mt-4"
                 >
                   <PlusCircle className="mr-2 h-4 w-4" />
-                  Añadir Punto de Dato
+                  Añadir Punto de Dato (Año)
                 </Button>
               </AccordionContent>
             </AccordionItem>
