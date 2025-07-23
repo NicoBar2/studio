@@ -1,14 +1,16 @@
 
+
 "use client";
 
-import type { UserRole } from '@/lib/types';
+import type { UserRole, Researcher } from '@/lib/types';
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast'; 
-import { loginAction } from '@/app/actions';
+import { loginAction, getMyResearcherDataAction } from '@/app/actions';
 
 type AuthContextType = {
   role: UserRole | null;
   userEmail: string | null;
+  researcher: Omit<Researcher, 'password'> | null;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
@@ -22,6 +24,7 @@ const ADMIN_EMAIL_FOR_SIMULATOR = 'admin@galapagos.com';
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [role, setRoleState] = useState<UserRole | null>(null);
   const [userEmail, setUserEmailState] = useState<string | null>(null);
+  const [researcher, setResearcher] = useState<Omit<Researcher, 'password'> | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
 
@@ -42,6 +45,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
     setIsLoading(false);
   }, []);
+
+  useEffect(() => {
+    async function fetchResearcherData() {
+        if (userEmail && (role === 'researcher' || role === 'admin')) {
+            const data = await getMyResearcherDataAction(userEmail);
+            if(data) setResearcher(data);
+        } else {
+            setResearcher(null);
+        }
+    }
+    fetchResearcherData();
+  }, [userEmail, role]);
 
   const login = async (email: string, password: string): Promise<{ success: boolean; error?: string }> => {
     setIsLoading(true);
@@ -65,6 +80,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const logout = () => {
     setRoleState('tourist');
     setUserEmailState(null);
+    setResearcher(null);
     localStorage.setItem('galapagos-auth-role', 'tourist');
     localStorage.removeItem('galapagos-auth-email');
     toast({ title: 'Sesión Cerrada', description: 'Has cerrado sesión correctamente.' });
@@ -97,7 +113,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }
 
   return (
-    <AuthContext.Provider value={{ role, userEmail, isLoading, login, logout, setRole }}>
+    <AuthContext.Provider value={{ role, userEmail, researcher, isLoading, login, logout, setRole }}>
       {children}
     </AuthContext.Provider>
   );

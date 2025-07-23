@@ -1,16 +1,18 @@
 
+
 "use client";
 import Link from 'next/link';
-import { MountainIcon, LogIn, LogOut, UserCircle, Languages } from 'lucide-react';
+import { MountainIcon, LogIn, LogOut, UserCircle, Languages, LayoutGrid } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 
 export default function Header() {
-  const { role, logout, isLoading } = useAuth();
+  const { role, logout, isLoading, researcher } = useAuth();
   const { language, setLanguage, t } = useLanguage();
   const router = useRouter();
 
@@ -40,29 +42,42 @@ export default function Header() {
           >
             {t.species}
           </Link>
-          {(role === 'admin' || role === 'researcher') && (
-            <Link
-              href="/dashboard"
-              className="text-sm font-medium hover:text-primary transition-colors"
-              prefetch={false}
-            >
-              {t.dashboard}
-            </Link>
-          )}
 
           {isLoading ? (
             <div className="text-sm text-muted-foreground">{t.loading}</div>
           ) : role && role !== 'tourist' ? (
-            <>
-              <div className="flex items-center gap-2 text-sm">
-                <UserCircle className="h-5 w-5 text-primary" />
-                <span className="font-medium text-foreground hidden sm:inline">{getRoleDisplayName(role)}</span>
-              </div>
-              <Button onClick={handleLogout} variant="outline" size="sm">
-                <LogOut className="mr-2 h-4 w-4" />
-                {t.logout}
-              </Button>
-            </>
+             <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="flex items-center gap-2">
+                   <Avatar className="h-8 w-8">
+                      <AvatarImage src={researcher?.profileImageUrl || undefined} alt={researcher?.name} />
+                      <AvatarFallback>
+                        <UserCircle className="h-5 w-5" />
+                      </AvatarFallback>
+                    </Avatar>
+                  <span className="font-medium text-foreground hidden sm:inline">{researcher?.name || getRoleDisplayName(role)}</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                 <DropdownMenuItem asChild>
+                    <Link href="/dashboard">
+                        <LayoutGrid className="mr-2 h-4 w-4" />
+                        <span>{t.dashboard}</span>
+                    </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/dashboard/profile">
+                    <UserCircle className="mr-2 h-4 w-4" />
+                    <span>Mi Perfil</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleLogout}>
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>{t.logout}</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           ) : (
             <Button asChild variant="ghost" size="sm">
               <Link href="/login">

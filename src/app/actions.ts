@@ -1,4 +1,5 @@
 
+
 "use server";
 
 import { revalidatePath } from 'next/cache';
@@ -153,6 +154,7 @@ async function addResearcher(name: string, email: string, orcid: string, institu
     institution: institution?.trim() || undefined,
     specialization: specialization?.trim() || undefined,
     isVerified: false,
+    profileImageUrl: `https://ui-avatars.com/api/?name=${encodeURIComponent(name.trim())}&background=random`,
   };
   
   const researchers = await readJsonFile<Researcher>(researchersDbPath);
@@ -956,3 +958,54 @@ export async function generatePdfAction(input: GeneratePdfInput): Promise<{pdfBa
     }
 }
 
+export async function getMyResearcherDataAction(email: string): Promise<Researcher | null> {
+    const researcher = await getResearcherByEmail(email);
+    if (!researcher) {
+        return null;
+    }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, ...researcherData } = researcher; // Don't send password to client
+    return researcherData;
+}
+
+export async function updateMyProfileAction(prevState: any, formData: FormData): Promise<{ success: boolean; message: string }> {
+    const userEmail = formData.get('userEmail') as string;
+    const researcherName = formData.get('researcherName') as string;
+    const institution = formData.get('institution') as string;
+    const specialization = formData.get('specialization') as string;
+    const profileImageUrl = formData.get('profileImageUrl') as string;
+
+    if (!userEmail) {
+        return { success: false, message: 'No se pudo identificar al usuario.' };
+    }
+    
+    if (!researcherName || researcherName.trim().length < 3) {
+      return { success: false, message: "El nombre debe tener al menos 3 caracteres." };
+    }
+
+    const researcher = await getResearcherByEmail(userEmail);
+    if (!researcher) {
+        return { success: false, message: 'Investigador no encontrado.' };
+    }
+
+    try {
+        const updatedData: Partial<Researcher> = {
+            name: researcherName,
+            institution,
+            specialization,
+            profileImageUrl: profileImageUrl || researcher.profileImageUrl,
+        };
+
+        const updatedResearcher = await updateResearcher(researcher.id, updatedData);
+
+        if (updatedResearcher) {
+            revalidatePath('/dashboard/profile');
+            return { success: true, message: 'Perfil actualizado correctamente.' };
+        } else {
+            return { success: false, message: 'No se pudo actualizar el perfil.' };
+        }
+    } catch (error) {
+        console.error("Error actualizando perfil:", error);
+        return { success: false, message: 'Ocurrió un error inesperado.' };
+    }
+}
