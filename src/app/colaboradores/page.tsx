@@ -6,6 +6,8 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Building, Award, Fingerprint, Users } from 'lucide-react';
 import Link from 'next/link';
 
+export const revalidate = 0; // Force dynamic rendering to get fresh data
+
 export async function generateMetadata() {
     const t = getTranslations('es'); 
     return {
