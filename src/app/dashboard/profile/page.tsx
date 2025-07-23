@@ -87,7 +87,6 @@ function ProfileForm({ researcher }: { researcher: Researcher }) {
                     </Button>
                     <Input 
                         id="imageUpload" 
-                        name="imageUpload" 
                         type="file" 
                         accept="image/*" 
                         onChange={handleImageChange}
@@ -145,28 +144,10 @@ function ProfileForm({ researcher }: { researcher: Researcher }) {
 
 
 function ProfilePageContent() {
-  const { userEmail } = useAuth();
+  const { userEmail, researcher, isLoading: authIsLoading } = useAuth();
   const { t } = useLanguage();
-  const [researcher, setResearcher] = useState<Researcher | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    async function loadResearcherData() {
-      if (!userEmail) {
-        setIsLoading(false);
-        return;
-      }
-      setIsLoading(true);
-      const data = await getMyResearcherDataAction(userEmail);
-      if (data) {
-        setResearcher(data);
-      }
-      setIsLoading(false);
-    }
-    loadResearcherData();
-  }, [userEmail]);
-
-  if (isLoading) {
+  
+  if (authIsLoading) {
     return (
       <div className="space-y-4">
         <Skeleton className="h-10 w-1/3" />

@@ -3,7 +3,7 @@
 "use client";
 
 import type { UserRole, Researcher } from '@/lib/types';
-import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useEffect, useCallback } from 'react';
 import { useToast } from '@/hooks/use-toast'; 
 import { loginAction, getMyResearcherDataAction } from '@/app/actions';
 
@@ -15,6 +15,7 @@ type AuthContextType = {
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
   setRole: (role: UserRole | null) => void; 
+  refreshResearcherData: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -28,51 +29,57 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
 
+  const fetchResearcherData = useCallback(async (email: string | null) => {
+    if (email) {
+        const data = await getMyResearcherDataAction(email);
+        if(data) setResearcher(data);
+        else setResearcher(null);
+    } else {
+        setResearcher(null);
+    }
+  }, []);
+
   useEffect(() => {
     const storedRole = localStorage.getItem('galapagos-auth-role') as UserRole | null;
     const storedEmail = localStorage.getItem('galapagos-auth-email');
 
-    if (storedRole && ['admin', 'researcher', 'tourist'].includes(storedRole)) {
-      setRoleState(storedRole);
-      if ((storedRole === 'admin' || storedRole === 'researcher') && storedEmail) {
-        setUserEmailState(storedEmail);
-      } else {
-        setUserEmailState(null);
-      }
-    } else {
-      setRoleState('tourist');
-      setUserEmailState(null);
-    }
-    setIsLoading(false);
-  }, []);
-
-  useEffect(() => {
-    async function fetchResearcherData() {
-        if (userEmail && (role === 'researcher' || role === 'admin')) {
-            const data = await getMyResearcherDataAction(userEmail);
-            if(data) setResearcher(data);
+    async function initializeAuth() {
+        if (storedRole && ['admin', 'researcher', 'tourist'].includes(storedRole)) {
+            setRoleState(storedRole);
+            if ((storedRole === 'admin' || storedRole === 'researcher') && storedEmail) {
+                setUserEmailState(storedEmail);
+                await fetchResearcherData(storedEmail);
+            } else {
+                setUserEmailState(null);
+                setResearcher(null);
+            }
         } else {
+            setRoleState('tourist');
+            setUserEmailState(null);
             setResearcher(null);
         }
+        setIsLoading(false);
     }
-    fetchResearcherData();
-  }, [userEmail, role]);
+    initializeAuth();
+  }, [fetchResearcherData]);
 
   const login = async (email: string, password: string): Promise<{ success: boolean; error?: string }> => {
     setIsLoading(true);
     await new Promise(resolve => setTimeout(resolve, 500)); // Simulate network delay
 
     const result = await loginAction(email, password);
-    setIsLoading(false);
-
+    
     if (result.success && result.role && result.userEmail) {
       setRoleState(result.role);
       setUserEmailState(result.userEmail);
       localStorage.setItem('galapagos-auth-role', result.role);
       localStorage.setItem('galapagos-auth-email', result.userEmail);
+      await fetchResearcherData(result.userEmail);
+      setIsLoading(false);
       toast({ title: '¡Éxito!', description: result.message });
       return { success: true };
     } else {
+      setIsLoading(false);
       return { success: false, error: result.error };
     }
   };
@@ -86,23 +93,25 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     toast({ title: 'Sesión Cerrada', description: 'Has cerrado sesión correctamente.' });
   };
 
-  const setRole = (newRole: UserRole | null) => { // For role simulator
+  const setRole = async (newRole: UserRole | null) => { // For role simulator
     const roleToSet = newRole || 'tourist';
     setRoleState(roleToSet);
     localStorage.setItem('galapagos-auth-role', roleToSet);
     
-    if (roleToSet === 'admin' && !userEmail) { // If simulating admin without prior login
+    if (roleToSet === 'admin') {
       setUserEmailState(ADMIN_EMAIL_FOR_SIMULATOR);
       localStorage.setItem('galapagos-auth-email', ADMIN_EMAIL_FOR_SIMULATOR);
-    } else if (roleToSet === 'researcher' && !userEmail) { // If simulating researcher without prior login, this is tricky.
-        // For simplicity, if switching TO researcher and no email, clear it. Actual researcher login sets email.
-        setUserEmailState(null); // Or a placeholder email if needed for some flows
-        localStorage.removeItem('galapagos-auth-email');
+      await fetchResearcherData(ADMIN_EMAIL_FOR_SIMULATOR);
     } else if (roleToSet !== 'admin' && roleToSet !== 'researcher') {
         setUserEmailState(null);
+        setResearcher(null);
         localStorage.removeItem('galapagos-auth-email');
     }
   };
+
+  const refreshResearcherData = useCallback(async () => {
+    await fetchResearcherData(userEmail);
+  }, [userEmail, fetchResearcherData]);
   
   if (isLoading && role === null) { 
     return (
@@ -113,7 +122,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }
 
   return (
-    <AuthContext.Provider value={{ role, userEmail, researcher, isLoading, login, logout, setRole }}>
+    <AuthContext.Provider value={{ role, userEmail, researcher, isLoading, login, logout, setRole, refreshResearcherData }}>
       {children}
     </AuthContext.Provider>
   );

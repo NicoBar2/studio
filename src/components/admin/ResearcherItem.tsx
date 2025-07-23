@@ -7,9 +7,10 @@ import { deleteResearcherAction, toggleResearcherVerificationAction } from '@/ap
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
-import { Trash2, Users, Mail, Building, Award, CheckCircle, XCircle, ShieldCheck, Fingerprint } from 'lucide-react';
+import { Trash2, Mail, Building, Award, CheckCircle, XCircle, ShieldCheck, Fingerprint } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 type ResearcherItemProps = {
   researcher: Researcher;
@@ -76,32 +77,38 @@ export default function ResearcherItem({ researcher, onDelete, onVerificationCha
   return (
     <li className="p-4 bg-card rounded-lg border shadow-sm hover:shadow-md transition-shadow">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div className="flex-grow space-y-2">
-          <div className="flex items-center gap-3">
-            <Users className="h-6 w-6 text-primary shrink-0" />
-            <h3 className="text-lg font-semibold text-primary">{researcher.name}</h3>
-            <Badge variant={researcher.isVerified ? 'default' : 'secondary'} className="ml-auto sm:ml-2">
-              {researcher.isVerified ? <CheckCircle className="mr-1 h-4 w-4" /> : <XCircle className="mr-1 h-4 w-4" />}
-              {researcher.isVerified ? t.verified : t.pending}
-            </Badge>
+        <div className="flex-grow flex items-start gap-4">
+          <Avatar className="h-16 w-16 border-2 border-primary shrink-0">
+              <AvatarImage src={researcher.profileImageUrl || undefined} alt={researcher.name} />
+              <AvatarFallback>{researcher.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+          </Avatar>
+
+          <div className="space-y-1">
+            <div className="flex items-center gap-3">
+              <h3 className="text-lg font-semibold text-primary">{researcher.name}</h3>
+              <Badge variant={researcher.isVerified ? 'default' : 'secondary'} className="ml-auto sm:ml-2">
+                {researcher.isVerified ? <CheckCircle className="mr-1 h-4 w-4" /> : <XCircle className="mr-1 h-4 w-4" />}
+                {researcher.isVerified ? t.verified : t.pending}
+              </Badge>
+            </div>
+            <p className="text-sm text-muted-foreground flex items-center gap-2">
+              <Mail className="h-4 w-4" /> {researcher.email}
+            </p>
+            <p className="text-sm text-muted-foreground flex items-center gap-2">
+                <Fingerprint className="h-4 w-4" /> {researcher.orcid}
+            </p>
+            {researcher.institution && (
+              <p className="text-sm text-muted-foreground flex items-center gap-2">
+                <Building className="h-4 w-4" /> {researcher.institution}
+              </p>
+            )}
+            {researcher.specialization && (
+              <p className="text-sm text-muted-foreground flex items-center gap-2">
+                <Award className="h-4 w-4" /> {researcher.specialization}
+              </p>
+            )}
+            <p className="text-xs text-muted-foreground pt-1">ID: {researcher.id}</p>
           </div>
-          <p className="text-sm text-muted-foreground flex items-center gap-2">
-            <Mail className="h-4 w-4" /> {researcher.email}
-          </p>
-          <p className="text-sm text-muted-foreground flex items-center gap-2">
-              <Fingerprint className="h-4 w-4" /> {researcher.orcid}
-          </p>
-          {researcher.institution && (
-            <p className="text-sm text-muted-foreground flex items-center gap-2">
-              <Building className="h-4 w-4" /> {researcher.institution}
-            </p>
-          )}
-          {researcher.specialization && (
-            <p className="text-sm text-muted-foreground flex items-center gap-2">
-              <Award className="h-4 w-4" /> {researcher.specialization}
-            </p>
-          )}
-           <p className="text-xs text-muted-foreground">ID: {researcher.id}</p>
         </div>
         
         <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto sm:ml-2 shrink-0">

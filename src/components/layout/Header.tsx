@@ -12,7 +12,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 
 export default function Header() {
-  const { role, logout, isLoading, researcher } = useAuth();
+  const { role, logout, isLoading, researcher, refreshResearcherData } = useAuth();
   const { language, setLanguage, t } = useLanguage();
   const router = useRouter();
 
@@ -25,6 +25,11 @@ export default function Header() {
     if (currentRole === 'admin') return t.role_admin;
     if (currentRole === 'researcher') return t.role_researcher;
     return t.role_tourist;
+  }
+  
+  const handleProfileClick = () => {
+    refreshResearcherData(); // Refresh data when opening profile
+    router.push('/dashboard/profile');
   }
 
   return (
@@ -72,11 +77,9 @@ export default function Header() {
                         <span>{t.dashboard}</span>
                     </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href="/dashboard/profile">
+                <DropdownMenuItem onClick={handleProfileClick} className="cursor-pointer">
                     <UserCircle className="mr-2 h-4 w-4" />
                     <span>Mi Perfil</span>
-                  </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleLogout}>
