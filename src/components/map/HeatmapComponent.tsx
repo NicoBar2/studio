@@ -144,7 +144,7 @@ const HeatmapComponent = ({ data }: HeatmapComponentProps) => {
                 }
 
 
-                div.innerHTML += `<h4 class="font-headline text-sm font-bold mb-1">${t.species}</h4>`;
+                div.innerHTML += `<h4 class="font-headline text-sm font-bold mb-1 text-black">${t.species}</h4>`;
                 
                 // loop through our density intervals and generate a label with a colored square for each interval
                 for (let i = 0; i < grades.length; i++) {
@@ -155,7 +155,7 @@ const HeatmapComponent = ({ data }: HeatmapComponentProps) => {
                     div.innerHTML +=
                         `<div class="flex items-center">
                             <i class="h-4 w-4 inline-block mr-2" style="background:${color}; border: 1px solid #AAA"></i> ` +
-                            `<span>${from}${to ? '&ndash;' + to : '+'}</span>` +
+                            `<span class="text-black">${from}${to ? '&ndash;' + to : '+'}</span>` +
                         `</div>`;
                 }
 
