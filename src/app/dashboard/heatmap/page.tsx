@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
@@ -94,7 +95,7 @@ export default function HeatmapPage() {
                 
                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
                     {/* Controls Panel */}
-                    <Card className="lg:col-span-1 lg:sticky lg:top-24 shadow-lg">
+                    <Card className="lg:col-span-1 lg:sticky lg:top-24 shadow-lg z-10">
                         <CardHeader>
                             <CardTitle>{t.heatmap_select_species}</CardTitle>
                         </CardHeader>
