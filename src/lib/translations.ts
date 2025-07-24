@@ -39,6 +39,7 @@ export type Translations = {
     sidebar_manage_researchers: string;
     sidebar_import_species: string;
     sidebar_public_site: string;
+    sidebar_heatmap: string;
 
     // Login Page
     loginTitle: string;
@@ -192,6 +193,14 @@ export type Translations = {
     minInRange: string;
     avgInRange: string;
 
+    // Heatmap Page
+    heatmap_description: string;
+    heatmap_select_species: string;
+    heatmap_search_species: string;
+    heatmap_select_all: string;
+    heatmap_clear_selection: string;
+    heatmap_species_selected: (count: number) => string;
+
     // Species Details
     speciesDescription: string;
     taxonomicClassification: string;
@@ -251,6 +260,7 @@ const esTranslations: Translations = {
     sidebar_manage_researchers: "Gestionar Investigadores",
     sidebar_import_species: "Importar Especies",
     sidebar_public_site: "Sitio Público",
+    sidebar_heatmap: "Mapa de Calor",
 
     loginTitle: "Acceder",
     loginDesc: "Investigadores verificados, si es su primer acceso, la contraseña que ingresen se establecerá como su nueva contraseña.",
@@ -395,6 +405,13 @@ const esTranslations: Translations = {
     minInRange: "Mínimo en Rango Filtrado",
     avgInRange: "Promedio en Rango Filtrado",
 
+    heatmap_description: "Visualiza la concentración de especies seleccionadas en el archipiélago.",
+    heatmap_select_species: "Seleccionar Especies",
+    heatmap_search_species: "Buscar especie...",
+    heatmap_select_all: "Seleccionar todo",
+    heatmap_clear_selection: "Limpiar selección",
+    heatmap_species_selected: (count) => `${count} especies seleccionadas`,
+
     speciesDescription: "Descripción",
     taxonomicClassification: "Clasificación Taxonómica",
     conservationAndPopulation: "Conservación y Población",
@@ -452,6 +469,7 @@ const enTranslations: Translations = {
     sidebar_manage_researchers: "Manage Researchers",
     sidebar_import_species: "Import Species",
     sidebar_public_site: "Public Site",
+    sidebar_heatmap: "Heatmap",
 
     loginTitle: "Login",
     loginDesc: "Verified researchers, if this is your first time logging in, the password you enter will be set as your new password.",
@@ -595,6 +613,13 @@ const enTranslations: Translations = {
     maxInRange: "Maximum in Filtered Range",
     minInRange: "Minimum in Filtered Range",
     avgInRange: "Average in Filtered Range",
+    
+    heatmap_description: "Visualize the concentration of selected species across the archipelago.",
+    heatmap_select_species: "Select Species",
+    heatmap_search_species: "Search species...",
+    heatmap_select_all: "Select all",
+    heatmap_clear_selection: "Clear selection",
+    heatmap_species_selected: (count) => `${count} species selected`,
 
     speciesDescription: "Description",
     taxonomicClassification: "Taxonomic Classification",

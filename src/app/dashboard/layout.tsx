@@ -2,7 +2,7 @@
 "use client"; 
 import RoleBasedGuard from '@/components/auth/RoleBasedGuard';
 import { Sidebar, SidebarProvider, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarHeader, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
-import { LayoutDashboard, Users, HomeIcon, FileUp, GitCompareArrows, PlusCircle, Webhook } from 'lucide-react';
+import { LayoutDashboard, Users, HomeIcon, FileUp, GitCompareArrows, PlusCircle, Webhook, Heatmap } from 'lucide-react';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -43,6 +43,15 @@ export default function DashboardLayout({
                     <Link href="/dashboard/compare">
                       <GitCompareArrows />
                       <span className="group-data-[state=collapsed]:hidden">{t.sidebar_generate_query}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild variant="ghost" className="justify-start w-full" tooltip={t.sidebar_heatmap}>
+                    <Link href="/dashboard/heatmap">
+                      <Heatmap />
+                      <span className="group-data-[state=collapsed]:hidden">{t.sidebar_heatmap}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
