@@ -57,10 +57,17 @@ const InteractiveMap = ({ onIslandClick, selectedIsland, dashboardMode = false }
 
   useEffect(() => {
     if (mapContainerRef.current && !mapRef.current) { 
+      const southWest = L.latLng(-2.5, -93);
+      const northEast = L.latLng(2.5, -88.5);
+      const bounds = L.latLngBounds(southWest, northEast);
+
       const map = L.map(mapContainerRef.current, {
           center: [-0.95, -90.96],
           zoom: 7,
           scrollWheelZoom: true,
+          maxBounds: bounds,
+          minZoom: 7,
+          maxBoundsViscosity: 1.0,
       });
 
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {

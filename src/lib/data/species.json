@@ -1,4 +1,3 @@
-
 [
   {
     "id": "tortuga-gigante-de-galapagos",
@@ -15,12 +14,7 @@
     "populationTrend": "unknown",
     "iucnStatus": "Datos Insuficientes",
     "habitat": "Varied habitats throughout the Galapagos Islands",
-    "threats": [
-      "Habitat degradation",
-      "Invasive species",
-      "Climate change",
-      "Human impact"
-    ],
+    "threats": [],
     "keyStats": [
       {
         "label": "Size",
@@ -36,34 +30,40 @@
     "historicalData": [
       {
         "year": 1970,
-        "value": 15000,
         "unit": "individuos",
-        "description": ""
+        "description": "",
+        "values": {
+          "is_darwin": 222,
+          "is_genovesa": 222
+        },
+        "value": 444
       },
       {
         "year": 2000,
-        "value": 18000,
         "unit": "individuos",
-        "description": ""
+        "description": "",
+        "values": {},
+        "value": 0
       },
       {
         "year": 2020,
-        "value": 20000,
         "unit": "individuos",
-        "description": "Censo post-erradicación de especies invasoras."
+        "description": "Censo post-erradicación de especies invasoras.",
+        "values": {},
+        "value": 0
       }
     ],
     "is_isabela": false,
     "is_santa_cruz": false,
-    "is_san_cristobal": true,
+    "is_san_cristobal": false,
     "is_espanola": false,
     "is_pinzon": false,
     "createdAt": "2024-01-01T12:00:00.000Z",
     "showHistoricalDataToPublic": false,
-    "is_darwin": true,
+    "is_darwin": false,
     "is_fernandina": false,
     "is_floreana": false,
-    "is_genovesa": true,
+    "is_genovesa": false,
     "is_marchena": false,
     "is_pinta": false,
     "is_santa_fe": false,
