@@ -1,10 +1,10 @@
+
 "use client";
 
 import { useEffect, useRef } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet.heat'; // Import the plugin
-import { useLanguage } from '@/contexts/LanguageContext';
 
 // Fix for default icon issue with Leaflet and Webpack
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -42,7 +42,6 @@ const HeatmapComponent = ({ data }: HeatmapComponentProps) => {
     const mapContainerRef = useRef<HTMLDivElement>(null);
     const mapRef = useRef<L.Map | null>(null);
     const heatLayerRef = useRef<L.HeatLayer | null>(null);
-    const { t } = useLanguage();
 
     useEffect(() => {
         if (mapContainerRef.current && !mapRef.current) {
@@ -83,6 +82,7 @@ const HeatmapComponent = ({ data }: HeatmapComponentProps) => {
                     blur: 35,
                     maxZoom: 1,
                     max: Math.max(...Object.values(data), 1),
+                    gradient: {0.4: 'blue', 0.65: 'lime', 1: 'red'}
                 }).addTo(mapRef.current);
             } else {
                  heatLayerRef.current.setLatLngs(heatPoints);
@@ -90,7 +90,7 @@ const HeatmapComponent = ({ data }: HeatmapComponentProps) => {
             }
         }
 
-    }, [data, t]); 
+    }, [data]); 
   
     return <div ref={mapContainerRef} className="h-full w-full rounded-lg overflow-hidden"></div>;
 };
