@@ -1,10 +1,9 @@
-
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
-import { ArrowLeft, Layers as HeatmapIcon, SearchIcon, XIcon } from 'lucide-react';
+import { ArrowLeft, Layers as HeatmapIcon, Search as SearchIcon, XIcon } from 'lucide-react';
 import type { Species } from '@/lib/types';
 import { getSpeciesListAction } from '@/app/actions';
 import { Button } from '@/components/ui/button';
@@ -16,6 +15,8 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
 import RoleBasedGuard from '@/components/auth/RoleBasedGuard';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { Badge } from '@/components/ui/badge';
+
 
 // Dynamically import the map component to prevent SSR issues with Leaflet
 const HeatmapComponent = dynamic(() => import('@/components/map/HeatmapComponent'), {
@@ -40,20 +41,20 @@ export default function HeatmapPage() {
         fetchSpecies();
     }, [t]);
 
-    const handleSelectAll = (select: boolean) => {
-        if (select) {
-            setSelectedSpeciesIds(filteredSpecies.map(s => s.id));
-        } else {
-            setSelectedSpeciesIds([]);
-        }
-    };
-    
     const filteredSpecies = useMemo(() => {
         if (!searchTerm) return allSpecies;
         return allSpecies.filter(s => 
             t.getSpeciesName(s).toLowerCase().includes(searchTerm.toLowerCase())
         );
     }, [allSpecies, searchTerm, t]);
+    
+    const handleSelectAll = useCallback(() => {
+        setSelectedSpeciesIds(filteredSpecies.map(s => s.id));
+    }, [filteredSpecies]);
+    
+    const handleClearSelection = () => {
+        setSelectedSpeciesIds([]);
+    };
 
     const islandSpeciesCount = useMemo(() => {
         const counts: Record<string, number> = {};
@@ -107,9 +108,9 @@ export default function HeatmapPage() {
                                     className="pl-9"
                                 />
                             </div>
-                            <div className="flex justify-between items-center">
-                                <Button variant="link" onClick={() => handleSelectAll(true)} className="p-0 h-auto">{t.heatmap_select_all}</Button>
-                                <Button variant="link" onClick={() => handleSelectAll(false)} className="p-0 h-auto">{t.heatmap_clear_selection}</Button>
+                            <div className="flex justify-between items-center text-sm">
+                                <Button variant="link" onClick={handleSelectAll} className="p-0 h-auto">{t.heatmap_select_all}</Button>
+                                <Button variant="link" onClick={handleClearSelection} className="p-0 h-auto">{t.heatmap_clear_selection}</Button>
                             </div>
                             <ScrollArea className="h-[450px] border rounded-md p-2">
                                 {isLoading ? (
@@ -137,9 +138,11 @@ export default function HeatmapPage() {
                                     ))
                                 )}
                             </ScrollArea>
-                            <p className="text-sm text-muted-foreground pt-2">
-                                {t.heatmap_species_selected(selectedSpeciesIds.length)}
-                            </p>
+                            <div className="flex justify-end pt-2">
+                                <Badge variant="secondary">
+                                    {t.heatmap_species_selected(selectedSpeciesIds.length)}
+                                </Badge>
+                            </div>
                         </CardContent>
                     </Card>
 
