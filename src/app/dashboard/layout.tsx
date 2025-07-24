@@ -2,7 +2,7 @@
 "use client"; 
 import RoleBasedGuard from '@/components/auth/RoleBasedGuard';
 import { Sidebar, SidebarProvider, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarHeader, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
-import { LayoutDashboard, Users, HomeIcon, FileUp, GitCompareArrows, PlusCircle, Webhook, Heatmap } from 'lucide-react';
+import { LayoutDashboard, Users, HomeIcon, FileUp, GitCompareArrows, PlusCircle, Layers } from 'lucide-react';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -50,7 +50,7 @@ export default function DashboardLayout({
                 <SidebarMenuItem>
                   <SidebarMenuButton asChild variant="ghost" className="justify-start w-full" tooltip={t.sidebar_heatmap}>
                     <Link href="/dashboard/heatmap">
-                      <Heatmap />
+                      <Layers />
                       <span className="group-data-[state=collapsed]:hidden">{t.sidebar_heatmap}</span>
                     </Link>
                   </SidebarMenuButton>

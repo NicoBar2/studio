@@ -4,7 +4,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
-import { ArrowLeft, Heatmap as HeatmapIcon, SearchIcon, XIcon } from 'lucide-react';
+import { ArrowLeft, Layers as HeatmapIcon, SearchIcon, XIcon } from 'lucide-react';
 import type { Species } from '@/lib/types';
 import { getSpeciesListAction } from '@/app/actions';
 import { Button } from '@/components/ui/button';
@@ -156,4 +156,3 @@ export default function HeatmapPage() {
         </RoleBasedGuard>
     );
 }
-
