@@ -79,8 +79,8 @@ const HeatmapComponent = ({ data }: HeatmapComponentProps) => {
         if (mapRef.current) {
             if (!heatLayerRef.current) {
                 heatLayerRef.current = (L as any).heatLayer(heatPoints, {
-                    radius: 35,
-                    blur: 20,
+                    radius: 40,
+                    blur: 35,
                     maxZoom: 1,
                     max: Math.max(...Object.values(data), 1),
                 }).addTo(mapRef.current);
