@@ -2,7 +2,7 @@
 "use client"; 
 import RoleBasedGuard from '@/components/auth/RoleBasedGuard';
 import { Sidebar, SidebarProvider, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarHeader, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
-import { LayoutDashboard, Users, HomeIcon, FileUp, GitCompareArrows, PlusCircle, Layers } from 'lucide-react';
+import { LayoutDashboard, Users, HomeIcon, FileUp, GitCompareArrows, PlusCircle, Layers, DatabaseZap } from 'lucide-react';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -80,6 +80,14 @@ export default function DashboardLayout({
                         <Link href="/dashboard/admin/import">
                           <FileUp />
                           <span className="group-data-[state=collapsed]:hidden">{t.sidebar_import_species}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
+                       <SidebarMenuButton asChild variant="ghost" className="justify-start w-full" tooltip="Scraping Anual">
+                        <Link href="/dashboard/admin/scrapeo">
+                          <DatabaseZap />
+                          <span className="group-data-[state=collapsed]:hidden">Scraping Anual</span>
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
