@@ -1,14 +1,14 @@
 
 "use client";
 
-import { useActionState, useState, useEffect, type ChangeEvent, useRef, useCallback, type FormEvent } from 'react';
+import { useActionState, useState, useEffect, type ChangeEvent, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 import RoleBasedGuard from '@/components/auth/RoleBasedGuard';
 import { GALAPAGOS_ISLANDS_NAMES } from '@/lib/utils';
 import type { Species, ConservationStatus, HistoricalDataPoint } from '@/lib/types';
-import { addSpeciesAction, getSpeciesListAction } from '@/app/actions';
+import { addSpeciesAction } from '@/app/actions';
 
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -23,7 +23,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Checkbox } from '@/components/ui/checkbox';
-import { ArrowLeft, PlusCircle, Trash2, Search, Wand2, Copy } from 'lucide-react';
+import { ArrowLeft, PlusCircle, Trash2 } from 'lucide-react';
 import Image from 'next/image';
 
 const initialState = {
@@ -70,72 +70,15 @@ export default function AddSpeciesPage() {
     const { role, userEmail } = useAuth();
     const { t } = useLanguage();
     
-    const formRef = useRef<HTMLFormElement>(null);
     const [imagePreview, setImagePreview] = useState<string | null>(null);
     const [imageFileValue, setImageFileValue] = useState<string>('');
     const [showPublicDataChecked, setShowPublicDataChecked] = useState<boolean>(false);
     const [historicalData, setHistoricalData] = useState<HistoricalDataPoint[]>([]);
     
-    const [allSpecies, setAllSpecies] = useState<Species[]>([]);
-    const [searchTerm, setSearchTerm] = useState('');
-    const [searchResults, setSearchResults] = useState<Species[]>([]);
-    const [templateSpecies, setTemplateSpecies] = useState<Species | null>(null);
     const [islandPresence, setIslandPresence] = useState<Record<string, boolean>>({});
 
     const prevMessageRef = useRef<string | undefined>();
-
-    useEffect(() => {
-        getSpeciesListAction().then(setAllSpecies);
-    }, []);
     
-    useEffect(() => {
-        if (searchTerm.length > 2) {
-            const results = allSpecies.filter(s => 
-                t.getSpeciesName(s).toLowerCase().includes(searchTerm.toLowerCase())
-            );
-            setSearchResults(results.slice(0, 5)); // Limit results
-        } else {
-            setSearchResults([]);
-        }
-    }, [searchTerm, allSpecies, t]);
-
-    const applyTemplate = useCallback((species: Species) => {
-        setTemplateSpecies(species);
-        setSearchTerm('');
-        setSearchResults([]);
-        toast({
-            title: "Plantilla Aplicada",
-            description: `Datos de "${t.getSpeciesName(species)}" cargados. Ajusta el nombre y otros detalles para crear una nueva especie.`,
-        });
-    }, [t, toast]);
-    
-    useEffect(() => {
-        if (templateSpecies && formRef.current) {
-            (formRef.current.elements.namedItem('spanishCommonName') as HTMLInputElement).value = ''; 
-            (formRef.current.elements.namedItem('englishCommonName') as HTMLInputElement).value = templateSpecies.englishCommonName || '';
-            (formRef.current.elements.namedItem('genus') as HTMLInputElement).value = templateSpecies.genus || '';
-            (formRef.current.elements.namedItem('specificEpithet') as HTMLInputElement).value = templateSpecies.specificEpithet || '';
-            (formRef.current.elements.namedItem('iucnStatus') as HTMLSelectElement).value = templateSpecies.iucnStatus;
-            (formRef.current.elements.namedItem('populationTrend') as HTMLSelectElement).value = templateSpecies.populationTrend;
-            (formRef.current.elements.namedItem('habitat') as HTMLInputElement).value = templateSpecies.habitat || '';
-            (formRef.current.elements.namedItem('spanishDescription') as HTMLTextAreaElement).value = templateSpecies.spanishDescription || '';
-            (formRef.current.elements.namedItem('englishDescription') as HTMLTextAreaElement).value = templateSpecies.englishDescription || '';
-            (formRef.current.elements.namedItem('threats') as HTMLInputElement).value = templateSpecies.threats?.join(', ') || '';
-
-            const newIslandPresence: Record<string, boolean> = {};
-            islandKeys.forEach(island => {
-                newIslandPresence[island.id as string] = !!templateSpecies[island.id];
-            });
-            setIslandPresence(newIslandPresence);
-            
-            setShowPublicDataChecked(!!templateSpecies.showHistoricalDataToPublic);
-            setHistoricalData(templateSpecies.historicalData || []);
-            setImagePreview(templateSpecies.imageUrl);
-            setImageFileValue(templateSpecies.imageUrl);
-        }
-    }, [templateSpecies]);
-
-
     useEffect(() => {
         if (state.message && state.message !== prevMessageRef.current) {
             toast({
@@ -146,13 +89,6 @@ export default function AddSpeciesPage() {
             prevMessageRef.current = state.message;
         }
     }, [state, toast, router, t]);
-    
-    const handleTemplateSearchSubmit = (e: FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        if (searchResults.length > 0) {
-            applyTemplate(searchResults[0]);
-        }
-    };
 
     const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
@@ -200,41 +136,6 @@ export default function AddSpeciesPage() {
                         <ArrowLeft className="mr-2 h-4 w-4" /> {t.backToDashboard}
                     </Link>
                 </Button>
-                
-                <Card className="shadow-lg">
-                    <CardHeader>
-                        <CardTitle className="flex items-center text-xl font-headline text-primary"><Wand2 className="mr-2 h-6 w-6" />Asistente de Creación</CardTitle>
-                        <CardDescription>Busca una especie existente para usar sus datos como plantilla y acelerar el proceso de creación.</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <form onSubmit={handleTemplateSearchSubmit}>
-                            <div className="relative">
-                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                                <Input 
-                                    type="text"
-                                    placeholder="Buscar especie existente para usar como plantilla..."
-                                    value={searchTerm}
-                                    onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="pl-9"
-                                />
-                                {searchResults.length > 0 && (
-                                    <ul className="absolute z-10 w-full mt-1 bg-card border rounded-md shadow-lg">
-                                        {searchResults.map(species => (
-                                            <li key={species.id} className="flex items-center justify-between p-2 hover:bg-muted">
-                                                <span>{t.getSpeciesName(species)}</span>
-                                                <Button type="button" size="sm" variant="outline" onClick={() => applyTemplate(species)}>
-                                                    <Copy className="mr-2 h-4 w-4" />
-                                                    Usar como Plantilla
-                                                </Button>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                )}
-                            </div>
-                        </form>
-                    </CardContent>
-                </Card>
-
 
                 <Card className="shadow-xl">
                     <CardHeader>
@@ -242,7 +143,7 @@ export default function AddSpeciesPage() {
                         <CardDescription>{t.addSpecies_description}</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <form ref={formRef} action={formAction} className="space-y-6">
+                        <form action={formAction} className="space-y-6">
                             <input type="hidden" name="userRole" value={role || ''} />
                             <input type="hidden" name="userEmail" value={userEmail || ''} />
                             <input type="hidden" name="historicalData" value={JSON.stringify(historicalData)} />
@@ -489,3 +390,4 @@ export default function AddSpeciesPage() {
     );
 
     
+}
