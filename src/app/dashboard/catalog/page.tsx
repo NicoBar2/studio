@@ -51,7 +51,9 @@ export default function SpeciesCatalogPage() {
     const uniqueFamilies = useMemo(() => {
         const families = new Set<string>();
         allSpecies.forEach(s => {
-            if (s.family) families.add(s.family);
+            if (s.family && s.family.trim() !== '') {
+                families.add(s.family);
+            }
         });
         return Array.from(families).sort();
     }, [allSpecies]);
