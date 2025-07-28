@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useActionState, useState, useEffect, type ChangeEvent, useRef, useCallback } from 'react';
+import { useActionState, useState, useEffect, type ChangeEvent, useRef, useCallback, type FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
@@ -146,6 +146,13 @@ export default function AddSpeciesPage() {
             prevMessageRef.current = state.message;
         }
     }, [state, toast, router, t]);
+    
+    const handleTemplateSearchSubmit = (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        if (searchResults.length > 0) {
+            applyTemplate(searchResults[0]);
+        }
+    };
 
     const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
@@ -200,29 +207,31 @@ export default function AddSpeciesPage() {
                         <CardDescription>Busca una especie existente para usar sus datos como plantilla y acelerar el proceso de creación.</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <div className="relative">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                            <Input 
-                                type="text"
-                                placeholder="Buscar especie existente para usar como plantilla..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                className="pl-9"
-                            />
-                            {searchResults.length > 0 && (
-                                <ul className="absolute z-10 w-full mt-1 bg-card border rounded-md shadow-lg">
-                                    {searchResults.map(species => (
-                                        <li key={species.id} className="flex items-center justify-between p-2 hover:bg-muted">
-                                            <span>{t.getSpeciesName(species)}</span>
-                                            <Button size="sm" variant="outline" onClick={() => applyTemplate(species)}>
-                                                <Copy className="mr-2 h-4 w-4" />
-                                                Usar como Plantilla
-                                            </Button>
-                                        </li>
-                                    ))}
-                                </ul>
-                            )}
-                        </div>
+                        <form onSubmit={handleTemplateSearchSubmit}>
+                            <div className="relative">
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                <Input 
+                                    type="text"
+                                    placeholder="Buscar especie existente para usar como plantilla..."
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    className="pl-9"
+                                />
+                                {searchResults.length > 0 && (
+                                    <ul className="absolute z-10 w-full mt-1 bg-card border rounded-md shadow-lg">
+                                        {searchResults.map(species => (
+                                            <li key={species.id} className="flex items-center justify-between p-2 hover:bg-muted">
+                                                <span>{t.getSpeciesName(species)}</span>
+                                                <Button type="button" size="sm" variant="outline" onClick={() => applyTemplate(species)}>
+                                                    <Copy className="mr-2 h-4 w-4" />
+                                                    Usar como Plantilla
+                                                </Button>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                )}
+                            </div>
+                        </form>
                     </CardContent>
                 </Card>
 
@@ -478,8 +487,5 @@ export default function AddSpeciesPage() {
             </div>
         </RoleBasedGuard>
     );
-}
-
-    
 
     
