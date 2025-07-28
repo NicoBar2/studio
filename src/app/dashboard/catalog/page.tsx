@@ -8,20 +8,14 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { GALAPAGOS_ISLANDS_NAMES } from '@/lib/utils';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ArrowUpDown, Edit, ExternalLink, ListChecks, Search } from 'lucide-react';
+import { ArrowUpDown, Edit, ExternalLink, ListChecks } from 'lucide-react';
 import Link from 'next/link';
 
 type SortKey = 'spanishCommonName' | 'family' | 'iucnStatus' | 'createdAt';
-
-const CONSERVATION_STATUSES: ConservationStatus[] = [
-    'En Peligro Crítico', 'En Peligro', 'Vulnerable', 'Casi Amenazada', 
-    'Preocupación Menor', 'Datos Insuficientes'
-];
 
 export default function SpeciesCatalogPage() {
     const { t } = useLanguage();
@@ -29,9 +23,6 @@ export default function SpeciesCatalogPage() {
     const [isLoading, setIsLoading] = useState(true);
 
     // Filtering states
-    const [searchTerm, setSearchTerm] = useState('');
-    const [familyFilter, setFamilyFilter] = useState('');
-    const [statusFilter, setStatusFilter] = useState('');
     const [islandFilter, setIslandFilter] = useState('');
 
     // Sorting states
@@ -47,35 +38,13 @@ export default function SpeciesCatalogPage() {
         };
         fetchSpecies();
     }, []);
-    
-    const uniqueFamilies = useMemo(() => {
-        const families = new Set<string>();
-        allSpecies.forEach(s => {
-            if (s.family && s.family.trim() !== '') {
-                families.add(s.family);
-            }
-        });
-        return Array.from(families).sort();
-    }, [allSpecies]);
 
     const filteredAndSortedSpecies = useMemo(() => {
         let filtered = allSpecies.filter(s => {
-            const lowerSearch = searchTerm.toLowerCase();
-            const nameMatch = lowerSearch === '' || 
-                              s.spanishCommonName.toLowerCase().includes(lowerSearch) || 
-                              (s.englishCommonName || '').toLowerCase().includes(lowerSearch) ||
-                              (s.genus && s.specificEpithet && `${s.genus} ${s.specificEpithet}`.toLowerCase().includes(lowerSearch));
+            if (!islandFilter) return true;
             
-            const familyMatch = !familyFilter || (s.family && s.family === familyFilter);
-            const statusMatch = !statusFilter || s.iucnStatus === statusFilter;
-            
-            let islandMatch = true;
-            if (islandFilter) {
-                const islandKey = `is_${islandFilter.toLowerCase().replace(/ /g, '_').normalize("NFD").replace(/[\u0300-\u036f]/g, "")}` as keyof Species;
-                islandMatch = !!s[islandKey];
-            }
-
-            return nameMatch && familyMatch && statusMatch && islandMatch;
+            const islandKey = `is_${islandFilter.toLowerCase().replace(/ /g, '_').normalize("NFD").replace(/[\u0300-\u036f]/g, "")}` as keyof Species;
+            return !!s[islandKey];
         });
 
         return filtered.sort((a, b) => {
@@ -87,7 +56,7 @@ export default function SpeciesCatalogPage() {
             return 0;
         });
 
-    }, [allSpecies, searchTerm, familyFilter, statusFilter, islandFilter, sortKey, sortDirection]);
+    }, [allSpecies, islandFilter, sortKey, sortDirection]);
 
     const handleSort = (key: SortKey) => {
         if (sortKey === key) {
@@ -120,29 +89,6 @@ export default function SpeciesCatalogPage() {
                 </CardHeader>
                 <CardContent>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                        <div className="relative">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                            <Input 
-                                placeholder="Buscar por nombre..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                className="pl-9"
-                            />
-                        </div>
-                         <Select value={familyFilter} onValueChange={(value) => setFamilyFilter(value === 'all' ? '' : value)}>
-                            <SelectTrigger><SelectValue placeholder="Filtrar por Familia" /></SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="all">Todas las Familias</SelectItem>
-                                {uniqueFamilies.map(family => <SelectItem key={family} value={family}>{family}</SelectItem>)}
-                            </SelectContent>
-                        </Select>
-                        <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value === 'all' ? '' : value)}>
-                            <SelectTrigger><SelectValue placeholder="Filtrar por Estado UICN" /></SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="all">Todos los Estados</SelectItem>
-                                {CONSERVATION_STATUSES.map(status => <SelectItem key={status} value={status}>{status}</SelectItem>)}
-                            </SelectContent>
-                        </Select>
                         <Select value={islandFilter} onValueChange={(value) => setIslandFilter(value === 'all' ? '' : value)}>
                             <SelectTrigger><SelectValue placeholder="Filtrar por Isla" /></SelectTrigger>
                             <SelectContent>
