@@ -80,6 +80,7 @@ export default function AddSpeciesPage() {
     const [searchTerm, setSearchTerm] = useState('');
     const [searchResults, setSearchResults] = useState<Species[]>([]);
     const [templateSpecies, setTemplateSpecies] = useState<Species | null>(null);
+    const [islandPresence, setIslandPresence] = useState<Record<string, boolean>>({});
 
     const prevMessageRef = useRef<string | undefined>();
 
@@ -110,8 +111,7 @@ export default function AddSpeciesPage() {
     
     useEffect(() => {
         if (templateSpecies && formRef.current) {
-            // This is a simplified reset. A more robust solution might use a library like react-hook-form's reset method.
-            (formRef.current.elements.namedItem('spanishCommonName') as HTMLInputElement).value = ''; // Clear name to avoid duplicates
+            (formRef.current.elements.namedItem('spanishCommonName') as HTMLInputElement).value = ''; 
             (formRef.current.elements.namedItem('englishCommonName') as HTMLInputElement).value = templateSpecies.englishCommonName || '';
             (formRef.current.elements.namedItem('genus') as HTMLInputElement).value = templateSpecies.genus || '';
             (formRef.current.elements.namedItem('specificEpithet') as HTMLInputElement).value = templateSpecies.specificEpithet || '';
@@ -124,8 +124,9 @@ export default function AddSpeciesPage() {
 
             const newIslandPresence: Record<string, boolean> = {};
             islandKeys.forEach(island => {
-                (formRef.current!.elements.namedItem(island.id as string) as HTMLInputElement).checked = !!templateSpecies[island.id];
+                newIslandPresence[island.id as string] = !!templateSpecies[island.id];
             });
+            setIslandPresence(newIslandPresence);
             
             setShowPublicDataChecked(!!templateSpecies.showHistoricalDataToPublic);
             setHistoricalData(templateSpecies.historicalData || []);
@@ -307,7 +308,12 @@ export default function AddSpeciesPage() {
                                             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 mt-2 p-4 border rounded-md">
                                                 {islandKeys.map(island => (
                                                     <div key={island.id as string} className="flex items-center space-x-2">
-                                                        <Checkbox id={island.id as string} name={island.id as string} />
+                                                        <Checkbox 
+                                                          id={island.id as string} 
+                                                          name={island.id as string}
+                                                          checked={islandPresence[island.id as string] || false}
+                                                          onCheckedChange={(checked) => setIslandPresence(prev => ({...prev, [island.id as string]: !!checked}))}
+                                                        />
                                                         <Label htmlFor={island.id as string} className="text-sm font-normal">{island.label}</Label>
                                                     </div>
                                                 ))}
@@ -473,5 +479,7 @@ export default function AddSpeciesPage() {
         </RoleBasedGuard>
     );
 }
+
+    
 
     
