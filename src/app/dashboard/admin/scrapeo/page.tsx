@@ -7,39 +7,75 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
-import { DatabaseZap, LoaderCircle, Calendar, Info } from 'lucide-react';
-import Link from 'next/link';
+import { DatabaseZap, LoaderCircle, Calendar, Info, CheckCircle } from 'lucide-react';
+
+// Define a type for the scrape info for better type safety
+type ScrapeInfo = {
+    status: 'completed' | 'in_progress' | 'error' | string;
+    completedAt?: string;
+    startedAt?: string;
+    sessionId?: string;
+};
 
 export default function ScrapeoPage() {
     const { toast } = useToast();
     const [isScraping, setIsScraping] = useState(false);
     const [isButtonEnabled, setIsButtonEnabled] = useState(false);
-    const [timeRemaining, setTimeRemaining] = useState('');
+    const [statusMessage, setStatusMessage] = useState('');
+    const [lastScrapeInfo, setLastScrapeInfo] = useState<ScrapeInfo | null>(null);
 
     useEffect(() => {
-        const checkDate = () => {
-            const today = new Date();
-            const targetDay = 27;
-            const targetMonth = 6; // July (0-indexed, so 6 is July)
-            const currentYear = today.getFullYear();
-            
-            const activationDate = new Date(currentYear, targetMonth, targetDay);
+        const checkScrapeStatusAndDate = async () => {
+            try {
+                // Fetch the latest scrape progress
+                const progressResponse = await fetch('https://us-central1-galapagos-datalens.cloudfunctions.net/checkScrapingProgress', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ data: {} }), // No session ID to get the latest
+                });
 
-            if (today >= activationDate) {
-                setIsButtonEnabled(true);
-                setTimeRemaining('El período de scraping manual para este año está activo.');
-            } else {
-                setIsButtonEnabled(false);
-                const diff = activationDate.getTime() - today.getTime();
-                const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
-                setTimeRemaining(`El botón se habilitará el 27 de julio. Faltan ${days} día(s).`);
+                if (progressResponse.ok) {
+                    const result = await progressResponse.json();
+                    setLastScrapeInfo(result.result);
+                } else {
+                    setStatusMessage('No se pudo verificar el estado del último scraping.');
+                }
+
+            } catch (error) {
+                 setStatusMessage('Error de conexión al verificar el estado del scraping.');
             }
         };
 
-        checkDate();
-        const interval = setInterval(checkDate, 1000 * 60 * 60); // Check every hour
-        return () => clearInterval(interval);
+        checkScrapeStatusAndDate();
     }, []);
+
+    useEffect(() => {
+        const today = new Date();
+        const currentYear = today.getFullYear();
+        const activationDate = new Date(currentYear, 6, 27); // Month is 0-indexed, so 6 is July.
+        
+        if (lastScrapeInfo) {
+            const lastScrapeYear = lastScrapeInfo.startedAt ? new Date(lastScrapeInfo.startedAt).getFullYear() : 0;
+            
+            if (lastScrapeInfo.status === 'completed' && lastScrapeYear === currentYear) {
+                setIsButtonEnabled(false);
+                const completionDate = lastScrapeInfo.completedAt ? new Date(lastScrapeInfo.completedAt).toLocaleDateString() : 'recientemente';
+                setStatusMessage(`La actualización de este año ya se realizó con éxito el ${completionDate}.`);
+                return; // End execution here
+            }
+        }
+        
+        if (today >= activationDate) {
+            setIsButtonEnabled(true);
+            setStatusMessage('El período de scraping manual para este año está activo.');
+        } else {
+            setIsButtonEnabled(false);
+            const diff = activationDate.getTime() - today.getTime();
+            const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+            setStatusMessage(`El botón se habilitará el 27 de julio. Faltan ${days} día(s).`);
+        }
+
+    }, [lastScrapeInfo]);
 
     const handleScrape = async () => {
         setIsScraping(true);
@@ -60,7 +96,7 @@ export default function ScrapeoPage() {
             
             toast({
                 title: 'Proceso Iniciado',
-                description: result.message || 'El proceso de scraping ha comenzado. Revisa el progreso en Firebase.',
+                description: result.result?.message || 'El proceso de scraping ha comenzado. Revisa el progreso en Firebase.',
             });
 
         } catch (error) {
@@ -73,6 +109,8 @@ export default function ScrapeoPage() {
             setIsScraping(false);
         }
     };
+
+    const isCompletedThisYear = lastScrapeInfo?.status === 'completed' && lastScrapeInfo?.startedAt && new Date(lastScrapeInfo.startedAt).getFullYear() === new Date().getFullYear();
 
     return (
         <RoleBasedGuard allowedRoles={['admin']}>
@@ -92,7 +130,7 @@ export default function ScrapeoPage() {
                            <Calendar className="h-4 w-4" />
                            <AlertTitle>Funcionamiento Anual</AlertTitle>
                            <AlertDescription>
-                            Esta función está diseñada para ejecutarse anualmente. El botón se activa el <strong>27 de julio</strong> y permanece activo por si el proceso automático falla o es olvidado. {timeRemaining}
+                            Esta función está diseñada para ejecutarse anualmente. El botón se activa a partir del <strong>27 de julio</strong> si el proceso no se ha completado en el año en curso. {statusMessage}
                            </AlertDescription>
                         </Alert>
                         
@@ -109,13 +147,13 @@ export default function ScrapeoPage() {
                             </Button>
                         </div>
                         
-                        {!isButtonEnabled && (
-                             <Alert variant="destructive" className="mt-4">
-                               <Info className="h-4 w-4" />
-                               <AlertTitle>Botón Deshabilitado</AlertTitle>
-                               <AlertDescription>
-                                 El botón solo se activa a partir del 27 de julio de cada año para prevenir ejecuciones accidentales y sobrecarga del sistema.
-                               </AlertDescription>
+                        {isCompletedThisYear && (
+                            <Alert variant="default" className="mt-4 bg-green-50 border-green-200 text-green-800 dark:bg-green-900/20 dark:border-green-700 dark:text-green-200">
+                                <CheckCircle className="h-4 w-4 text-green-600 dark:text-green-400" />
+                                <AlertTitle>Proceso Completado</AlertTitle>
+                                <AlertDescription>
+                                    La actualización para este año ya se realizó con éxito.
+                                </AlertDescription>
                             </Alert>
                         )}
                         
