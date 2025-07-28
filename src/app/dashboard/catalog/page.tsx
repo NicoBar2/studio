@@ -15,7 +15,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { ArrowUpDown, Edit, ExternalLink, ListChecks } from 'lucide-react';
 import Link from 'next/link';
 
-type SortKey = 'spanishCommonName' | 'family' | 'iucnStatus' | 'createdAt';
+type SortKey = 'spanishCommonName' | 'family' | 'iucnStatus' | 'createdAt' | 'kingdom' | 'phylum' | 'class' | 'order' | 'genus';
 
 export default function SpeciesCatalogPage() {
     const { t } = useLanguage();
@@ -84,7 +84,7 @@ export default function SpeciesCatalogPage() {
                         Catálogo de Especies
                     </CardTitle>
                     <CardDescription>
-                        Explora, filtra y gestiona la base de datos completa de especies. Haz clic en las cabeceras para ordenar.
+                        Explora, filtra y gestiona la base de datos completa de especies. Haz clic en las cabeceras para ordenar. La tabla es desplazable horizontalmente.
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -98,38 +98,56 @@ export default function SpeciesCatalogPage() {
                         </Select>
                     </div>
 
-                    <div className="border rounded-md overflow-hidden">
-                        <Table>
+                    <div className="border rounded-md overflow-x-auto">
+                        <Table className="min-w-max">
                             <TableHeader>
                                 <TableRow>
-                                    <TableHead className="cursor-pointer hover:bg-muted" onClick={() => handleSort('spanishCommonName')}>
+                                    <TableHead className="cursor-pointer hover:bg-muted sticky left-0 bg-card z-10 w-[250px]" onClick={() => handleSort('spanishCommonName')}>
                                         <div className="flex items-center gap-2">Nombre Común {renderSortArrow('spanishCommonName')}</div>
                                     </TableHead>
-                                    <TableHead>Nombre Científico</TableHead>
-                                    <TableHead className="cursor-pointer hover:bg-muted" onClick={() => handleSort('family')}>
+                                    <TableHead className="cursor-pointer hover:bg-muted w-[150px]" onClick={() => handleSort('kingdom')}>
+                                        <div className="flex items-center gap-2">Reino {renderSortArrow('kingdom')}</div>
+                                    </TableHead>
+                                    <TableHead className="cursor-pointer hover:bg-muted w-[150px]" onClick={() => handleSort('phylum')}>
+                                        <div className="flex items-center gap-2">Filo {renderSortArrow('phylum')}</div>
+                                    </TableHead>
+                                    <TableHead className="cursor-pointer hover:bg-muted w-[150px]" onClick={() => handleSort('class')}>
+                                        <div className="flex items-center gap-2">Clase {renderSortArrow('class')}</div>
+                                    </TableHead>
+                                    <TableHead className="cursor-pointer hover:bg-muted w-[150px]" onClick={() => handleSort('order')}>
+                                        <div className="flex items-center gap-2">Orden {renderSortArrow('order')}</div>
+                                    </TableHead>
+                                    <TableHead className="cursor-pointer hover:bg-muted w-[150px]" onClick={() => handleSort('family')}>
                                         <div className="flex items-center gap-2">Familia {renderSortArrow('family')}</div>
                                     </TableHead>
-                                    <TableHead className="cursor-pointer hover:bg-muted" onClick={() => handleSort('iucnStatus')}>
+                                    <TableHead className="cursor-pointer hover:bg-muted w-[150px]" onClick={() => handleSort('genus')}>
+                                        <div className="flex items-center gap-2">Género {renderSortArrow('genus')}</div>
+                                    </TableHead>
+                                    <TableHead className="cursor-pointer hover:bg-muted w-[150px]" onClick={() => handleSort('iucnStatus')}>
                                         <div className="flex items-center gap-2">Estado UICN {renderSortArrow('iucnStatus')}</div>
                                     </TableHead>
-                                    <TableHead className="text-right">Acciones</TableHead>
+                                    <TableHead className="text-right sticky right-0 bg-card z-10 w-[120px]">Acciones</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
                                 {isLoading ? (
                                     [...Array(5)].map((_, i) => (
                                         <TableRow key={i}>
-                                            <TableCell colSpan={5}><Skeleton className="h-8 w-full" /></TableCell>
+                                            <TableCell colSpan={9}><Skeleton className="h-8 w-full" /></TableCell>
                                         </TableRow>
                                     ))
                                 ) : filteredAndSortedSpecies.length > 0 ? (
                                     filteredAndSortedSpecies.map(species => (
                                         <TableRow key={species.id}>
-                                            <TableCell className="font-medium">{species.spanishCommonName}</TableCell>
-                                            <TableCell className="italic text-muted-foreground">{`${species.genus || ''} ${species.specificEpithet || ''}`.trim() || 'N/A'}</TableCell>
+                                            <TableCell className="font-medium sticky left-0 bg-card z-10">{species.spanishCommonName}</TableCell>
+                                            <TableCell>{species.kingdom || 'N/A'}</TableCell>
+                                            <TableCell>{species.phylum || 'N/A'}</TableCell>
+                                            <TableCell>{species.class || 'N/A'}</TableCell>
+                                            <TableCell>{species.order || 'N/A'}</TableCell>
                                             <TableCell>{species.family || 'N/A'}</TableCell>
+                                            <TableCell className="italic">{species.genus || 'N/A'}</TableCell>
                                             <TableCell><Badge variant="secondary">{species.iucnStatus}</Badge></TableCell>
-                                            <TableCell className="text-right space-x-2">
+                                            <TableCell className="text-right space-x-2 sticky right-0 bg-card z-10">
                                                 <Button asChild variant="outline" size="sm-icon" title="Editar Especie">
                                                     <Link href={`/dashboard/edit/${species.id}`}><Edit className="h-4 w-4" /></Link>
                                                 </Button>
@@ -141,7 +159,7 @@ export default function SpeciesCatalogPage() {
                                     ))
                                 ) : (
                                     <TableRow>
-                                        <TableCell colSpan={5} className="text-center h-24 text-muted-foreground">
+                                        <TableCell colSpan={9} className="text-center h-24 text-muted-foreground">
                                             No se encontraron especies que coincidan con los filtros.
                                         </TableCell>
                                     </TableRow>
