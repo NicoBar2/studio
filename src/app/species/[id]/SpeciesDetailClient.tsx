@@ -240,8 +240,8 @@ export default function SpeciesDetailClient({ species }: SpeciesDetailClientProp
               </CardHeader>
               <CardContent>
                 <ul className="list-disc list-inside space-y-1">
-                  {species.keyStats.map(stat => (
-                    <li key={stat.label}><strong>{stat.label}:</strong> {stat.value} {stat.unit || ''}</li>
+                  {species.keyStats.map((stat, index) => (
+                    <li key={`${stat.label}-${index}`}><strong>{stat.label}:</strong> {stat.value} {stat.unit || ''}</li>
                   ))}
                 </ul>
               </CardContent>

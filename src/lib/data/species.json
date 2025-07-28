@@ -80,7 +80,7 @@
     "family": "Iguanidae",
     "spanishDescription": "La única iguana del mundo que se alimenta en el mar. Estas criaturas prehistóricas son famosas por su capacidad para bucear y alimentarse de algas submarinas. Pasan gran parte de su tiempo tomando el sol en las rocas volcánicas para calentarse.",
     "englishDescription": "The world's only sea-feeding iguana. These prehistoric-looking creatures are famous for their ability to dive and feed on underwater algae. They spend much of their time basking on volcanic rocks to warm up.",
-    "imageUrl": "https://images.unsplash.com/photo-1551009175-8a68da93d5f9?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "imageUrl": "https://i.ibb.co/35srbbKh/6ce9d97d2eb7.webp",
     "dataAiHint": "marine iguana",
     "icon": "Waves",
     "populationTrend": "decreasing",
@@ -102,34 +102,37 @@
     "historicalData": [
       {
         "year": 1990,
-        "value": 250000,
         "unit": "individuos",
-        "description": ""
+        "description": "",
+        "values": {},
+        "value": 0
       },
       {
         "year": 2010,
-        "value": 200000,
         "unit": "individuos",
-        "description": ""
+        "description": "",
+        "values": {},
+        "value": 0
       },
       {
         "year": 2022,
-        "value": 220000,
         "unit": "individuos",
-        "description": ""
+        "description": "",
+        "values": {},
+        "value": 0
       }
     ],
     "is_fernandina": false,
-    "is_espanola": true,
+    "is_espanola": false,
     "is_floreana": false,
     "is_santiago": false,
     "createdAt": "2024-01-01T12:00:00.000Z",
     "showHistoricalDataToPublic": false,
-    "is_darwin": true,
-    "is_genovesa": true,
+    "is_darwin": false,
+    "is_genovesa": false,
     "is_isabela": false,
     "is_marchena": false,
-    "is_pinta": true,
+    "is_pinta": false,
     "is_pinzon": false,
     "is_san_cristobal": false,
     "is_santa_cruz": false,
@@ -276,7 +279,7 @@
     "family": "Diomedeidae",
     "spanishDescription": "Prácticamente toda la población mundial de esta especie anida en la isla Española. Son conocidos por sus elaborados rituales de cortejo y su impresionante envergadura. Pasan la mayor parte de su vida en el mar.",
     "englishDescription": "Virtually the entire world population of this species nests on Española Island. They are known for their elaborate courtship rituals and impressive wingspan. They spend most of their lives at sea.",
-    "imageUrl": "https://images.unsplash.com/photo-1626432788327-a2ff38283a3d?q=80&w=1964&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "imageUrl": "https://i.ibb.co/BVjwGBg4/a1b607741a10.jpg",
     "dataAiHint": "albatross bird",
     "icon": "Bird",
     "populationTrend": "decreasing",
@@ -293,21 +296,24 @@
     "historicalData": [
       {
         "year": 1994,
-        "value": 15000,
         "unit": "parejas reproductoras",
-        "description": ""
+        "description": "",
+        "values": {},
+        "value": 0
       },
       {
         "year": 2007,
-        "value": 12000,
         "unit": "parejas reproductoras",
-        "description": ""
+        "description": "",
+        "values": {},
+        "value": 0
       },
       {
         "year": 2020,
-        "value": 10000,
         "unit": "parejas reproductoras",
-        "description": ""
+        "description": "",
+        "values": {},
+        "value": 0
       }
     ],
     "is_espanola": false,
@@ -337,7 +343,7 @@
     "family": "Otariidae",
     "spanishDescription": "Mamífero marino endémico muy sociable y juguetón, a menudo visto descansando en playas y muelles. Son más pequeños que sus parientes de California y tienen un ladrido característico.",
     "englishDescription": "A very social and playful endemic marine mammal, often seen resting on beaches and piers. They are smaller than their California relatives and have a characteristic bark.",
-    "imageUrl": "https://images.unsplash.com/photo-1577789324838-519aca2409de?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "imageUrl": "https://i.ibb.co/Hf16pvpx/ad92802931d9.jpg",
     "dataAiHint": "sea lion",
     "icon": "Waves",
     "populationTrend": "decreasing",
@@ -354,21 +360,24 @@
     "historicalData": [
       {
         "year": 1980,
-        "value": 60000,
         "unit": "individuos",
-        "description": ""
+        "description": "",
+        "values": {},
+        "value": 0
       },
       {
         "year": 2000,
-        "value": 50000,
         "unit": "individuos",
-        "description": ""
+        "description": "",
+        "values": {},
+        "value": 0
       },
       {
         "year": 2020,
-        "value": 45000,
         "unit": "individuos",
-        "description": ""
+        "description": "",
+        "values": {},
+        "value": 0
       }
     ],
     "is_isabela": false,
@@ -398,7 +407,7 @@
     "family": "Spheniscidae",
     "spanishDescription": "El único pingüino que vive al norte del ecuador. Es una de las especies de pingüinos más pequeñas del mundo. Utiliza las frías corrientes de Humboldt y Cromwell para sobrevivir en el clima tropical.",
     "englishDescription": "The only penguin that lives north of the equator. It is one of the smallest penguin species in the world. It uses the cold Humboldt and Cromwell currents to survive in the tropical climate.",
-    "imageUrl": "https://images.unsplash.com/photo-1598463166191-3316ce59fb7a?q=80&w=2010&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "imageUrl": "https://i.ibb.co/kgB4ysbK/1b89524b8d5b.jpg",
     "dataAiHint": "penguin galapagos",
     "icon": "Bird",
     "populationTrend": "stable",
@@ -415,21 +424,24 @@
     "historicalData": [
       {
         "year": 2004,
-        "value": 1000,
         "unit": "individuos",
-        "description": "Censo post El Niño severo."
+        "description": "Censo post El Niño severo.",
+        "values": {},
+        "value": 0
       },
       {
         "year": 2019,
-        "value": 1200,
         "unit": "individuos",
-        "description": ""
+        "description": "",
+        "values": {},
+        "value": 0
       },
       {
         "year": 2021,
-        "value": 2000,
         "unit": "individuos",
-        "description": "Aumento significativo post-La Niña."
+        "description": "Aumento significativo post-La Niña.",
+        "values": {},
+        "value": 0
       }
     ],
     "is_isabela": false,
@@ -459,7 +471,7 @@
     "family": "Tropiduridae",
     "spanishDescription": "Pequeños reptiles muy comunes en las islas, con diferentes especies o subespecies en cada isla. Son conocidos por sus exhibiciones de 'flexiones' (push-ups) para defender su territorio. El color de los machos varía según la isla.",
     "englishDescription": "Small reptiles very common on the islands, with different species or subspecies on each island. They are known for their 'push-up' displays to defend their territory. The color of the males varies depending on the island.",
-    "imageUrl": "https://images.unsplash.com/photo-1533738990152-4543b58406f5?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "imageUrl": "https://i.ibb.co/7xRbrzyZ/c87fa22e850e.jpg",
     "dataAiHint": "lava lizard",
     "icon": "Footprints",
     "populationTrend": "stable",
@@ -476,21 +488,24 @@
     "historicalData": [
       {
         "year": 2000,
-        "value": 500000,
         "unit": "individuos",
-        "description": ""
+        "description": "",
+        "values": {},
+        "value": 0
       },
       {
         "year": 2010,
-        "value": 550000,
         "unit": "individuos",
-        "description": ""
+        "description": "",
+        "values": {},
+        "value": 0
       },
       {
         "year": 2020,
-        "value": 530000,
         "unit": "individuos",
-        "description": ""
+        "description": "",
+        "values": {},
+        "value": 0
       }
     ],
     "is_santa_cruz": false,
