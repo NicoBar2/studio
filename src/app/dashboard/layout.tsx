@@ -2,7 +2,7 @@
 "use client"; 
 import RoleBasedGuard from '@/components/auth/RoleBasedGuard';
 import { Sidebar, SidebarProvider, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarHeader, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
-import { LayoutDashboard, Users, HomeIcon, FileUp, GitCompareArrows, PlusCircle, Layers, DatabaseZap } from 'lucide-react';
+import { LayoutDashboard, Users, HomeIcon, FileUp, GitCompareArrows, PlusCircle, Layers, DatabaseZap, ListChecks } from 'lucide-react';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -56,6 +56,15 @@ export default function DashboardLayout({
                   </SidebarMenuButton>
                 </SidebarMenuItem>
                 
+                 <SidebarMenuItem>
+                  <SidebarMenuButton asChild variant="ghost" className="justify-start w-full" tooltip="Catálogo de Especies">
+                    <Link href="/dashboard/catalog">
+                      <ListChecks />
+                      <span className="group-data-[state=collapsed]:hidden">Catálogo de Especies</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+
                 <SidebarMenuItem>
                   <SidebarMenuButton asChild variant="ghost" className="justify-start w-full" tooltip={t.sidebar_add_species}>
                     <Link href="/dashboard/add-species">
