@@ -14,12 +14,27 @@ import { redirect } from 'next/navigation';
 import bcrypt from 'bcryptjs';
 import fetch from 'node-fetch';
 import { Resend } from 'resend';
+import admin from 'firebase-admin';
 
 
 // --- Data Access Functions (moved from /lib) ---
 
 const speciesDbPath = path.join(process.cwd(), 'src', 'lib', 'data', 'species.json');
 const researchersDbPath = path.join(process.cwd(), 'src', 'lib', 'data', 'researchers.json');
+
+
+if (!admin.apps.length) {
+  try {
+    admin.initializeApp({
+      credential: admin.credential.applicationDefault(),
+    });
+  } catch (error) {
+    console.log('Firebase admin initialization error', error);
+  }
+}
+
+const db = admin.firestore();
+
 
 async function readJsonFile<T>(filePath: string): Promise<T[]> {
     try {
@@ -240,6 +255,19 @@ async function generateSpeciesInsight(speciesName: string, speciesData: string):
 
 export async function getSpeciesListAction(): Promise<Species[]> {
   return getSpeciesList();
+}
+
+export async function getAllSpeciesFromFirestoreAction(): Promise<Species[]> {
+  try {
+    const snapshot = await db.collection('allSpeciesData').orderBy('createdAt', 'desc').get();
+    if (snapshot.empty) {
+      return [];
+    }
+    return snapshot.docs.map(doc => doc.data() as Species);
+  } catch (error) {
+    console.error("Error fetching species from Firestore:", error);
+    return [];
+  }
 }
 
 export async function getSpeciesByIdAction(id: string): Promise<Species | undefined> {

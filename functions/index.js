@@ -64,12 +64,16 @@ function processCSVDataFast(records, filename) {
       
       // Solo extraer campos esenciales
       return {
+        id: scientificName.toLowerCase().replace(/\s+/g, '-'),
         ScientificName: scientificName,
         CommonNameEnglish: String(record.CommonNameEnglish || "").trim(),
+        family: String(record.Family || "").trim(),
+        iucnStatus: String(record.IUCNStatus || "Datos Insuficientes").trim(),
         Islands: extractIslands(record),
         Bioregions: extractBioregions(record),
         sourceFile: filename,
         recordIndex: i,
+        createdAt: new Date().toISOString(),
       };
     } catch (err) {
       console.warn(`⚠️ Error en registro ${i}:`, err.message);
@@ -110,37 +114,39 @@ function extractBioregions(record) {
 async function saveToFirestoreFast(records, collectionName, filename) {
   if (records.length === 0) return 0;
   
-  console.log(`💾 Guardado rápido: ${records.length} docs en ${collectionName}`);
+  console.log(`💾 Guardado rápido: ${records.length} docs en ${collectionName} y allSpeciesData`);
   
   let saved = 0;
   
-  // Dividir en batches pequeños para velocidad
   for (let i = 0; i < records.length; i += CONFIG.BATCH_SIZE) {
     const batch = db.batch();
     const chunk = records.slice(i, i + CONFIG.BATCH_SIZE);
     
     chunk.forEach(record => {
+      // Guardar en la colección específica del archivo
       const docRef = db.collection("webScrapedData")
         .doc(collectionName)
         .collection("entries")
-        .doc();
-      
+        .doc(); // ID aleatorio
       batch.set(docRef, {
         ...record,
         processedAt: admin.firestore.FieldValue.serverTimestamp(),
       });
+
+      // Guardar/Actualizar en la colección centralizada 'allSpeciesData'
+      const allSpeciesRef = db.collection("allSpeciesData").doc(record.id);
+      batch.set(allSpeciesRef, record, { merge: true });
     });
     
     await batch.commit();
     saved += chunk.length;
     
-    // Pausa micro entre batches
     if (i + CONFIG.BATCH_SIZE < records.length) {
       await new Promise(resolve => setTimeout(resolve, CONFIG.PAUSE_BETWEEN_BATCHES));
     }
   }
   
-  console.log(`✅ Guardados ${saved} documentos en ${collectionName}`);
+  console.log(`✅ Guardados/Actualizados ${saved} documentos en ${collectionName} y allSpeciesData`);
   return saved;
 }
 
@@ -399,8 +405,22 @@ exports.scrapeDarwinData = onCall({
 // Función para verificar progreso de una sesión
 exports.checkScrapingProgress = onCall(async (request) => {
   const sessionId = request.data.sessionId;
+  
   if (!sessionId) {
-    throw new HttpsError("invalid-argument", "sessionId requerido");
+    // Si no se proporciona sessionId, busca la última sesión.
+    const snapshot = await db.collection("scrapingProgress")
+                            .orderBy("startedAt", "desc")
+                            .limit(1)
+                            .get();
+    if (snapshot.empty) {
+      throw new HttpsError("not-found", "No se encontraron sesiones de scraping.");
+    }
+    const latestProgress = snapshot.docs[0].data();
+    return {
+      success: true,
+      ...latestProgress,
+      progressPercentage: Math.round((latestProgress.processedFiles / latestProgress.totalFiles) * 100),
+    };
   }
   
   const progress = await getProgress(sessionId);

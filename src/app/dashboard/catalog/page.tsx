@@ -3,7 +3,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import type { Species, ConservationStatus } from '@/lib/types';
-import { getSpeciesListAction } from '@/app/actions';
+import { getAllSpeciesFromFirestoreAction } from '@/app/actions';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { GALAPAGOS_ISLANDS_NAMES } from '@/lib/utils';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -41,7 +41,7 @@ export default function SpeciesCatalogPage() {
     useEffect(() => {
         const fetchSpecies = async () => {
             setIsLoading(true);
-            const data = await getSpeciesListAction();
+            const data = await getAllSpeciesFromFirestoreAction();
             setAllSpecies(data);
             setIsLoading(false);
         };
