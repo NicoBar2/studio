@@ -20,20 +20,19 @@ export default function ScrapeoPage() {
         const checkDate = () => {
             const today = new Date();
             const targetDay = 27;
-            const targetMonth = 6; // July (0-indexed)
+            const targetMonth = 6; // July (0-indexed, so 6 is July)
+            const currentYear = today.getFullYear();
             
-            if (today.getDate() === targetDay && today.getMonth() === targetMonth) {
+            const activationDate = new Date(currentYear, targetMonth, targetDay);
+
+            if (today >= activationDate) {
                 setIsButtonEnabled(true);
-                setTimeRemaining('El botón está habilitado hoy.');
+                setTimeRemaining('El período de scraping manual para este año está activo.');
             } else {
                 setIsButtonEnabled(false);
-                let nextActivation = new Date(today.getFullYear(), targetMonth, targetDay);
-                if (today > nextActivation) {
-                    nextActivation.setFullYear(today.getFullYear() + 1);
-                }
-                const diff = nextActivation.getTime() - today.getTime();
+                const diff = activationDate.getTime() - today.getTime();
                 const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
-                setTimeRemaining(`El botón se habilitará en ${days} día(s).`);
+                setTimeRemaining(`El botón se habilitará el 27 de julio. Faltan ${days} día(s).`);
             }
         };
 
@@ -93,7 +92,7 @@ export default function ScrapeoPage() {
                            <Calendar className="h-4 w-4" />
                            <AlertTitle>Funcionamiento Anual</AlertTitle>
                            <AlertDescription>
-                            Esta función está diseñada para ejecutarse una vez al año, el <strong>27 de julio</strong>, para asegurar que nuestros datos estén sincronizados. {timeRemaining}
+                            Esta función está diseñada para ejecutarse anualmente. El botón se activa el <strong>27 de julio</strong> y permanece activo por si el proceso automático falla o es olvidado. {timeRemaining}
                            </AlertDescription>
                         </Alert>
                         
@@ -115,7 +114,7 @@ export default function ScrapeoPage() {
                                <Info className="h-4 w-4" />
                                <AlertTitle>Botón Deshabilitado</AlertTitle>
                                <AlertDescription>
-                                 El botón solo está activo el 27 de julio de cada año para prevenir ejecuciones accidentales y sobrecarga del sistema.
+                                 El botón solo se activa a partir del 27 de julio de cada año para prevenir ejecuciones accidentales y sobrecarga del sistema.
                                </AlertDescription>
                             </Alert>
                         )}
