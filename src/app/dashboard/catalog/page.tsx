@@ -129,24 +129,24 @@ export default function SpeciesCatalogPage() {
                                 className="pl-9"
                             />
                         </div>
-                         <Select value={familyFilter} onValueChange={setFamilyFilter}>
+                         <Select value={familyFilter} onValueChange={(value) => setFamilyFilter(value === 'all' ? '' : value)}>
                             <SelectTrigger><SelectValue placeholder="Filtrar por Familia" /></SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="">Todas las Familias</SelectItem>
+                                <SelectItem value="all">Todas las Familias</SelectItem>
                                 {uniqueFamilies.map(family => <SelectItem key={family} value={family}>{family}</SelectItem>)}
                             </SelectContent>
                         </Select>
-                        <Select value={statusFilter} onValueChange={setStatusFilter}>
+                        <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value === 'all' ? '' : value)}>
                             <SelectTrigger><SelectValue placeholder="Filtrar por Estado UICN" /></SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="">Todos los Estados</SelectItem>
+                                <SelectItem value="all">Todos los Estados</SelectItem>
                                 {CONSERVATION_STATUSES.map(status => <SelectItem key={status} value={status}>{status}</SelectItem>)}
                             </SelectContent>
                         </Select>
-                        <Select value={islandFilter} onValueChange={setIslandFilter}>
+                        <Select value={islandFilter} onValueChange={(value) => setIslandFilter(value === 'all' ? '' : value)}>
                             <SelectTrigger><SelectValue placeholder="Filtrar por Isla" /></SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="">Todas las Islas</SelectItem>
+                                <SelectItem value="all">Todas las Islas</SelectItem>
                                 {GALAPAGOS_ISLANDS_NAMES.sort().map(island => <SelectItem key={island} value={island}>{island}</SelectItem>)}
                             </SelectContent>
                         </Select>
