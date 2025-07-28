@@ -120,7 +120,7 @@ export default function ScrapeoPage() {
                         )}
                         
                         <div className="text-sm text-muted-foreground pt-4">
-                            <p><strong>Nota:</strong> Al hacer clic, se ejecutará la Cloud Function `scrapeDarwinData` para actualizar la base de datos con la información más reciente. Este proceso es intensivo y puede tardar varios minutos. Puedes monitorear el progreso en los logs de Firebase Functions.</p>
+                            <p><strong>Nota:</strong> Se extraen y se limpian datos de la base de datos <a href="https://datazone.darwinfoundation.org/es/checklist/checklists-archive" target="_blank" rel="noopener noreferrer" className="text-primary underline">Datazone de la Fundación Darwin</a> con el fin de mantener la autenticidad de los datos. Este proceso puede tardar varios minutos.</p>
                             <p className="mt-2">Se recomienda forzar un reinicio (`forceRestart: true`) para asegurar una importación limpia cada año.</p>
                         </div>
 
