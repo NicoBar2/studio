@@ -166,6 +166,7 @@ export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
           <input type="hidden" name="userRole" value={role || ''} />
           <input type="hidden" name="userEmail" value={userEmail || ''} />
           <input type="hidden" name="historicalData" value={JSON.stringify(historicalData)} />
+          <input type="hidden" name="imageUrl" value={imageFileValue} />
 
 
           <Accordion type="multiple" defaultValue={['item-1', 'item-2']} className="w-full">
@@ -300,7 +301,6 @@ export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
                                 hover:file:bg-primary/20"
                     />
                     </div>
-                    <input type="hidden" name="imageUrl" value={imageFileValue} />
                     <p className="mt-1 text-xs text-muted-foreground">
                     Sube una nueva imagen para reemplazar la actual. Si no seleccionas una nueva, se mantendrá la imagen existente.
                     </p>

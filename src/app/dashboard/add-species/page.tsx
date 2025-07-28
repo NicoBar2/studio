@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useActionState, useState, useEffect, type ChangeEvent, useRef, useCallback } from 'react';
+import { useActionState, useState, useEffect, type ChangeEvent, useRef, useMemo, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import RoleBasedGuard from '@/components/auth/RoleBasedGuard';
@@ -206,6 +206,7 @@ export default function AddSpeciesPage() {
                             <input type="hidden" name="userRole" value={role || ''} />
                             <input type="hidden" name="userEmail" value={userEmail || ''} />
                             <input type="hidden" name="historicalData" value={JSON.stringify(historicalData)} />
+                            <input type="hidden" name="imageUrl" value={imageFileValue} />
                             
                             <Accordion type="multiple" defaultValue={['item-0']} className="w-full">
                                 <AccordionItem value="item-0">
@@ -371,7 +372,6 @@ export default function AddSpeciesPage() {
                                                         hover:file:bg-primary/20"
                                             />
                                         </div>
-                                        <input type="hidden" name="imageUrl" value={imageFileValue} />
                                         <p className="mt-1 text-xs text-muted-foreground">
                                             {t.addSpecies_image_hint}
                                         </p>

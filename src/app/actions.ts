@@ -15,6 +15,8 @@ import bcrypt from 'bcryptjs';
 import fetch from 'node-fetch';
 import { Resend } from 'resend';
 import admin from 'firebase-admin';
+import axios from 'axios';
+import FormData from 'form-data';
 
 
 // --- Data Access Functions (moved from /lib) ---
@@ -244,6 +246,38 @@ async function deleteResearcherById(id: string): Promise<boolean> {
 
 // --- Server Actions ---
 
+async function handleImageUpload(imageDataUri: string): Promise<string> {
+    if (!process.env.IMGBB_API_KEY) {
+        console.warn('IMGBB_API_KEY not set. Returning placeholder.');
+        return 'https://placehold.co/600x400.png';
+    }
+    if (!imageDataUri.startsWith('data:image')) {
+        return imageDataUri; // It's already a URL, no need to upload
+    }
+
+    try {
+        const base64Data = imageDataUri.split(',')[1];
+        const formData = new FormData();
+        formData.append('image', base64Data);
+
+        const response = await axios.post(
+            `https://api.imgbb.com/1/upload?key=${process.env.IMGBB_API_KEY}`,
+            formData,
+            { headers: formData.getHeaders() }
+        );
+
+        if (response.data.success) {
+            return response.data.data.url;
+        } else {
+            console.error('ImgBB upload failed:', response.data);
+            return 'https://placehold.co/600x400.png'; // Fallback
+        }
+    } catch (error) {
+        console.error('Error uploading to ImgBB:', error);
+        return 'https://placehold.co/600x400.png'; // Fallback
+    }
+}
+
 // Placeholder for AI insight generation
 async function generateSpeciesInsight(speciesName: string, speciesData: string): Promise<string> {
   await new Promise(resolve => setTimeout(resolve, 1500));
@@ -353,6 +387,8 @@ export async function saveSpeciesData(prevState: any, formData: FormData): Promi
         }
     }
 
+    const imageDataUri = formData.get('imageUrl') as string;
+    const finalImageUrl = await handleImageUpload(imageDataUri);
 
     const updatedData: Partial<Species> = {
       spanishCommonName: formData.get('spanishCommonName') as string || currentSpecies.spanishCommonName,
@@ -361,7 +397,7 @@ export async function saveSpeciesData(prevState: any, formData: FormData): Promi
       specificEpithet: formData.get('specificEpithet') as string || currentSpecies.specificEpithet,
       spanishDescription: formData.get('spanishDescription') as string || currentSpecies.spanishDescription,
       englishDescription: formData.get('englishDescription') as string || currentSpecies.englishDescription,
-      imageUrl: formData.get('imageUrl') as string || currentSpecies.imageUrl,
+      imageUrl: finalImageUrl,
       iucnStatus: formData.get('iucnStatus') as Species['iucnStatus'] || currentSpecies.iucnStatus,
       populationTrend: formData.get('populationTrend') as Species['populationTrend'] || currentSpecies.populationTrend,
       habitat: formData.get('habitat') as string || currentSpecies.habitat,
@@ -460,6 +496,9 @@ export async function addSpeciesAction(prevState: any, formData: FormData): Prom
         }
     }
 
+    const imageDataUri = formData.get('imageUrl') as string;
+    const finalImageUrl = await handleImageUpload(imageDataUri);
+
     const newSpeciesData: Partial<Species> = {
       spanishCommonName: spanishCommonName,
       englishCommonName: formData.get('englishCommonName') as string,
@@ -467,7 +506,7 @@ export async function addSpeciesAction(prevState: any, formData: FormData): Prom
       specificEpithet: formData.get('specificEpithet') as string,
       spanishDescription: formData.get('spanishDescription') as string,
       englishDescription: formData.get('englishDescription') as string,
-      imageUrl: formData.get('imageUrl') as string,
+      imageUrl: finalImageUrl,
       iucnStatus: formData.get('iucnStatus') as Species['iucnStatus'],
       populationTrend: formData.get('populationTrend') as Species['populationTrend'],
       habitat: formData.get('habitat') as string,
@@ -1045,7 +1084,7 @@ export async function updateMyProfileAction(prevState: any, formData: FormData):
     const researcherName = formData.get('researcherName') as string;
     const institution = formData.get('institution') as string;
     const specialization = formData.get('specialization') as string;
-    const profileImageUrl = formData.get('profileImageUrl') as string;
+    const imageDataUri = formData.get('profileImageUrl') as string;
 
     if (!userEmail) {
         return { success: false, message: 'No se pudo identificar al usuario.' };
@@ -1061,11 +1100,13 @@ export async function updateMyProfileAction(prevState: any, formData: FormData):
     }
 
     try {
+        const finalImageUrl = await handleImageUpload(imageDataUri);
+
         const updatedData: Partial<Researcher> = {
             name: researcherName,
             institution,
             specialization,
-            profileImageUrl: profileImageUrl || researcher.profileImageUrl,
+            profileImageUrl: finalImageUrl,
         };
 
         const updatedResearcher = await updateResearcher(researcher.id, updatedData);
