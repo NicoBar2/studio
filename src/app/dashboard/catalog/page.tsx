@@ -123,17 +123,13 @@ export default function SpeciesCatalogPage() {
                                     <TableHead className="cursor-pointer hover:bg-muted w-[150px]" onClick={() => handleSort('genus')}>
                                         <div className="flex items-center gap-2">Género {renderSortArrow('genus')}</div>
                                     </TableHead>
-                                    <TableHead className="cursor-pointer hover:bg-muted w-[150px]" onClick={() => handleSort('iucnStatus')}>
-                                        <div className="flex items-center gap-2">Estado UICN {renderSortArrow('iucnStatus')}</div>
-                                    </TableHead>
-                                    <TableHead className="text-right sticky right-0 bg-card z-10 w-[120px]">Acciones</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
                                 {isLoading ? (
                                     [...Array(5)].map((_, i) => (
                                         <TableRow key={i}>
-                                            <TableCell colSpan={9}><Skeleton className="h-8 w-full" /></TableCell>
+                                            <TableCell colSpan={7}><Skeleton className="h-8 w-full" /></TableCell>
                                         </TableRow>
                                     ))
                                 ) : filteredAndSortedSpecies.length > 0 ? (
@@ -146,20 +142,11 @@ export default function SpeciesCatalogPage() {
                                             <TableCell>{species.order || 'N/A'}</TableCell>
                                             <TableCell>{species.family || 'N/A'}</TableCell>
                                             <TableCell className="italic">{species.genus || 'N/A'}</TableCell>
-                                            <TableCell><Badge variant="secondary">{species.iucnStatus}</Badge></TableCell>
-                                            <TableCell className="text-right space-x-2 sticky right-0 bg-card z-10">
-                                                <Button asChild variant="outline" size="sm-icon" title="Editar Especie">
-                                                    <Link href={`/dashboard/edit/${species.id}`}><Edit className="h-4 w-4" /></Link>
-                                                </Button>
-                                                <Button asChild variant="ghost" size="sm-icon" title="Ver Página Pública">
-                                                    <Link href={`/species/${species.id}`}><ExternalLink className="h-4 w-4" /></Link>
-                                                </Button>
-                                            </TableCell>
                                         </TableRow>
                                     ))
                                 ) : (
                                     <TableRow>
-                                        <TableCell colSpan={9} className="text-center h-24 text-muted-foreground">
+                                        <TableCell colSpan={7} className="text-center h-24 text-muted-foreground">
                                             No se encontraron especies que coincidan con los filtros.
                                         </TableCell>
                                     </TableRow>
