@@ -246,13 +246,13 @@ async function deleteResearcherById(id: string): Promise<boolean> {
 
 // --- Server Actions ---
 
-async function handleImageUpload(imageDataUri: string): Promise<string> {
+async function handleImageUpload(imageDataUri: string, currentImageUrl: string): Promise<string> {
+    if (!imageDataUri.startsWith('data:image')) {
+        return currentImageUrl; // No new image was selected, return the existing URL
+    }
     if (!process.env.IMGBB_API_KEY) {
         console.warn('IMGBB_API_KEY not set. Returning placeholder.');
         return 'https://placehold.co/600x400.png';
-    }
-    if (!imageDataUri.startsWith('data:image')) {
-        return imageDataUri; // It's already a URL, no need to upload
     }
 
     try {
@@ -388,7 +388,7 @@ export async function saveSpeciesData(prevState: any, formData: FormData): Promi
     }
 
     const imageDataUri = formData.get('imageUrl') as string;
-    const finalImageUrl = await handleImageUpload(imageDataUri);
+    const finalImageUrl = await handleImageUpload(imageDataUri, currentSpecies.imageUrl);
 
     const updatedData: Partial<Species> = {
       spanishCommonName: formData.get('spanishCommonName') as string || currentSpecies.spanishCommonName,
@@ -497,7 +497,7 @@ export async function addSpeciesAction(prevState: any, formData: FormData): Prom
     }
 
     const imageDataUri = formData.get('imageUrl') as string;
-    const finalImageUrl = await handleImageUpload(imageDataUri);
+    const finalImageUrl = await handleImageUpload(imageDataUri, 'https://placehold.co/600x400.png');
 
     const newSpeciesData: Partial<Species> = {
       spanishCommonName: spanishCommonName,
@@ -1100,7 +1100,7 @@ export async function updateMyProfileAction(prevState: any, formData: FormData):
     }
 
     try {
-        const finalImageUrl = await handleImageUpload(imageDataUri);
+        const finalImageUrl = await handleImageUpload(imageDataUri, researcher.profileImageUrl || '');
 
         const updatedData: Partial<Researcher> = {
             name: researcherName,

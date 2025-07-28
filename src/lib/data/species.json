@@ -8,7 +8,7 @@
     "family": "Testudinidae",
     "spanishDescription": "Reptiles icónicos conocidos por su larga vida y gran tamaño, desempeñando un papel crucial en la configuración de su entorno. Son herbívoros y su lento metabolismo les permite sobrevivir largos períodos sin comida ni agua.",
     "englishDescription": "Iconic reptiles known for their long lifespan and large size, playing a crucial role in shaping their environment. They are herbivores, and their slow metabolism allows them to survive long periods without food or water.",
-    "imageUrl": "https://images.unsplash.com/photo-1596481775269-9a3b6527cb04?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "imageUrl": "https://i.ibb.co/gbhTGhDv/21e560e28fef.jpg",
     "dataAiHint": "giant tortoise",
     "icon": "Turtle",
     "populationTrend": "unknown",
@@ -149,15 +149,13 @@
     "family": "Thraupidae",
     "spanishDescription": "Un grupo de unas 15 especies de aves famosas por la variación en la forma y tamaño de sus picos, que están adaptados a diferentes fuentes de alimento. Jugaron un papel clave en la teoría de la evolución por selección natural de Darwin.",
     "englishDescription": "A group of about 15 species of birds famous for the variation in the shape and size of their beaks, which are adapted to different food sources. They played a key role in Darwin's theory of evolution by natural selection.",
-    "imageUrl": "https://images.unsplash.com/photo-1551381600-7539423548a3?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "imageUrl": "https://i.ibb.co/s9J1LBv0/1d43c36ea4ee.webp",
     "dataAiHint": "finch bird",
     "icon": "Bird",
     "populationTrend": "unknown",
     "iucnStatus": "Datos Insuficientes",
     "habitat": "string",
-    "threats": [
-      "string"
-    ],
+    "threats": [],
     "keyStats": [
       {
         "label": "string",
@@ -171,21 +169,24 @@
     "historicalData": [
       {
         "year": 1995,
-        "value": 300000,
         "unit": "individuos",
-        "description": ""
+        "description": "",
+        "values": {},
+        "value": 0
       },
       {
         "year": 2005,
-        "value": 320000,
         "unit": "individuos",
-        "description": ""
+        "description": "",
+        "values": {},
+        "value": 0
       },
       {
         "year": 2015,
-        "value": 310000,
         "unit": "individuos",
-        "description": ""
+        "description": "",
+        "values": {},
+        "value": 0
       }
     ],
     "is_isabela": false,
@@ -534,27 +535,30 @@
     "specificEpithet": "trifasciatus",
     "family": "Mimidae",
     "spanishDescription": "El Sinsonte de Floreana es una especie endémica de las Islas Galápagos, actualmente restringida a islas pequeñas como Champion e Isla Gardner cerca de Floreana. Se caracteriza por su plumaje de color grisáceo-marrón, con rayas más oscuras en la espalda y alas. Son omnívoros, alimentándose de insectos, frutos y néctar.",
-    "imageUrl": "https://placehold.co/600x400.png",
+    "imageUrl": "https://i.ibb.co/8DynQgmC/e419d89fecfc.webp",
     "dataAiHint": "floreana mockingbird",
     "icon": "Bird",
     "historicalData": [
       {
         "year": 1996,
-        "value": 150,
         "unit": "individuos",
-        "description": "Estimación de población"
+        "description": "Estimación de población",
+        "values": {},
+        "value": 0
       },
       {
         "year": 2008,
-        "value": 50,
         "unit": "individuos",
-        "description": "Población post-evento climático"
+        "description": "Población post-evento climático",
+        "values": {},
+        "value": 0
       },
       {
         "year": 2017,
-        "value": 80,
         "unit": "individuos",
-        "description": "Población en islas Champion y Gardner"
+        "description": "Población en islas Champion y Gardner",
+        "values": {},
+        "value": 0
       }
     ],
     "iucnStatus": "En Peligro Crítico",
@@ -588,7 +592,7 @@
     "specificEpithet": "lewini",
     "family": "Sphyrnidae",
     "spanishDescription": "Conocido por su distintiva cabeza en forma de 'T' o martillo. A menudo se congregan en grandes grupos alrededor de las islas Darwin y Wolf, lo que los convierte en una atracción clave para los buceadores. Son depredadores ápice en el ecosistema marino.",
-    "imageUrl": "https://images.unsplash.com/photo-1588691395641-7a91b2d0445e?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "imageUrl": "https://placehold.co/600x400.png",
     "dataAiHint": "hammerhead shark",
     "icon": "Waves",
     "populationTrend": "decreasing",
@@ -610,15 +614,17 @@
     "historicalData": [
       {
         "year": 2005,
-        "value": 100,
         "unit": "individuos/km²",
-        "description": "Línea base de monitoreo"
+        "description": "Línea base de monitoreo",
+        "values": {},
+        "value": 0
       },
       {
         "year": 2015,
-        "value": 75,
         "unit": "individuos/km²",
-        "description": "Disminución observada"
+        "description": "Disminución observada",
+        "values": {},
+        "value": 0
       }
     ],
     "is_darwin": false,
