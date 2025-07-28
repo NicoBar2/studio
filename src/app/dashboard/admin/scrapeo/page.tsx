@@ -21,13 +21,15 @@ export default function ScrapeoPage() {
     const { toast } = useToast();
     const [isScraping, setIsScraping] = useState(false);
     const [isButtonEnabled, setIsButtonEnabled] = useState(false);
-    const [statusMessage, setStatusMessage] = useState('');
+    const [statusMessage, setStatusMessage] = useState('Verificando estado...');
     const [lastScrapeInfo, setLastScrapeInfo] = useState<ScrapeInfo | null>(null);
 
     useEffect(() => {
-        const checkScrapeStatusAndDate = async () => {
+        // This function is now self-contained and will run once on mount.
+        const checkScrapeStatusAndSetButton = async () => {
+            let info: ScrapeInfo | null = null;
             try {
-                // Fetch the latest scrape progress
+                // Check for the latest scrape session
                 const progressResponse = await fetch('https://us-central1-galapagos-datalens.cloudfunctions.net/checkScrapingProgress', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -36,46 +38,47 @@ export default function ScrapeoPage() {
 
                 if (progressResponse.ok) {
                     const result = await progressResponse.json();
-                    setLastScrapeInfo(result.result);
+                    info = result.result;
+                    setLastScrapeInfo(info);
                 } else {
-                    setStatusMessage('No se pudo verificar el estado del último scraping.');
+                   setStatusMessage('No se pudo verificar el estado del último scraping.');
+                   return;
                 }
-
             } catch (error) {
-                 setStatusMessage('Error de conexión al verificar el estado del scraping.');
+                setStatusMessage('Error de conexión al verificar el estado del scraping.');
+                return;
+            }
+
+            const today = new Date();
+            const currentYear = today.getFullYear();
+            let activationDate = new Date(currentYear, 6, 27); // Month is 0-indexed, so 6 is July.
+            
+            const lastScrapeYear = info?.startedAt ? new Date(info.startedAt).getFullYear() : 0;
+            const isCompletedThisYear = info?.status === 'completed' && lastScrapeYear === currentYear;
+
+            if (isCompletedThisYear) {
+                setIsButtonEnabled(false);
+                const completionDate = info.completedAt ? new Date(info.completedAt).toLocaleDateString() : 'recientemente';
+                
+                // Set activation for next year
+                activationDate = new Date(currentYear + 1, 6, 27);
+                const diff = activationDate.getTime() - today.getTime();
+                const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+                setStatusMessage(`La actualización de este año ya se realizó el ${completionDate}. La próxima activación será en ${days} día(s).`);
+                
+            } else if (today >= activationDate) {
+                setIsButtonEnabled(true);
+                setStatusMessage('El período de scraping manual para este año está activo.');
+            } else {
+                setIsButtonEnabled(false);
+                const diff = activationDate.getTime() - today.getTime();
+                const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+                setStatusMessage(`El botón se habilitará el 27 de julio. Faltan ${days} día(s).`);
             }
         };
 
-        checkScrapeStatusAndDate();
+        checkScrapeStatusAndSetButton();
     }, []);
-
-    useEffect(() => {
-        const today = new Date();
-        const currentYear = today.getFullYear();
-        const activationDate = new Date(currentYear, 6, 27); // Month is 0-indexed, so 6 is July.
-        
-        if (lastScrapeInfo) {
-            const lastScrapeYear = lastScrapeInfo.startedAt ? new Date(lastScrapeInfo.startedAt).getFullYear() : 0;
-            
-            if (lastScrapeInfo.status === 'completed' && lastScrapeYear === currentYear) {
-                setIsButtonEnabled(false);
-                const completionDate = lastScrapeInfo.completedAt ? new Date(lastScrapeInfo.completedAt).toLocaleDateString() : 'recientemente';
-                setStatusMessage(`La actualización de este año ya se realizó con éxito el ${completionDate}.`);
-                return; // End execution here
-            }
-        }
-        
-        if (today >= activationDate) {
-            setIsButtonEnabled(true);
-            setStatusMessage('El período de scraping manual para este año está activo.');
-        } else {
-            setIsButtonEnabled(false);
-            const diff = activationDate.getTime() - today.getTime();
-            const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
-            setStatusMessage(`El botón se habilitará el 27 de julio. Faltan ${days} día(s).`);
-        }
-
-    }, [lastScrapeInfo]);
 
     const handleScrape = async () => {
         setIsScraping(true);
@@ -130,7 +133,7 @@ export default function ScrapeoPage() {
                            <Calendar className="h-4 w-4" />
                            <AlertTitle>Funcionamiento Anual</AlertTitle>
                            <AlertDescription>
-                            Esta función está diseñada para ejecutarse anualmente. El botón se activa a partir del <strong>27 de julio</strong> si el proceso no se ha completado en el año en curso. {statusMessage}
+                            Esta función está diseñada para ejecutarse anualmente para mantener los datos actualizados. {statusMessage}
                            </AlertDescription>
                         </Alert>
                         
