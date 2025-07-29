@@ -1,4 +1,3 @@
-
 "use client"; 
 import RoleBasedGuard from '@/components/auth/RoleBasedGuard';
 import { Sidebar, SidebarProvider, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarHeader, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
@@ -55,15 +54,6 @@ export default function DashboardLayout({
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
-                
-                 <SidebarMenuItem>
-                  <SidebarMenuButton asChild variant="ghost" className="justify-start w-full" tooltip="Catálogo de Especies">
-                    <Link href="/dashboard/catalog">
-                      <ListChecks />
-                      <span className="group-data-[state=collapsed]:hidden">Catálogo de Especies</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
 
                 <SidebarMenuItem>
                   <SidebarMenuButton asChild variant="ghost" className="justify-start w-full" tooltip={t.sidebar_add_species}>
@@ -89,14 +79,6 @@ export default function DashboardLayout({
                         <Link href="/dashboard/admin/import">
                           <FileUp />
                           <span className="group-data-[state=collapsed]:hidden">{t.sidebar_import_species}</span>
-                        </Link>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                    <SidebarMenuItem>
-                       <SidebarMenuButton asChild variant="ghost" className="justify-start w-full" tooltip="Scraping Anual">
-                        <Link href="/dashboard/admin/scrapeo">
-                          <DatabaseZap />
-                          <span className="group-data-[state=collapsed]:hidden">Scraping Anual</span>
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>

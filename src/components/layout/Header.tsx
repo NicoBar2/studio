@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { ThemeToggle } from '../ui/ThemeToggle';
 
 
 export default function Header() {
@@ -113,6 +114,8 @@ export default function Header() {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+
+          <ThemeToggle />
         </nav>
       </div>
     </header>
