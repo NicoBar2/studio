@@ -17,7 +17,7 @@ import { Resend } from 'resend';
 import admin from 'firebase-admin';
 import axios from 'axios';
 import FormData from 'form-data';
-import { validateEcuadorianId } from '@/lib/utils';
+import { validateEcuadorianId, validatePassportNumber } from '@/lib/utils';
 
 
 // --- Data Access Functions (moved from /lib) ---
@@ -620,13 +620,17 @@ export async function createResearcherAction(
     return { success: false, message: "El número de Cédula/Pasaporte es obligatorio." };
   }
 
-  // Validate Ecuadorian ID if it looks like one, otherwise treat as passport
+  // Validate Ecuadorian ID or Passport
   if (/^\d{10}$/.test(idNumber)) {
     if (!validateEcuadorianId(idNumber)) {
-        return { success: false, message: "El número de Cédula ingresado no es válido." };
+        return { success: false, message: "El número de Cédula Ecuatoriana ingresado no es válido." };
     }
-  } else if (!/^[A-Za-z0-9]{5,20}$/.test(idNumber)) {
-    return { success: false, message: "El número de Pasaporte debe tener entre 5 y 20 caracteres alfanuméricos." };
+  } else if (/^[A-Z0-9]{9}$/.test(idNumber.toUpperCase())) {
+    if (!validatePassportNumber(idNumber.toUpperCase())) {
+        return { success: false, message: "El número de Pasaporte no es válido (dígito de control incorrecto)." };
+    }
+  } else {
+    return { success: false, message: "Formato de Cédula/Pasaporte no reconocido. Use 10 dígitos para cédula o 9 caracteres para pasaporte." };
   }
 
   const researchers = await readJsonFile<Researcher>(researchersDbPath);

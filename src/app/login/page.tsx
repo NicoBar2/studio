@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { useState, type FormEvent, useActionState, useRef, useEffect, Suspense } from 'react';
@@ -203,7 +204,7 @@ function RegisterForm() {
              <Library className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
              <Input id="idNumber" name="idNumber" placeholder="Número de identificación" required className="pl-10" />
           </div>
-          <p className="text-xs text-muted-foreground">Cédula Ecuatoriana (10 dígitos) o Pasaporte (5-20 caracteres).</p>
+          <p className="text-xs text-muted-foreground">Cédula (10 dígitos) o Pasaporte (9 caracteres alfanuméricos).</p>
         </div>
         <div className="space-y-2">
           <Label htmlFor="institution">Institución (Opcional)</Label>
