@@ -203,7 +203,7 @@ function RegisterForm() {
              <Library className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
              <Input id="idNumber" name="idNumber" placeholder="Número de identificación" required className="pl-10" />
           </div>
-          <p className="text-xs text-muted-foreground">De 5 a 20 caracteres alfanuméricos.</p>
+          <p className="text-xs text-muted-foreground">Cédula Ecuatoriana (10 dígitos) o Pasaporte (5-20 caracteres).</p>
         </div>
         <div className="space-y-2">
           <Label htmlFor="institution">Institución (Opcional)</Label>

@@ -17,6 +17,7 @@ import { Resend } from 'resend';
 import admin from 'firebase-admin';
 import axios from 'axios';
 import FormData from 'form-data';
+import { validateEcuadorianId } from '@/lib/utils';
 
 
 // --- Data Access Functions (moved from /lib) ---
@@ -248,7 +249,7 @@ async function deleteResearcherById(id: string): Promise<boolean> {
 // --- Server Actions ---
 
 async function handleImageUpload(imageDataUri: string, currentImageUrl: string): Promise<string> {
-    if (!imageDataUri.startsWith('data:image')) {
+    if (!imageDataUri || !imageDataUri.startsWith('data:image')) {
         return currentImageUrl; // No new image was selected, return the existing URL
     }
     if (!process.env.IMGBB_API_KEY) {
@@ -615,8 +616,17 @@ export async function createResearcherAction(
   if (!orcid || !orcid.match(/^\d{4}-\d{4}-\d{4}-\d{3}[0-9X]$/)) {
       return { success: false, message: "El formato del ORCID ID no es válido. Debe ser XXXX-XXXX-XXXX-XXXX." };
   }
-  if (!idNumber || !idNumber.match(/^[A-Za-z0-9]{5,20}$/)) {
-    return { success: false, message: "El número de Cédula/Pasaporte debe tener entre 5 y 20 caracteres alfanuméricos." };
+  if (!idNumber) {
+    return { success: false, message: "El número de Cédula/Pasaporte es obligatorio." };
+  }
+
+  // Validate Ecuadorian ID if it looks like one, otherwise treat as passport
+  if (/^\d{10}$/.test(idNumber)) {
+    if (!validateEcuadorianId(idNumber)) {
+        return { success: false, message: "El número de Cédula ingresado no es válido." };
+    }
+  } else if (!/^[A-Za-z0-9]{5,20}$/.test(idNumber)) {
+    return { success: false, message: "El número de Pasaporte debe tener entre 5 y 20 caracteres alfanuméricos." };
   }
 
   const researchers = await readJsonFile<Researcher>(researchersDbPath);
