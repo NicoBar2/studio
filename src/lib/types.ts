@@ -109,6 +109,7 @@ export type Researcher = {
     name: string;
     email: string;
     orcid: string;
+    idNumber?: string;
     institution?: string;
     specialization?: string;
     isVerified: boolean;

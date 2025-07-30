@@ -17,7 +17,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { AlertTriangle, UserPlus, KeyRound, CheckCircle, Fingerprint } from 'lucide-react';
+import { AlertTriangle, UserPlus, KeyRound, CheckCircle, Fingerprint, Library } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { createResearcherAction } from '@/app/actions';
 import type { Researcher } from '@/lib/types';
@@ -190,12 +190,20 @@ function RegisterForm() {
           <p className="text-xs text-muted-foreground">Utiliza un correo electrónico institucional si es posible.</p>
         </div>
          <div className="space-y-2">
-          <Label htmlFor="orcid">ORCID ID</Label>
+          <Label htmlFor="orcid">ORCID iD</Label>
           <div className="relative">
              <Fingerprint className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
              <Input id="orcid" name="orcid" placeholder="0000-0000-0000-0000" required className="pl-10" />
           </div>
           <p className="text-xs text-muted-foreground">Identificador único de investigador. Formato: XXXX-XXXX-XXXX-XXXX.</p>
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="idNumber">Cédula o Pasaporte</Label>
+          <div className="relative">
+             <Library className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+             <Input id="idNumber" name="idNumber" placeholder="Número de identificación" required className="pl-10" />
+          </div>
+          <p className="text-xs text-muted-foreground">De 5 a 20 caracteres alfanuméricos.</p>
         </div>
         <div className="space-y-2">
           <Label htmlFor="institution">Institución (Opcional)</Label>

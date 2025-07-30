@@ -163,12 +163,13 @@ function generateId(): string {
   return Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
 }
 
-async function addResearcher(name: string, email: string, orcid: string, institution?: string, specialization?: string): Promise<Researcher> {
+async function addResearcher(name: string, email: string, orcid: string, idNumber: string, institution?: string, specialization?: string): Promise<Researcher> {
   const newResearcher: Researcher = {
     id: generateId(),
     name: name.trim(),
     email: email.trim().toLowerCase(),
     orcid: orcid,
+    idNumber: idNumber,
     institution: institution?.trim() || undefined,
     specialization: specialization?.trim() || undefined,
     isVerified: false,
@@ -595,6 +596,7 @@ export async function createResearcherAction(
   const researcherName = formData.get('researcherName') as string;
   const email = formData.get('email') as string;
   const orcid = formData.get('orcid') as string;
+  const idNumber = formData.get('idNumber') as string;
   const institution = formData.get('institution') as string | undefined;
   const specialization = formData.get('specialization') as string | undefined;
 
@@ -613,6 +615,9 @@ export async function createResearcherAction(
   if (!orcid || !orcid.match(/^\d{4}-\d{4}-\d{4}-\d{3}[0-9X]$/)) {
       return { success: false, message: "El formato del ORCID ID no es válido. Debe ser XXXX-XXXX-XXXX-XXXX." };
   }
+  if (!idNumber || !idNumber.match(/^[A-Za-z0-9]{5,20}$/)) {
+    return { success: false, message: "El número de Cédula/Pasaporte debe tener entre 5 y 20 caracteres alfanuméricos." };
+  }
 
   const researchers = await readJsonFile<Researcher>(researchersDbPath);
   const lowerCaseEmail = email.trim().toLowerCase();
@@ -623,6 +628,9 @@ export async function createResearcherAction(
   
   if (researchers.some(r => r.orcid === orcid)) {
       return { success: false, message: "Este ORCID ID ya ha sido registrado." };
+  }
+  if (researchers.some(r => r.idNumber === idNumber)) {
+      return { success: false, message: "Este número de Cédula/Pasaporte ya ha sido registrado." };
   }
 
   try {
@@ -642,7 +650,7 @@ export async function createResearcherAction(
 
 
   try {
-    const newResearcher = await addResearcher(researcherName, lowerCaseEmail, orcid, institution, specialization);
+    const newResearcher = await addResearcher(researcherName, lowerCaseEmail, orcid, idNumber, institution, specialization);
     revalidatePath('/dashboard/admin/researchers');
     return { 
         success: true, 

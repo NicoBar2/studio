@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { UserPlus, ListChecks, Fingerprint } from 'lucide-react';
+import { UserPlus, ListChecks, Fingerprint, Library } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useLanguage } from '@/contexts/LanguageContext';
 
@@ -32,6 +32,7 @@ export default function ResearcherManagementClient() {
   const [researcherName, setResearcherName] = useState('');
   const [email, setEmail] = useState('');
   const [orcid, setOrcid] = useState('');
+  const [idNumber, setIdNumber] = useState('');
   const [institution, setInstitution] = useState('');
   const [specialization, setSpecialization] = useState('');
 
@@ -59,6 +60,7 @@ export default function ResearcherManagementClient() {
         setResearcherName('');
         setEmail('');
         setOrcid('');
+        setIdNumber('');
         setInstitution('');
         setSpecialization('');
         formRef.current?.reset();
@@ -137,6 +139,21 @@ export default function ResearcherManagementClient() {
                         required 
                         value={orcid}
                         onChange={(e) => setOrcid(e.target.value)}
+                    />
+                </div>
+              </div>
+              <div>
+                <Label htmlFor="idNumberAdmin" className="font-semibold">Cédula o Pasaporte</Label>
+                 <div className="relative">
+                    <Library className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                    <Input 
+                        id="idNumberAdmin" 
+                        name="idNumber" 
+                        placeholder="Número de identificación"
+                        className="mt-1 pl-10" 
+                        required 
+                        value={idNumber}
+                        onChange={(e) => setIdNumber(e.target.value)}
                     />
                 </div>
               </div>
