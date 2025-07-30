@@ -41,38 +41,29 @@ export const getSpeciesImageUrl = (species: Species | undefined | null): string 
 
 
 /**
- * Validates an Ecuadorian ID number (cédula).
- * @param id The 10-digit ID number as a string.
+ * Validates an Ecuadorian ID number (cédula) using the provided algorithm.
+ * @param cedula The 10-digit ID number as a string.
  * @returns True if the ID is valid, false otherwise.
  */
-export function validateEcuadorianId(id: string): boolean {
-    if (typeof id !== 'string' || id.length !== 10 || !/^\d+$/.test(id)) {
-        return false;
+export function validateEcuadorianId(cedula: string): boolean {
+  if (!/^\d{10}$/.test(cedula)) return false;
+
+  const provincia = parseInt(cedula.substring(0, 2));
+  if (provincia < 1 || provincia > 24) return false;
+
+  const digitoVerificador = parseInt(cedula[9]);
+  let suma = 0;
+
+  for (let i = 0; i < 9; i++) {
+    let num = parseInt(cedula[i]);
+    if (i % 2 === 0) {
+      num *= 2;
+      if (num > 9) num -= 9;
     }
+    suma += num;
+  }
 
-    const provinceCode = parseInt(id.substring(0, 2));
-    if (provinceCode < 1 || provinceCode > 24) { // 24 provinces
-        return false;
-    }
+  const resultado = (10 - (suma % 10)) % 10;
 
-    const thirdDigit = parseInt(id[2]);
-    if (thirdDigit < 0 || thirdDigit > 5) { // Third digit must be 0-5
-        return false;
-    }
-
-    const coefficients = [2, 1, 2, 1, 2, 1, 2, 1, 2];
-    const verifier = parseInt(id[9]);
-    let sum = 0;
-
-    for (let i = 0; i < 9; i++) {
-        let product = parseInt(id[i]) * coefficients[i];
-        if (product >= 10) {
-            product -= 9;
-        }
-        sum += product;
-    }
-
-    const calculatedVerifier = (sum % 10 === 0) ? 0 : 10 - (sum % 10);
-
-    return verifier === calculatedVerifier;
+  return resultado === digitoVerificador;
 }
