@@ -83,7 +83,7 @@ const HeatmapComponent = ({ data }: HeatmapComponentProps) => {
                     blur: 35,
                     maxZoom: 1,
                     max: maxVal,
-                    gradient: {0.4: 'blue', 0.65: 'lime', 1: 'red'}
+                    gradient: {0.4: 'blue', 0.65: 'yellow', 1: 'red'}
                 }).addTo(mapRef.current);
             } else {
                  heatLayerRef.current.setLatLngs(heatPoints);
