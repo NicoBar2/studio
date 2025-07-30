@@ -34,9 +34,9 @@
         "description": "",
         "values": {
           "is_darwin": 222,
-          "is_genovesa": 222
+          "is_genovesa": 10
         },
-        "value": 444
+        "value": 232
       },
       {
         "year": 2000,
@@ -57,13 +57,13 @@
     "is_santa_cruz": false,
     "is_san_cristobal": false,
     "is_espanola": false,
-    "is_pinzon": false,
+    "is_pinzon": true,
     "createdAt": "2024-01-01T12:00:00.000Z",
     "showHistoricalDataToPublic": false,
-    "is_darwin": false,
+    "is_darwin": true,
     "is_fernandina": false,
     "is_floreana": false,
-    "is_genovesa": false,
+    "is_genovesa": true,
     "is_marchena": false,
     "is_pinta": false,
     "is_santa_fe": false,

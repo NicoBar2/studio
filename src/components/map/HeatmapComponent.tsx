@@ -74,20 +74,22 @@ const HeatmapComponent = ({ data }: HeatmapComponentProps) => {
                 return null;
             })
             .filter((p): p is [number, number, number] => p !== null);
+        
+        const counts = Object.values(data);
+        const maxVal = counts.length > 0 ? Math.max(...counts) : 1;
 
         if (mapRef.current) {
-            const maxVal = Object.values(data).length > 0 ? Math.max(...Object.values(data)) : 1;
             if (!heatLayerRef.current) {
                 heatLayerRef.current = (L as any).heatLayer(heatPoints, {
-                    radius: 40,
-                    blur: 35,
+                    radius: 35,
+                    blur: 25,
                     maxZoom: 1,
                     max: maxVal,
                     gradient: {0.4: 'blue', 0.65: 'yellow', 1: 'red'}
                 }).addTo(mapRef.current);
             } else {
                  heatLayerRef.current.setLatLngs(heatPoints);
-                 heatLayerRef.current.setOptions({max: maxVal});
+                 (heatLayerRef.current as any).setOptions({max: maxVal}); // Cast to any to access setOptions
             }
         }
 
