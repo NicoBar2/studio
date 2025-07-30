@@ -726,6 +726,30 @@ export async function deleteResearcherAction(
   }
 }
 
+const verificationEmailTemplate = (name: string, loginUrl: string) => `
+<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden;">
+  <div style="background-color: #210A2B; color: white; padding: 20px; text-align: center;">
+    <img src="https://i.ibb.co/b2bWQC2/logo-png.png" alt="Galápagos DataLens Logo" style="max-width: 150px; margin-bottom: 10px;">
+    <h1 style="margin: 0; font-size: 24px;">¡Bienvenido a Galápagos DataLens!</h1>
+  </div>
+  <div style="padding: 20px;">
+    <h2 style="color: #210A2B; font-size: 20px;">Hola, ${name},</h2>
+    <p>¡Tu cuenta ha sido verificada por un administrador! Ya tienes acceso completo a la plataforma como investigador.</p>
+    <p>Ahora puedes iniciar sesión para gestionar datos, crear visualizaciones y colaborar con la comunidad científica para la conservación de las Islas Galápagos.</p>
+    <div style="text-align: center; margin: 30px 0;">
+      <a href="${loginUrl}" style="background-color: #3B82F6; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 16px;">Iniciar Sesión</a>
+    </div>
+    <p>Si es tu primera vez, utiliza tu correo electrónico y la contraseña que creaste durante el registro. Si no recuerdas tu contraseña, puedes usar la opción de "Olvidé mi contraseña" en la página de inicio de sesión.</p>
+    <p>Gracias por unirte a nuestra misión.</p>
+    <p>Atentamente,<br>El equipo de Galápagos DataLens</p>
+  </div>
+  <div style="background-color: #f8f8f8; padding: 15px; text-align: center; font-size: 12px; color: #888;">
+    &copy; ${new Date().getFullYear()} Galápagos DataLens. Todos los derechos reservados.
+  </div>
+</div>
+`;
+
+
 export async function toggleResearcherVerificationAction(
   prevState: { success: boolean; message: string; updatedResearcher?: Researcher },
   formData: FormData
@@ -756,14 +780,15 @@ export async function toggleResearcherVerificationAction(
     if (updatedResearcher.isVerified) {
       message = `Verificación de ${updatedResearcher.name} completada.`;
       
-      if (process.env.RESEND_API_KEY && process.env.RESEND_FROM_EMAIL) {
+      if (process.env.RESEND_API_KEY && process.env.RESEND_FROM_EMAIL && process.env.NEXT_PUBLIC_BASE_URL) {
         const resend = new Resend(process.env.RESEND_API_KEY);
         try {
+          const loginUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/login`;
           await resend.emails.send({
             from: process.env.RESEND_FROM_EMAIL,
             to: updatedResearcher.email,
             subject: '¡Tu cuenta en Galápagos DataLens ha sido verificada!',
-            html: `<h1>¡Bienvenido/a a Galápagos DataLens!</h1><p>Hola ${updatedResearcher.name},</p><p>Tu cuenta ha sido verificada por un administrador. Ya puedes iniciar sesión y comenzar a contribuir.</p><p>Para iniciar sesión por primera vez, utiliza tu correo electrónico y establece tu contraseña.</p><p>Gracias por unirte a nuestra comunidad.</p><p>El equipo de Galápagos DataLens</p>`,
+            html: verificationEmailTemplate(updatedResearcher.name, loginUrl),
           });
           message += ` Se ha enviado un correo de confirmación.`;
         } catch (emailError) {
@@ -788,6 +813,29 @@ export async function toggleResearcherVerificationAction(
   }
 }
 
+const passwordResetEmailTemplate = (name: string, resetUrl: string) => `
+<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden;">
+  <div style="background-color: #210A2B; color: white; padding: 20px; text-align: center;">
+    <img src="https://i.ibb.co/b2bWQC2/logo-png.png" alt="Galápagos DataLens Logo" style="max-width: 150px; margin-bottom: 10px;">
+    <h1 style="margin: 0; font-size: 24px;">Restablecer Contraseña</h1>
+  </div>
+  <div style="padding: 20px;">
+    <h2 style="color: #210A2B; font-size: 20px;">Hola, ${name},</h2>
+    <p>Recibimos una solicitud para restablecer tu contraseña en Galápagos DataLens. Si no fuiste tú quien realizó esta solicitud, puedes ignorar este correo electrónico de forma segura.</p>
+    <p>Para crear una nueva contraseña, haz clic en el siguiente botón:</p>
+    <div style="text-align: center; margin: 30px 0;">
+      <a href="${resetUrl}" style="background-color: #3B82F6; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 16px;">Restablecer Contraseña</a>
+    </div>
+    <p>Este enlace de restablecimiento es válido por un tiempo limitado. Si tienes problemas, copia y pega la siguiente URL en tu navegador:</p>
+    <p style="font-size: 12px; word-break: break-all; color: #888;">${resetUrl}</p>
+    <p>Atentamente,<br>El equipo de Galápagos DataLens</p>
+  </div>
+  <div style="background-color: #f8f8f8; padding: 15px; text-align: center; font-size: 12px; color: #888;">
+    &copy; ${new Date().getFullYear()} Galápagos DataLens. Todos los derechos reservados.
+  </div>
+</div>
+`;
+
 export async function requestPasswordResetAction(
   prevState: any,
   formData: FormData
@@ -808,10 +856,7 @@ export async function requestPasswordResetAction(
           from: process.env.RESEND_FROM_EMAIL,
           to: email,
           subject: 'Restablece tu contraseña de Galápagos DataLens',
-          html: `<p>Hola ${researcher.name},</p>
-                 <p>Recibimos una solicitud para restablecer tu contraseña. Haz clic en el siguiente enlace para continuar:</p>
-                 <a href="${resetUrl}">Restablecer Contraseña</a>
-                 <p>Si no solicitaste esto, puedes ignorar este correo.</p>`,
+          html: passwordResetEmailTemplate(researcher.name, resetUrl),
         });
       } catch (emailError) {
         console.error("Password reset email error:", emailError);
