@@ -182,8 +182,8 @@ function RegisterForm() {
       <form ref={formRef} action={formAction} className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="researcherName">Nombre Completo</Label>
-          <Input id="researcherName" name="researcherName" placeholder="Ej: Dra. Jane Goodall" required />
-          <p className="text-xs text-muted-foreground">Debe contener solo letras y al menos un nombre y un apellido.</p>
+          <Input id="researcherName" name="researcherName" placeholder="Ej: Dra. María Pérez" required />
+          <p className="text-xs text-muted-foreground">Debe contener solo letras (incluidas tildes) y al menos un nombre y un apellido.</p>
         </div>
         <div className="space-y-2">
           <Label htmlFor="register-email">Correo Electrónico</Label>
@@ -196,7 +196,7 @@ function RegisterForm() {
              <Fingerprint className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
              <Input id="orcid" name="orcid" placeholder="0000-0000-0000-0000" required className="pl-10" />
           </div>
-          <p className="text-xs text-muted-foreground">Identificador único de investigador. Formato: XXXX-XXXX-XXXX-XXXX.</p>
+          <p className="text-xs text-muted-foreground">Identificador único de investigador. Se aceptan URLs de ORCID.</p>
         </div>
         <div className="space-y-2">
           <Label htmlFor="idNumber">Cédula o Pasaporte</Label>

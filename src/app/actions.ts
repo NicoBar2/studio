@@ -596,7 +596,7 @@ export async function createResearcherAction(
 ): Promise<{ success: boolean; message: string; researcher?: Researcher }> {
   const researcherName = formData.get('researcherName') as string;
   const email = formData.get('email') as string;
-  const orcid = formData.get('orcid') as string;
+  let orcid = formData.get('orcid') as string;
   const idNumber = formData.get('idNumber') as string;
   const institution = formData.get('institution') as string | undefined;
   const specialization = formData.get('specialization') as string | undefined;
@@ -604,7 +604,7 @@ export async function createResearcherAction(
   if (!researcherName || researcherName.trim().length < 3) {
     return { success: false, message: "El nombre del investigador debe tener al menos 3 caracteres." };
   }
-  if (!/^[a-zA-Z\s]+$/.test(researcherName)) {
+  if (!/^[a-zA-Z\u00C0-\u017F\s]+$/.test(researcherName)) {
     return { success: false, message: "El nombre del investigador solo debe contener letras y espacios." };
   }
   if (researcherName.trim().split(' ').filter(word => word.length > 0).length < 2) {
@@ -613,6 +613,14 @@ export async function createResearcherAction(
   if (!email || !email.trim().match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g)) {
     return { success: false, message: "Por favor, introduce un correo electrónico válido." };
   }
+
+  // Extract ORCID from URL if provided
+  const orcidRegex = /(\d{4}-\d{4}-\d{4}-\d{3}[0-9X])$/;
+  const orcidMatch = orcid.match(orcidRegex);
+  if (orcidMatch) {
+      orcid = orcidMatch[0];
+  }
+
   if (!orcid || !orcid.match(/^\d{4}-\d{4}-\d{4}-\d{3}[0-9X]$/)) {
       return { success: false, message: "El formato del ORCID ID no es válido. Debe ser XXXX-XXXX-XXXX-XXXX." };
   }
