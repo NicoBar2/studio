@@ -17,7 +17,7 @@ import { Resend } from 'resend';
 import admin from 'firebase-admin';
 import axios from 'axios';
 import FormData from 'form-data';
-import { validateEcuadorianId, validatePassportNumber } from '@/lib/utils';
+import { validateEcuadorianId, validatePassportNumber, validateOrcid } from '@/lib/utils';
 
 
 // --- Data Access Functions (moved from /lib) ---
@@ -621,9 +621,13 @@ export async function createResearcherAction(
       orcid = orcidMatch[0];
   }
 
-  if (!orcid || !orcid.match(/^\d{4}-\d{4}-\d{4}-\d{3}[0-9X]$/)) {
-      return { success: false, message: "El formato del ORCID ID no es válido. Debe ser XXXX-XXXX-XXXX-XXXX." };
+  if (!orcid) {
+    return { success: false, message: "El ORCID iD es obligatorio." };
   }
+  if (!validateOrcid(orcid)) {
+    return { success: false, message: "El ORCID iD proporcionado no es válido (dígito de verificación incorrecto)." };
+  }
+  
   if (!idNumber) {
     return { success: false, message: "El número de Cédula/Pasaporte es obligatorio." };
   }
@@ -633,12 +637,8 @@ export async function createResearcherAction(
     if (!validateEcuadorianId(idNumber)) {
         return { success: false, message: "El número de Cédula Ecuatoriana ingresado no es válido." };
     }
-  } else if (/^[A-Z0-9]{9}$/.test(idNumber.toUpperCase())) {
-    if (!validatePassportNumber(idNumber.toUpperCase())) {
-        return { success: false, message: "El número de Pasaporte no es válido (dígito de control incorrecto)." };
-    }
-  } else {
-    return { success: false, message: "Formato de Cédula/Pasaporte no reconocido. Use 10 dígitos para cédula o 9 caracteres para pasaporte." };
+  } else if (!/^[A-Z0-9]{9}$/.test(idNumber.toUpperCase())) {
+    return { success: false, message: "Formato de Pasaporte no reconocido. Use 9 caracteres alfanuméricos." };
   }
 
   const researchers = await readJsonFile<Researcher>(researchersDbPath);
@@ -661,7 +661,7 @@ export async function createResearcherAction(
     
     if (!response.ok) {
         if(response.status === 404) {
-             return { success: false, message: "El ORCID ID proporcionado no es válido o no existe." };
+             return { success: false, message: "El ORCID ID proporcionado no existe." };
         }
         return { success: false, message: "No se pudo verificar el ORCID ID en este momento. Inténtelo más tarde." };
     }
@@ -785,7 +785,7 @@ export async function toggleResearcherVerificationAction(
         try {
           const loginUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/login`;
           await resend.emails.send({
-            from: process.env.RESEND_FROM_EMAIL,
+            from: 'onboarding@resend.dev',
             to: updatedResearcher.email,
             subject: '¡Tu cuenta en Galápagos DataLens ha sido verificada!',
             html: verificationEmailTemplate(updatedResearcher.name, loginUrl),
@@ -853,7 +853,7 @@ export async function requestPasswordResetAction(
 
       try {
         await resend.emails.send({
-          from: process.env.RESEND_FROM_EMAIL,
+          from: 'onboarding@resend.dev',
           to: email,
           subject: 'Restablece tu contraseña de Galápagos DataLens',
           html: passwordResetEmailTemplate(researcher.name, resetUrl),
