@@ -78,6 +78,8 @@ export default function DarwinServicePage() {
         setIsLoading(true);
         setError(null);
         setTaskStatus(null);
+        if (intervalRef.current) clearInterval(intervalRef.current);
+
         try {
             const response = await fetch('/api/darwin-consult', {
                 method: 'POST',
@@ -134,6 +136,7 @@ export default function DarwinServicePage() {
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 disabled={isLoading}
                                 className="bg-input"
+                                onKeyDown={(e) => { if (e.key === 'Enter') startSearch(); }}
                             />
                             <Button onClick={startSearch} disabled={isLoading}>
                                 <Search className="mr-2 h-4 w-4" /> {isLoading ? 'Buscando...' : 'Iniciar Búsqueda'}
@@ -157,11 +160,13 @@ export default function DarwinServicePage() {
                                         <p><strong>ID de Tarea:</strong> <span className="font-mono text-sm">{taskStatus.taskId}</span></p>
                                         {getStatusBadge(taskStatus.status)}
                                     </div>
-                                    {taskStatus.status === 'processing' && (
+                                    {(taskStatus.status === 'processing' || (taskStatus.status === 'pending' && taskStatus.totalFiles > 0)) && (
                                         <div>
                                             <Progress value={taskStatus.progress * 100} className="w-full" />
                                             <p className="text-sm text-muted-foreground mt-1">
-                                                Procesado {taskStatus.filesProcessed} de {taskStatus.totalFiles} archivos... ({Math.round(taskStatus.progress * 100)}%)
+                                                {taskStatus.totalFiles > 0 
+                                                 ? `Procesado ${taskStatus.filesProcessed} de ${taskStatus.totalFiles} archivos... (${Math.round(taskStatus.progress * 100)}%)`
+                                                 : 'Iniciando, buscando archivos...'}
                                             </p>
                                         </div>
                                     )}
@@ -183,12 +188,12 @@ export default function DarwinServicePage() {
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <div className="border rounded-lg overflow-hidden">
+                            <div className="border rounded-lg overflow-hidden max-h-[600px] overflow-y-auto">
                                 <Table>
-                                    <TableHeader>
+                                    <TableHeader className="sticky top-0 bg-muted/95 backdrop-blur">
                                         <TableRow>
                                             <TableHead>Nombre Científico</TableHead>
-                                            <TableHead>Nombre Común (Inglés)</TableHead>
+                                            <TableHead>Nombre Común</TableHead>
                                             <TableHead>Familia</TableHead>
                                             <TableHead>Estado UICN</TableHead>
                                         </TableRow>
