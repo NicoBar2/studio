@@ -346,43 +346,16 @@ exports.scrapeDarwinData = onCall({
         message: "Scraping completado exitosamente",
       };
     } else {
-      // Auto-continuar llamando a la función nuevamente
-      console.log(`🔄 Continuando automáticamente: ${progress.processedFiles}/${progress.totalFiles}`);
+      progress.status = "in_progress";
+      await saveProgress(sessionId, progress);
       
-      // Llamar a la función nuevamente de forma asíncrona
-      setTimeout(async () => {
-        try {
-          const https = require("https");
-          const postData = JSON.stringify({data: {sessionId}});
-          
-          const options = {
-            hostname: "us-central1-galapagos-datalens.cloudfunctions.net",
-            path: "/scrapeDarwinData",
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "Content-Length": Buffer.byteLength(postData),
-            },
-          };
-          
-          const req = https.request(options);
-          req.write(postData);
-          req.end();
-          
-        } catch (continueError) {
-          console.error("❌ Error continuando:", continueError.message);
-        }
-      }, 5000); // Continuar en 5 segundos
-      
-      return {
+      console.log(`🔄 Proceso en pausa, continuará en la próxima ejecución. ${progress.processedFiles}/${progress.totalFiles}`);
+       return {
         success: true,
         status: "continuing",
         sessionId,
         progress: `${progress.processedFiles}/${progress.totalFiles} archivos`,
-        totalRecords: progress.totalRecords,
-        filteredAnimals: progress.filteredAnimals,
-        nextBatch: true,
-        message: `Lote completado. Procesados ${filesProcessedThisBatch} archivos en este lote.`,
+        message: `Lote procesado. El proceso continuará. Vuelve a comprobar el estado en unos minutos.`,
       };
     }
     
@@ -419,7 +392,7 @@ exports.checkScrapingProgress = onCall(async (request) => {
     return {
       success: true,
       ...latestProgress,
-      progressPercentage: Math.round((latestProgress.processedFiles / latestProgress.totalFiles) * 100),
+      progressPercentage: latestProgress.totalFiles > 0 ? Math.round((latestProgress.processedFiles / latestProgress.totalFiles) * 100) : 0,
     };
   }
   
@@ -431,7 +404,7 @@ exports.checkScrapingProgress = onCall(async (request) => {
   return {
     success: true,
     ...progress,
-    progressPercentage: Math.round((progress.processedFiles / progress.totalFiles) * 100),
+    progressPercentage: progress.totalFiles > 0 ? Math.round((progress.processedFiles / progress.totalFiles) * 100) : 0,
   };
 });
 

@@ -1,7 +1,7 @@
 "use client"; 
 import RoleBasedGuard from '@/components/auth/RoleBasedGuard';
 import { Sidebar, SidebarProvider, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarHeader, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
-import { LayoutDashboard, Users, HomeIcon, FileUp, GitCompareArrows, PlusCircle, Layers, DatabaseZap, ListChecks } from 'lucide-react';
+import { LayoutDashboard, Users, HomeIcon, FileUp, GitCompareArrows, PlusCircle, Layers, DatabaseZap, ListChecks, Search } from 'lucide-react';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -81,6 +81,14 @@ export default function DashboardLayout({
                           <span className="group-data-[state=collapsed]:hidden">{t.sidebar_import_species}</span>
                         </Link>
                       </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
+                        <SidebarMenuButton asChild variant="ghost" className="justify-start w-full" tooltip="Consulta Darwin">
+                            <Link href="/dashboard/admin/darwin-query">
+                                <Search />
+                                <span className="group-data-[state=collapsed]:hidden">Consulta Darwin</span>
+                            </Link>
+                        </SidebarMenuButton>
                     </SidebarMenuItem>
                   </>
                 )}

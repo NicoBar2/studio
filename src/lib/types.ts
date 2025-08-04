@@ -33,6 +33,8 @@ export type Species = {
   englishCommonName?: string;
   spanishCommonName: string;
   localName?: string;
+  ScientificName?: string; // From Darwin data
+  CommonNameEnglish?: string; // From Darwin data
 
   // Taxonomy
   domain?: string;
