@@ -4,6 +4,7 @@ import * as cheerio from 'cheerio';
 import { parse } from 'csv-parse/sync';
 import iconv from 'iconv-lite';
 import fetch from 'node-fetch';
+import { extractSpeciesInfo } from '@/ai/flows/extractSpeciesInfoFlow';
 
 // Simple in-memory store for task progress. In a real production scenario,
 // this should be replaced with a more robust solution like Redis, a database, or Firestore.
@@ -23,62 +24,6 @@ const taskStore: Map<string, Task> = new Map();
 
 
 // --- Helper Functions ---
-
-/**
- * Processes a CSV text to find records matching a search term.
- * This version is more robust and intelligently finds relevant columns.
- * @param csvText The raw text content of the CSV file.
- * @param searchTerm The term to search for.
- * @returns An array of found records.
- */
-function processCsv(csvText: string, searchTerm: string): any[] {
-    const lowercasedTerm = searchTerm.toLowerCase();
-    try {
-        const records: any[] = parse(csvText, {
-            columns: true,
-            skip_empty_lines: true,
-            relax_column_count: true,
-        });
-
-        if (records.length === 0) return [];
-        
-        // Intelligently find column names
-        const header = Object.keys(records[0]);
-        const findColumn = (keywords: string[]) => 
-            header.find(h => keywords.some(k => h.toLowerCase().includes(k)));
-
-        const scientificNameCol = findColumn(['scientificname', 'scientific_name', 'taxon']);
-        const genusCol = findColumn(['genus']);
-        const epithetCol = findColumn(['specificepithet', 'epithet']);
-        const commonNameCol = findColumn(['common', 'vernacular']);
-        const familyCol = findColumn(['family']);
-        const iucnCol = findColumn(['iucn']);
-
-        return records.filter(record => {
-             // Search in all available values for a match
-            return Object.values(record).some(value => 
-                String(value).toLowerCase().includes(lowercasedTerm)
-            );
-        }).map(record => {
-            // Construct a structured result from what we found
-            let scientificName = (scientificNameCol ? record[scientificNameCol] : '') || '';
-            if (!scientificName && genusCol && epithetCol) {
-                scientificName = `${record[genusCol] || ''} ${record[epithetCol] || ''}`.trim();
-            }
-
-            return {
-                scientificName: scientificName || 'N/A',
-                commonName: (commonNameCol ? record[commonNameCol] : '') || 'N/A',
-                family: (familyCol ? record[familyCol] : '') || 'N/A',
-                iucnStatus: (iucnCol ? record[iucnCol] : '') || 'N/A',
-            };
-        });
-
-    } catch(e) {
-        console.warn('Skipping CSV due to parsing error:', e);
-        return [];
-    }
-}
 
 
 // Function to run the search task asynchronously
@@ -106,31 +51,44 @@ async function runSearchTask(taskId: string) {
 
     task.status = 'processing';
     task.totalFiles = csvLinks.length;
-    console.log(`[${taskId}] Found ${task.totalFiles} files. Starting processing.`);
+    console.log(`[${taskId}] Found ${task.totalFiles} files. Starting AI-powered processing.`);
 
-    // 2. Process each file
-    for (const link of csvLinks) {
-      if (!taskStore.has(taskId)) break; // Task was cancelled/removed
+    // 2. Process each file using the AI flow
+    const processingPromises = csvLinks.map(async (link) => {
+        if (!taskStore.has(taskId)) return; // Task was cancelled/removed
 
-      try {
-        const csvResponse = await fetch(link);
-        if (!csvResponse.ok) {
-            console.warn(`[${taskId}] Skipping file ${link} due to non-OK response: ${csvResponse.statusText}`);
-            continue;
+        try {
+            const csvResponse = await fetch(link);
+            if (!csvResponse.ok) {
+                console.warn(`[${taskId}] Skipping file ${link} due to non-OK response: ${csvResponse.statusText}`);
+                return;
+            }
+            const buffer = await csvResponse.buffer();
+            const csvText = iconv.decode(buffer, "utf-8");
+            
+            // Call the AI flow to extract information
+            const foundRecords = await extractSpeciesInfo({
+                searchTerm: task.searchTerm,
+                csvText: csvText,
+            });
+            
+            if (foundRecords.length > 0) {
+              task.results.push(...foundRecords);
+            }
+        } catch (fileError: any) {
+            console.warn(`[${taskId}] Skipping file ${link} due to error: ${fileError.message}`);
+        } finally {
+            task.filesProcessed += 1;
         }
-        const buffer = await csvResponse.buffer();
-        const csvText = iconv.decode(buffer, "utf-8"); // Assume UTF-8, if fails it's handled by catch
-        const foundRecords = processCsv(csvText, task.searchTerm);
-        
-        if (foundRecords.length > 0) {
-          task.results.push(...foundRecords);
-        }
-      } catch (fileError: any) {
-        console.warn(`[${taskId}] Skipping file ${link} due to error: ${fileError.message}`);
-      } finally {
-          task.filesProcessed += 1;
-      }
+    });
+
+    // We can process files in parallel up to a certain limit to speed things up
+    const concurrencyLimit = 5;
+    for (let i = 0; i < processingPromises.length; i += concurrencyLimit) {
+        const batch = processingPromises.slice(i, i + concurrencyLimit);
+        await Promise.all(batch);
     }
+
 
     // 3. Complete the task
     task.status = 'completed';
