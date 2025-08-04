@@ -1,9 +1,9 @@
 
 import { NextResponse } from 'next/server';
-import fetch from 'node-fetch';
 import * as cheerio from 'cheerio';
 import { parse } from 'csv-parse/sync';
 import iconv from 'iconv-lite';
+import fetch from 'node-fetch';
 
 // Simple in-memory store for task progress. In a real production scenario,
 // this should be replaced with a more robust solution like Redis, a database, or Firestore.
