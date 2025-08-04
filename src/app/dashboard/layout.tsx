@@ -83,10 +83,10 @@ export default function DashboardLayout({
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                     <SidebarMenuItem>
-                        <SidebarMenuButton asChild variant="ghost" className="justify-start w-full" tooltip="Consulta Darwin">
-                            <Link href="/dashboard/admin/darwin-query">
-                                <Search />
-                                <span className="group-data-[state=collapsed]:hidden">Consulta Darwin</span>
+                        <SidebarMenuButton asChild variant="ghost" className="justify-start w-full" tooltip="Servicio Darwin">
+                            <Link href="/dashboard/admin/darwin-service">
+                                <DatabaseZap />
+                                <span className="group-data-[state=collapsed]:hidden">Servicio Darwin</span>
                             </Link>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
