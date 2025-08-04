@@ -94,7 +94,7 @@ export default function DarwinServicePage() {
             setTaskId(data.taskId);
 
             // Start polling
-            intervalRef.current = setInterval(() => pollTaskStatus(data.taskId), 2000);
+            intervalRef.current = setInterval(() => pollTaskStatus(data.taskId), 3000);
 
         } catch (err: any) {
             setError(err.message);

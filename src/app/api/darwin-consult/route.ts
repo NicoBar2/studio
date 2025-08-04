@@ -2,7 +2,7 @@
 import { NextResponse } from 'next/server';
 import axios from 'axios';
 import cheerio from 'cheerio';
-import { parse } from 'csv-parse';
+import { parse } from 'csv-parse/sync';
 import iconv from 'iconv-lite';
 
 // Simple in-memory store for task progress. In a real production scenario,
@@ -26,34 +26,32 @@ const taskStore: Map<string, Task> = new Map();
 
 // Minimalistic CSV processing
 function processCsv(csvText: string, searchTerm: string): any[] {
-  const records: any[] = [];
-  const lowercasedTerm = searchTerm.toLowerCase();
+    const lowercasedTerm = searchTerm.toLowerCase();
+    try {
+        const records: any[] = parse(csvText, {
+            columns: true,
+            skip_empty_lines: true,
+            relax_column_count: true,
+        });
 
-  const parser = parse(csvText, {
-    columns: true,
-    skip_empty_lines: true,
-    relax_column_count: true,
-  });
+        return records.filter(record => {
+            const scientificName = record['ScientificName'] || `${record['Genus'] || ''} ${record['SpecificEpithet'] || ''}`.trim();
+            const commonName = record['CommonNameEnglish'] || '';
 
-  parser.on('data', (record) => {
-    // Check multiple fields for the search term
-    const scientificName = record['ScientificName'] || `${record['Genus'] || ''} ${record['SpecificEpithet'] || ''}`.trim();
-    const commonName = record['CommonNameEnglish'] || '';
-    
-    if (scientificName.toLowerCase().includes(lowercasedTerm) || commonName.toLowerCase().includes(lowercasedTerm)) {
-      records.push({
-        scientificName: scientificName,
-        commonName: commonName,
-        family: record['Family'] || 'N/A',
-        iucnStatus: record['IUCNStatus'] || 'N/A',
-      });
+            return scientificName.toLowerCase().includes(lowercasedTerm) || commonName.toLowerCase().includes(lowercasedTerm);
+        }).map(record => ({
+            scientificName: record['ScientificName'] || `${record['Genus'] || ''} ${record['SpecificEpithet'] || ''}`.trim(),
+            commonName: record['CommonNameEnglish'] || 'N/A',
+            family: record['Family'] || 'N/A',
+            iucnStatus: record['IUCNStatus'] || 'N/A',
+        }));
+
+    } catch(e) {
+        console.warn('Skipping CSV due to parsing error:', e);
+        return [];
     }
-  });
-
-  // This is synchronous for simplicity here
-  parser.read();
-  return records;
 }
+
 
 // Function to run the search task asynchronously
 async function runSearchTask(taskId: string) {
@@ -144,6 +142,7 @@ export async function POST(request: Request) {
 
     // Immediately respond to the client
     const statusUrl = new URL(request.url);
+    statusUrl.pathname = '/api/darwin-consult'; // Ensure correct path
     statusUrl.searchParams.set('taskId', taskId);
 
     return NextResponse.json({

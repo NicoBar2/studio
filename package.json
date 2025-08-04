@@ -1,3 +1,4 @@
+
 {
   "name": "galapagos-datalens",
   "version": "0.1.0",
@@ -37,14 +38,17 @@
     "@radix-ui/react-tooltip": "^1.1.8",
     "axios": "^1.7.2",
     "bcryptjs": "^2.4.3",
+    "cheerio": "^1.0.0-rc.12",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "csv-parse": "^5.5.6",
     "date-fns": "^3.6.0",
     "dotenv": "^16.5.0",
     "firebase": "^11.8.1",
     "firebase-admin": "^12.7.0",
     "form-data": "^4.0.0",
     "genkit": "^1.8.0",
+    "iconv-lite": "^0.6.3",
     "leaflet": "^1.9.4",
     "leaflet.heat": "^0.2.0",
     "lucide-react": "^0.475.0",
@@ -66,6 +70,8 @@
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
+    "@types/cheerio": "^0.22.35",
+    "@types/iconv-lite": "0.0.1",
     "@types/leaflet": "^1.9.12",
     "@types/leaflet.heat": "^0.2.2",
     "@types/node": "^20",
