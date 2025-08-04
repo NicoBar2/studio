@@ -1,6 +1,6 @@
 
 import { NextResponse } from 'next/server';
-import axios from 'axios';
+import fetch from 'node-fetch';
 import * as cheerio from 'cheerio';
 import { parse } from 'csv-parse/sync';
 import iconv from 'iconv-lite';
@@ -61,16 +61,16 @@ async function runSearchTask(taskId: string) {
   try {
     // 1. Get the list of all CSV files
     console.log(`[${taskId}] Fetching CSV links...`);
-    const htmlResponse = await axios.get("https://datazone.darwinfoundation.org/es/checklist/checklists-archive", {
+    const htmlResponse = await fetch("https://datazone.darwinfoundation.org/es/checklist/checklists-archive", {
       headers: { "User-Agent": "Mozilla/5.0" },
-      timeout: 15000,
     });
+    const html = await htmlResponse.text();
     
-    const $ = cheerio.load(htmlResponse.data);
+    const $ = cheerio.load(html);
     const csvLinks: string[] = [];
     $("a[href$='.csv']").each((_, element) => {
       const href = $(element).attr("href");
-      if (href) csvLinks.push(new URL(href, htmlResponse.config.url).href);
+      if (href) csvLinks.push(new URL(href, "https://datazone.darwinfoundation.org/").href);
     });
 
     task.status = 'processing';
@@ -82,8 +82,9 @@ async function runSearchTask(taskId: string) {
       if (!taskStore.has(taskId)) break; // Task was cancelled/removed
 
       try {
-        const csvResponse = await axios.get(link, { responseType: 'arraybuffer', timeout: 20000 });
-        const csvText = iconv.decode(Buffer.from(csvResponse.data), "utf8");
+        const csvResponse = await fetch(link);
+        const buffer = await csvResponse.buffer();
+        const csvText = iconv.decode(buffer, "utf8");
         const foundRecords = processCsv(csvText, task.searchTerm);
         
         if (foundRecords.length > 0) {
