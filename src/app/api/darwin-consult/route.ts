@@ -1,7 +1,7 @@
 
 import { NextResponse } from 'next/server';
 import axios from 'axios';
-import cheerio from 'cheerio';
+import * as cheerio from 'cheerio';
 import { parse } from 'csv-parse/sync';
 import iconv from 'iconv-lite';
 
