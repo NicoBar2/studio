@@ -28,7 +28,7 @@ const nextConfig = {
       }
     ],
   },
-  transpilePackages: ['pdfkit', 'fontkit'],
+  transpilePackages: ['pdfkit', 'fontkit', 'next'],
 };
 
 module.exports = nextConfig;
