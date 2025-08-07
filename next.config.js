@@ -1,6 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  transpilePackages: ['pdfkit', 'fontkit', 'xlsx', 'csv-parse', 'iconv-lite', 'cheerio'],
   typescript: {
     ignoreBuildErrors: true,
   },
