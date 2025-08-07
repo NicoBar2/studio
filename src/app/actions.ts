@@ -1081,3 +1081,26 @@ export async function updateMyProfileAction(prevState: any, formData: FormData):
         return { success: false, message: 'Ocurrió un error inesperado.' };
     }
 }
+
+/**
+ * Fetches data from the Darwin Service microservice.
+ * This is an example of how to connect to an external microservice.
+ * @returns A promise that resolves to the data from the microservice.
+ */
+export async function getDarwinServiceDataAction(): Promise<any> {
+    try {
+        // Replace this URL with the actual URL of your microservice
+        const response = await fetch('https://jsonplaceholder.typicode.com/todos/1');
+        
+        if (!response.ok) {
+            throw new Error(`Error from microservice: ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        return { success: true, data };
+    } catch (error) {
+        console.error("Error fetching from Darwin Service:", error);
+        const message = error instanceof Error ? error.message : "An unknown error occurred.";
+        return { success: false, error: `Could not fetch data: ${message}` };
+    }
+}
