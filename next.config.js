@@ -29,7 +29,10 @@ const nextConfig = {
     ],
   },
   experimental: {
-    transpilePackages: ['pdfkit', 'fontkit'],
+    serverActions: {
+      bodySizeLimit: '4mb', // Aumentar límite para imágenes en base64
+      maxDuration: 30, // Aumentar a 30 segundos para dar tiempo a Puppeteer
+    },
   },
 };
 
