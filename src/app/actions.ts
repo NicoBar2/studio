@@ -1090,7 +1090,7 @@ export async function updateMyProfileAction(prevState: any, formData: FormData):
 export async function getDarwinServiceDataAction(): Promise<any> {
     try {
         // Replace this URL with the actual URL of your microservice
-        const response = await fetch('https://jsonplaceholder.typicode.com/todos/1');
+        const response = await fetch('http://127.0.0.1:8001/docs#/default/');
         
         if (!response.ok) {
             throw new Error(`Error from microservice: ${response.statusText}`);
