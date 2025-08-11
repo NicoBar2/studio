@@ -4,27 +4,27 @@
 ## 1. Tabla de Contenidos
 
 1.  [Introducción](#2-introducción)
-2.  [Control de Versiones](#3-control-de-versiones)
-3.  [Avisos Legales y Licencias](#4-avisos-legales-y-licencias)
-4.  [Propósito del Manual](#6-propósito-del-manual)
-5.  [Alcance del Sistema](#7-alcance-del-sistema)
-6.  [Convenciones Tipográficas y Simbología](#8-convenciones-tipográficas-y-simbología)
-7.  [Descripción General del Sistema](#9-descripción-general-del-sistema)
-8.  [Requisitos y Entorno](#10-requisitos-y-entorno)
+2.	[Control de Versiones](#3-control-de-versiones)
+3.	[Avisos Legales y Licencias](#4-avisos-legales-y-licencias)
+4.	[Propósito del Manual](#6-propósito-del-manual)
+5.	[Alcance del Sistema](#7-alcance-del-sistema)
+6.	[Convenciones Tipográficas y Simbología](#8-convenciones-tipográficas-y-simbología)
+7.	[Descripción General del Sistema](#9-descripción-general-del-sistema)
+8.	[Requisitos y Entorno](#10-requisitos-y-entorno)
     *   [Hardware](#11-requisitos-de-hardware-mínimos-y-recomendados)
     *   [Software](#12-requisitos-de-software)
     *   [Configuraciones Previas](#13-configuraciones-previas-necesarias)
-9.  [Instalación y Despliegue](#14-instalación-y-despliegue)
-10. [Primeros Pasos](#15-primeros-pasos)
+9.	[Instalación y Despliegue](#14-instalación-y-despliegue)
+10.	[Primeros Pasos](#15-primeros-pasos)
     *   [Inicio de Sesión y Registro](#a-inicio-de-sesión-o-registro-de-usuarios)
     *   [Recorrido Inicial](#b-recorrido-inicial-por-la-interfaz)
-11. [Guía de Usuario por Módulos](#16-guía-de-usuario-por-módulos)
-12. [Resolución de Problemas](#17-resolución-de-problemas)
-13. [Preguntas Frecuentes (FAQ)](#18-preguntas-frecuentes-faq)
-14. [Soporte y Contacto](#19-soporte-y-contacto)
-15. [Glosario de Términos](#20-glosario-de-términos-y-acrónimos)
-16. [Referencias](#21-referencias-y-bibliografía)
-17. [Anexos](#22-anexos)
+11.	[Guía de Usuario por Módulos](#16-guía-de-usuario-por-módulos)
+12.	[Resolución de Problemas](#17-resolución-de-problemas)
+13.	[Preguntas Frecuentes (FAQ)](#18-preguntas-frecuentes-faq)
+14.	[Soporte y Contacto](#19-soporte-y-contacto)
+15.	[Glosario de Términos](#20-glosario-de-términos-y-acrónimos)
+16.	[Referencias](#21-referencias-y-bibliografía)
+17.	[Anexos](#22-anexos)
 
 ---
 
@@ -73,12 +73,32 @@ Este manual cubre todas las funcionalidades de la versión actual de Galapagos D
 
 ## 8. Convenciones Tipográficas y Simbología
 
-| Símbolo/Estilo       | Significado                                                  | Ejemplo                                         |
-| :------------------- | :----------------------------------------------------------- | :---------------------------------------------- |
-| **Negrita**          | Nombres de botones, menús, o elementos de la interfaz.       | Haz clic en **Guardar Cambios**.                |
-| `Código`             | Nombres de archivos, rutas, o fragmentos de código.          | El archivo se encuentra en `src/app/page.tsx`.  |
-| > **Nota:**          | Información adicional o consejos útiles.                     | > **Nota:** Asegúrate de guardar antes de salir. |
-| >> **Advertencia:**  | Indicación de acciones que pueden tener consecuencias inesperadas o pérdida de datos. | >> **Advertencia:** Eliminar una especie es una acción irreversible. |
+Para facilitar la comprensión de este manual, se utilizan las siguientes convenciones:
+
+| Símbolo/Estilo | Significado | Ejemplo |
+| :--- | :--- | :--- |
+| **Negrita** | Nombres de botones, menús, etiquetas y otros elementos interactivos de la interfaz. | Haz clic en **Guardar Cambios**.<br>Navega a **Panel > Resumen**. |
+| *Cursiva* | Énfasis en un término o para introducir un concepto nuevo. | Un *investigador* debe ser verificado por un *administrador*. |
+| `Código` | Nombres de archivos, rutas, o fragmentos de código para desarrolladores. | El archivo se encuentra en `src/app/page.tsx`. |
+| > **Nota:** | Información adicional, consejos o buenas prácticas que pueden ser útiles. | > **Nota:** Asegúrate de guardar tus cambios antes de salir de la página de edición. |
+| >> **Advertencia:** | Indicación de acciones que pueden tener consecuencias importantes o pérdida de datos. | >> **Advertencia:** Eliminar una especie es una acción irreversible y no se puede deshacer. |
+| >>> **Importante:** | Información crítica para el correcto funcionamiento de una característica. | >>> **Importante:** Para la generación de PDF, el servidor puede tardar unos segundos. No cierres la ventana. |
+
+### Simbología de Iconos
+
+Los siguientes iconos se utilizan a lo largo de la aplicación para representar acciones comunes:
+
+| Icono (Lucide-React) | Nombre | Acción que Representa |
+| :--- | :--- | :--- |
+| `Edit` | Editar | Abre el formulario para modificar la información de un elemento. |
+| `Trash2` | Eliminar | Inicia el proceso para borrar un elemento de forma permanente. |
+| `PlusCircle` | Añadir | Permite crear un nuevo elemento, como una especie o un punto de dato. |
+| `ArrowLeft` | Volver | Navega a la página anterior o principal. |
+| `FileSearch` | Generar Consulta | Abre la interfaz para comparar datos entre especies. |
+| `Layers` | Mapa de Calor | Accede a la visualización de concentración de especies. |
+| `Download` | Descargar | Inicia la descarga de un archivo, como un informe en PDF. |
+| `CheckCircle` | Verificado / Éxito | Indica que una acción se completó correctamente o que un estado es verificado. |
+| `XCircle` | Pendiente / Error | Indica un estado pendiente de aprobación o un error en una operación. |
 
 ---
 
