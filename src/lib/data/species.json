@@ -29,13 +29,83 @@
       }
     ],
     "historicalData": [
-      { "year": 1990, "value": 15000, "unit": "individuos", "description": "", "values": {} },
-      { "year": 1995, "value": 15200, "unit": "individuos", "description": "", "values": {} },
-      { "year": 2000, "value": 15500, "unit": "individuos", "description": "", "values": {} },
-      { "year": 2005, "value": 15800, "unit": "individuos", "description": "", "values": {} },
-      { "year": 2010, "value": 16000, "unit": "individuos", "description": "", "values": {} },
-      { "year": 2015, "value": 16300, "unit": "individuos", "description": "", "values": {} },
-      { "year": 2020, "value": 16500, "unit": "individuos", "description": "", "values": {} }
+      {
+        "year": 1990,
+        "unit": "individuos",
+        "description": "Censo inicial de la población.",
+        "values": {
+          "is_pinzon": 120,
+          "is_darwin": 300,
+          "is_genovesa": 250
+        },
+        "value": 670
+      },
+      {
+        "year": 1995,
+        "unit": "individuos",
+        "description": "",
+        "values": {
+          "is_pinzon": 130,
+          "is_darwin": 310,
+          "is_genovesa": 260
+        },
+        "value": 700
+      },
+      {
+        "year": 2000,
+        "unit": "individuos",
+        "description": "Monitoreo post-El Niño.",
+        "values": {
+          "is_pinzon": 125,
+          "is_darwin": 290,
+          "is_genovesa": 240
+        },
+        "value": 655
+      },
+      {
+        "year": 2005,
+        "unit": "individuos",
+        "description": "",
+        "values": {
+          "is_pinzon": 140,
+          "is_darwin": 320,
+          "is_genovesa": 270
+        },
+        "value": 730
+      },
+      {
+        "year": 2010,
+        "unit": "individuos",
+        "description": "Censo decenal.",
+        "values": {
+          "is_pinzon": 150,
+          "is_darwin": 330,
+          "is_genovesa": 280
+        },
+        "value": 760
+      },
+      {
+        "year": 2015,
+        "unit": "individuos",
+        "description": "",
+        "values": {
+          "is_pinzon": 160,
+          "is_darwin": 340,
+          "is_genovesa": 290
+        },
+        "value": 790
+      },
+      {
+        "year": 2020,
+        "unit": "individuos",
+        "description": "Estimación reciente.",
+        "values": {
+          "is_pinzon": 170,
+          "is_darwin": 350,
+          "is_genovesa": 300
+        },
+        "value": 820
+      }
     ],
     "is_isabela": false,
     "is_santa_cruz": false,
@@ -84,17 +154,94 @@
       }
     ],
     "historicalData": [
-      { "year": 1990, "value": 50000, "unit": "individuos", "description": "", "values": {} },
-      { "year": 1995, "value": 48000, "unit": "individuos", "description": "", "values": {} },
-      { "year": 2000, "value": 45000, "unit": "individuos", "description": "", "values": {} },
-      { "year": 2005, "value": 46000, "unit": "individuos", "description": "", "values": {} },
-      { "year": 2010, "value": 44000, "unit": "individuos", "description": "", "values": {} },
-      { "year": 2015, "value": 42000, "unit": "individuos", "description": "", "values": {} },
-      { "year": 2020, "value": 40000, "unit": "individuos", "description": "", "values": {} }
+      {
+        "year": 1990,
+        "unit": "individuos",
+        "description": "Censo inicial de la población.",
+        "values": {
+          "is_fernandina": 5000,
+          "is_espanola": 3000,
+          "is_floreana": 2000,
+          "is_santa_fe": 1500
+        },
+        "value": 11500
+      },
+      {
+        "year": 1995,
+        "unit": "individuos",
+        "description": "",
+        "values": {
+          "is_fernandina": 4800,
+          "is_espanola": 2900,
+          "is_floreana": 1900,
+          "is_santa_fe": 1400
+        },
+        "value": 11000
+      },
+      {
+        "year": 2000,
+        "unit": "individuos",
+        "description": "Monitoreo post-El Niño.",
+        "values": {
+          "is_fernandina": 4500,
+          "is_espanola": 2700,
+          "is_floreana": 1800,
+          "is_santa_fe": 1300
+        },
+        "value": 10300
+      },
+      {
+        "year": 2005,
+        "unit": "individuos",
+        "description": "",
+        "values": {
+          "is_fernandina": 4600,
+          "is_espanola": 2800,
+          "is_floreana": 1850,
+          "is_santa_fe": 1350
+        },
+        "value": 10600
+      },
+      {
+        "year": 2010,
+        "unit": "individuos",
+        "description": "Censo decenal.",
+        "values": {
+          "is_fernandina": 4400,
+          "is_espanola": 2600,
+          "is_floreana": 1700,
+          "is_santa_fe": 1200
+        },
+        "value": 9900
+      },
+      {
+        "year": 2015,
+        "unit": "individuos",
+        "description": "",
+        "values": {
+          "is_fernandina": 4300,
+          "is_espanola": 2500,
+          "is_floreana": 1600,
+          "is_santa_fe": 1100
+        },
+        "value": 9500
+      },
+      {
+        "year": 2020,
+        "unit": "individuos",
+        "description": "Estimación reciente.",
+        "values": {
+          "is_fernandina": 4200,
+          "is_espanola": 2400,
+          "is_floreana": 1500,
+          "is_santa_fe": 1000
+        },
+        "value": 9100
+      }
     ],
-    "is_fernandina": false,
-    "is_espanola": false,
-    "is_floreana": false,
+    "is_fernandina": true,
+    "is_espanola": true,
+    "is_floreana": true,
     "is_santiago": false,
     "createdAt": "2024-01-01T12:00:00.000Z",
     "showHistoricalDataToPublic": false,
@@ -106,7 +253,7 @@
     "is_pinzon": false,
     "is_san_cristobal": false,
     "is_santa_cruz": false,
-    "is_santa_fe": false,
+    "is_santa_fe": true,
     "is_north_seymour": false,
     "is_wolf": false
   },
@@ -137,31 +284,136 @@
       }
     ],
     "historicalData": [
-      { "year": 1990, "value": 200000, "unit": "individuos", "description": "", "values": {} },
-      { "year": 1995, "value": 210000, "unit": "individuos", "description": "", "values": {} },
-      { "year": 2000, "value": 205000, "unit": "individuos", "description": "", "values": {} },
-      { "year": 2005, "value": 190000, "unit": "individuos", "description": "", "values": {} },
-      { "year": 2010, "value": 195000, "unit": "individuos", "description": "", "values": {} },
-      { "year": 2015, "value": 185000, "unit": "individuos", "description": "", "values": {} },
-      { "year": 2020, "value": 180000, "unit": "individuos", "description": "", "values": {} }
+      {
+        "year": 1990,
+        "unit": "individuos",
+        "description": "Censo inicial de la población.",
+        "values": {
+          "is_isabela": 2000,
+          "is_santa_cruz": 1500,
+          "is_darwin": 500,
+          "is_espanola": 400,
+          "is_genovesa": 300,
+          "is_san_cristobal": 1000,
+          "is_santiago": 800,
+          "is_wolf": 200
+        },
+        "value": 6700
+      },
+      {
+        "year": 1995,
+        "unit": "individuos",
+        "description": "",
+        "values": {
+          "is_isabela": 2100,
+          "is_santa_cruz": 1600,
+          "is_darwin": 520,
+          "is_espanola": 420,
+          "is_genovesa": 310,
+          "is_san_cristobal": 1050,
+          "is_santiago": 820,
+          "is_wolf": 210
+        },
+        "value": 7030
+      },
+      {
+        "year": 2000,
+        "unit": "individuos",
+        "description": "Monitoreo post-El Niño.",
+        "values": {
+          "is_isabela": 1900,
+          "is_santa_cruz": 1400,
+          "is_darwin": 480,
+          "is_espanola": 380,
+          "is_genovesa": 290,
+          "is_san_cristobal": 950,
+          "is_santiago": 780,
+          "is_wolf": 190
+        },
+        "value": 6370
+      },
+      {
+        "year": 2005,
+        "unit": "individuos",
+        "description": "",
+        "values": {
+          "is_isabela": 2200,
+          "is_santa_cruz": 1700,
+          "is_darwin": 550,
+          "is_espanola": 450,
+          "is_genovesa": 330,
+          "is_san_cristobal": 1100,
+          "is_santiago": 850,
+          "is_wolf": 220
+        },
+        "value": 7400
+      },
+      {
+        "year": 2010,
+        "unit": "individuos",
+        "description": "Censo decenal.",
+        "values": {
+          "is_isabela": 2300,
+          "is_santa_cruz": 1800,
+          "is_darwin": 580,
+          "is_espanola": 470,
+          "is_genovesa": 350,
+          "is_san_cristobal": 1150,
+          "is_santiago": 880,
+          "is_wolf": 230
+        },
+        "value": 7760
+      },
+      {
+        "year": 2015,
+        "unit": "individuos",
+        "description": "",
+        "values": {
+          "is_isabela": 2400,
+          "is_santa_cruz": 1900,
+          "is_darwin": 600,
+          "is_espanola": 490,
+          "is_genovesa": 360,
+          "is_san_cristobal": 1200,
+          "is_santiago": 900,
+          "is_wolf": 240
+        },
+        "value": 8090
+      },
+      {
+        "year": 2020,
+        "unit": "individuos",
+        "description": "Estimación reciente.",
+        "values": {
+          "is_isabela": 2500,
+          "is_santa_cruz": 2000,
+          "is_darwin": 620,
+          "is_espanola": 500,
+          "is_genovesa": 370,
+          "is_san_cristobal": 1250,
+          "is_santiago": 920,
+          "is_wolf": 250
+        },
+        "value": 8410
+      }
     ],
-    "is_isabela": false,
-    "is_santa_cruz": false,
+    "is_isabela": true,
+    "is_santa_cruz": true,
     "is_pinta": false,
     "createdAt": "2024-01-01T12:00:00.000Z",
     "showHistoricalDataToPublic": false,
-    "is_darwin": false,
-    "is_espanola": false,
+    "is_darwin": true,
+    "is_espanola": true,
     "is_fernandina": false,
     "is_floreana": false,
-    "is_genovesa": false,
+    "is_genovesa": true,
     "is_marchena": false,
     "is_pinzon": false,
-    "is_san_cristobal": false,
+    "is_san_cristobal": true,
     "is_santa_fe": false,
-    "is_santiago": false,
+    "is_santiago": true,
     "is_north_seymour": false,
-    "is_wolf": false
+    "is_wolf": true
   },
   {
     "id": "cormoran-no-volador",
@@ -187,20 +439,83 @@
       }
     ],
     "historicalData": [
-      { "year": 1990, "value": 1000, "unit": "individuos", "description": "", "values": {} },
-      { "year": 1995, "value": 1100, "unit": "individuos", "description": "", "values": {} },
-      { "year": 2000, "value": 900, "unit": "individuos", "description": "", "values": {} },
-      { "year": 2005, "value": 1200, "unit": "individuos", "description": "", "values": {} },
-      { "year": 2010, "value": 1500, "unit": "individuos", "description": "", "values": {} },
-      { "year": 2015, "value": 1600, "unit": "individuos", "description": "", "values": {} },
-      { "year": 2020, "value": 1650, "unit": "individuos", "description": "", "values": {} }
+      {
+        "year": 1990,
+        "unit": "parejas reproductoras",
+        "description": "Censo inicial de la población.",
+        "values": {
+          "is_fernandina": 400,
+          "is_espanola": 300
+        },
+        "value": 700
+      },
+      {
+        "year": 1995,
+        "unit": "parejas reproductoras",
+        "description": "",
+        "values": {
+          "is_fernandina": 410,
+          "is_espanola": 305
+        },
+        "value": 715
+      },
+      {
+        "year": 2000,
+        "unit": "parejas reproductoras",
+        "description": "Monitoreo post-El Niño.",
+        "values": {
+          "is_fernandina": 390,
+          "is_espanola": 295
+        },
+        "value": 685
+      },
+      {
+        "year": 2005,
+        "unit": "parejas reproductoras",
+        "description": "",
+        "values": {
+          "is_fernandina": 420,
+          "is_espanola": 310
+        },
+        "value": 730
+      },
+      {
+        "year": 2010,
+        "unit": "parejas reproductoras",
+        "description": "Censo decenal.",
+        "values": {
+          "is_fernandina": 430,
+          "is_espanola": 315
+        },
+        "value": 745
+      },
+      {
+        "year": 2015,
+        "unit": "parejas reproductoras",
+        "description": "",
+        "values": {
+          "is_fernandina": 440,
+          "is_espanola": 320
+        },
+        "value": 760
+      },
+      {
+        "year": 2020,
+        "unit": "parejas reproductoras",
+        "description": "Estimación reciente.",
+        "values": {
+          "is_fernandina": 450,
+          "is_espanola": 325
+        },
+        "value": 775
+      }
     ],
     "is_isabela": false,
-    "is_fernandina": false,
+    "is_fernandina": true,
     "createdAt": "2024-01-01T12:00:00.000Z",
     "showHistoricalDataToPublic": false,
     "is_darwin": false,
-    "is_espanola": false,
+    "is_espanola": true,
     "is_floreana": false,
     "is_genovesa": false,
     "is_marchena": false,
@@ -237,15 +552,71 @@
       }
     ],
     "historicalData": [
-      { "year": 1990, "value": 35000, "unit": "parejas reproductoras", "description": "", "values": {} },
-      { "year": 1995, "value": 34000, "unit": "parejas reproductoras", "description": "", "values": {} },
-      { "year": 2000, "value": 32000, "unit": "parejas reproductoras", "description": "", "values": {} },
-      { "year": 2005, "value": 30000, "unit": "parejas reproductoras", "description": "", "values": {} },
-      { "year": 2010, "value": 28000, "unit": "parejas reproductoras", "description": "", "values": {} },
-      { "year": 2015, "value": 25000, "unit": "parejas reproductoras", "description": "", "values": {} },
-      { "year": 2020, "value": 22000, "unit": "parejas reproductoras", "description": "", "values": {} }
+      {
+        "year": 1990,
+        "unit": "parejas reproductoras",
+        "description": "Censo inicial de la población.",
+        "values": {
+          "is_espanola": 12000
+        },
+        "value": 12000
+      },
+      {
+        "year": 1995,
+        "unit": "parejas reproductoras",
+        "description": "",
+        "values": {
+          "is_espanola": 11500
+        },
+        "value": 11500
+      },
+      {
+        "year": 2000,
+        "unit": "parejas reproductoras",
+        "description": "Monitoreo post-El Niño.",
+        "values": {
+          "is_espanola": 11000
+        },
+        "value": 11000
+      },
+      {
+        "year": 2005,
+        "unit": "parejas reproductoras",
+        "description": "",
+        "values": {
+          "is_espanola": 10500
+        },
+        "value": 10500
+      },
+      {
+        "year": 2010,
+        "unit": "parejas reproductoras",
+        "description": "Censo decenal.",
+        "values": {
+          "is_espanola": 10000
+        },
+        "value": 10000
+      },
+      {
+        "year": 2015,
+        "unit": "parejas reproductoras",
+        "description": "",
+        "values": {
+          "is_espanola": 9500
+        },
+        "value": 9500
+      },
+      {
+        "year": 2020,
+        "unit": "parejas reproductoras",
+        "description": "Estimación reciente.",
+        "values": {
+          "is_espanola": 9000
+        },
+        "value": 9000
+      }
     ],
-    "is_espanola": false,
+    "is_espanola": true,
     "createdAt": "2024-01-01T12:00:00.000Z",
     "showHistoricalDataToPublic": false,
     "is_darwin": false,
@@ -287,22 +658,99 @@
       }
     ],
     "historicalData": [
-      { "year": 1990, "value": 40000, "unit": "individuos", "description": "", "values": {} },
-      { "year": 1995, "value": 38000, "unit": "individuos", "description": "", "values": {} },
-      { "year": 2000, "value": 25000, "unit": "individuos", "description": "", "values": {} },
-      { "year": 2005, "value": 20000, "unit": "individuos", "description": "", "values": {} },
-      { "year": 2010, "value": 18000, "unit": "individuos", "description": "", "values": {} },
-      { "year": 2015, "value": 16000, "unit": "individuos", "description": "", "values": {} },
-      { "year": 2020, "value": 15000, "unit": "individuos", "description": "", "values": {} }
+      {
+        "year": 1990,
+        "unit": "individuos",
+        "description": "Censo inicial de la población.",
+        "values": {
+          "is_isabela": 4000,
+          "is_san_cristobal": 3000,
+          "is_espanola": 2000,
+          "is_north_seymour": 1000
+        },
+        "value": 10000
+      },
+      {
+        "year": 1995,
+        "unit": "individuos",
+        "description": "",
+        "values": {
+          "is_isabela": 3800,
+          "is_san_cristobal": 2800,
+          "is_espanola": 1900,
+          "is_north_seymour": 950
+        },
+        "value": 9450
+      },
+      {
+        "year": 2000,
+        "unit": "individuos",
+        "description": "Monitoreo post-El Niño.",
+        "values": {
+          "is_isabela": 3500,
+          "is_san_cristobal": 2500,
+          "is_espanola": 1700,
+          "is_north_seymour": 850
+        },
+        "value": 8550
+      },
+      {
+        "year": 2005,
+        "unit": "individuos",
+        "description": "",
+        "values": {
+          "is_isabela": 3600,
+          "is_san_cristobal": 2600,
+          "is_espanola": 1800,
+          "is_north_seymour": 900
+        },
+        "value": 8900
+      },
+      {
+        "year": 2010,
+        "unit": "individuos",
+        "description": "Censo decenal.",
+        "values": {
+          "is_isabela": 3400,
+          "is_san_cristobal": 2400,
+          "is_espanola": 1600,
+          "is_north_seymour": 800
+        },
+        "value": 8200
+      },
+      {
+        "year": 2015,
+        "unit": "individuos",
+        "description": "",
+        "values": {
+          "is_isabela": 3300,
+          "is_san_cristobal": 2300,
+          "is_espanola": 1500,
+          "is_north_seymour": 750
+        },
+        "value": 7850
+      },
+      {
+        "year": 2020,
+        "unit": "individuos",
+        "description": "Estimación reciente.",
+        "values": {
+          "is_isabela": 3200,
+          "is_san_cristobal": 2200,
+          "is_espanola": 1400,
+          "is_north_seymour": 700
+        },
+        "value": 7500
+      }
     ],
-    "is_isabela": false,
+    "is_isabela": true,
     "is_santa_cruz": false,
-    "is_san_cristobal": false,
+    "is_san_cristobal": true,
     "is_santiago": false,
     "createdAt": "2024-01-01T12:00:00.000Z",
     "showHistoricalDataToPublic": false,
     "is_darwin": false,
-    "is_espanola": false,
+    "is_espanola": true,
     "is_fernandina": false,
     "is_floreana": false,
     "is_genovesa": false,
@@ -310,7 +758,7 @@
     "is_pinta": false,
     "is_pinzon": false,
     "is_santa_fe": false,
-    "is_north_seymour": false,
+    "is_north_seymour": true,
     "is_wolf": false
   },
   {
@@ -337,21 +785,105 @@
       }
     ],
     "historicalData": [
-      { "year": 1990, "value": 2000, "unit": "individuos", "description": "", "values": {} },
-      { "year": 1995, "value": 1500, "unit": "individuos", "description": "", "values": {} },
-      { "year": 2000, "value": 1200, "unit": "individuos", "description": "", "values": {} },
-      { "year": 2005, "value": 1000, "unit": "individuos", "description": "", "values": {} },
-      { "year": 2010, "value": 1800, "unit": "individuos", "description": "", "values": {} },
-      { "year": 2015, "value": 1900, "unit": "individuos", "description": "", "values": {} },
-      { "year": 2020, "value": 2100, "unit": "individuos", "description": "", "values": {} }
+      {
+        "year": 1990,
+        "unit": "individuos",
+        "description": "Censo inicial de la población.",
+        "values": {
+          "is_isabela": 800,
+          "is_fernandina": 600,
+          "is_espanola": 100,
+          "is_floreana": 50,
+          "is_santiago": 50
+        },
+        "value": 1600
+      },
+      {
+        "year": 1995,
+        "unit": "individuos",
+        "description": "",
+        "values": {
+          "is_isabela": 750,
+          "is_fernandina": 550,
+          "is_espanola": 90,
+          "is_floreana": 45,
+          "is_santiago": 45
+        },
+        "value": 1480
+      },
+      {
+        "year": 2000,
+        "unit": "individuos",
+        "description": "Monitoreo post-El Niño.",
+        "values": {
+          "is_isabela": 700,
+          "is_fernandina": 500,
+          "is_espanola": 80,
+          "is_floreana": 40,
+          "is_santiago": 40
+        },
+        "value": 1360
+      },
+      {
+        "year": 2005,
+        "unit": "individuos",
+        "description": "",
+        "values": {
+          "is_isabela": 720,
+          "is_fernandina": 520,
+          "is_espanola": 85,
+          "is_floreana": 42,
+          "is_santiago": 42
+        },
+        "value": 1409
+      },
+      {
+        "year": 2010,
+        "unit": "individuos",
+        "description": "Censo decenal.",
+        "values": {
+          "is_isabela": 780,
+          "is_fernandina": 580,
+          "is_espanola": 95,
+          "is_floreana": 48,
+          "is_santiago": 48
+        },
+        "value": 1551
+      },
+      {
+        "year": 2015,
+        "unit": "individuos",
+        "description": "",
+        "values": {
+          "is_isabela": 800,
+          "is_fernandina": 600,
+          "is_espanola": 100,
+          "is_floreana": 50,
+          "is_santiago": 50
+        },
+        "value": 1600
+      },
+      {
+        "year": 2020,
+        "unit": "individuos",
+        "description": "Estimación reciente.",
+        "values": {
+          "is_isabela": 820,
+          "is_fernandina": 620,
+          "is_espanola": 105,
+          "is_floreana": 52,
+          "is_santiago": 52
+        },
+        "value": 1649
+      }
     ],
-    "is_isabela": false,
-    "is_fernandina": false,
+    "is_isabela": true,
+    "is_fernandina": true,
     "createdAt": "2024-01-01T12:00:00.000Z",
     "showHistoricalDataToPublic": false,
     "is_darwin": false,
-    "is_espanola": false,
-    "is_floreana": false,
+    "is_espanola": true,
+    "is_floreana": true,
     "is_genovesa": false,
     "is_marchena": false,
     "is_pinta": false,
@@ -359,7 +891,7 @@
     "is_san_cristobal": false,
     "is_santa_cruz": false,
     "is_santa_fe": false,
-    "is_santiago": false,
+    "is_santiago": true,
     "is_north_seymour": false,
     "is_wolf": false
   },
@@ -387,19 +919,89 @@
       }
     ],
     "historicalData": [
-      { "year": 1990, "value": 500000, "unit": "individuos", "description": "", "values": {} },
-      { "year": 1995, "value": 510000, "unit": "individuos", "description": "", "values": {} },
-      { "year": 2000, "value": 505000, "unit": "individuos", "description": "", "values": {} },
-      { "year": 2005, "value": 520000, "unit": "individuos", "description": "", "values": {} },
-      { "year": 2010, "value": 525000, "unit": "individuos", "description": "", "values": {} },
-      { "year": 2015, "value": 530000, "unit": "individuos", "description": "", "values": {} },
-      { "year": 2020, "value": 535000, "unit": "individuos", "description": "", "values": {} }
+      {
+        "year": 1990,
+        "unit": "individuos por hectárea",
+        "description": "Censo inicial de la población.",
+        "values": {
+          "is_genovesa": 50,
+          "is_darwin": 40,
+          "is_wolf": 30
+        },
+        "value": 120
+      },
+      {
+        "year": 1995,
+        "unit": "individuos por hectárea",
+        "description": "",
+        "values": {
+          "is_genovesa": 52,
+          "is_darwin": 42,
+          "is_wolf": 32
+        },
+        "value": 126
+      },
+      {
+        "year": 2000,
+        "unit": "individuos por hectárea",
+        "description": "Monitoreo post-El Niño.",
+        "values": {
+          "is_genovesa": 48,
+          "is_darwin": 38,
+          "is_wolf": 28
+        },
+        "value": 114
+      },
+      {
+        "year": 2005,
+        "unit": "individuos por hectárea",
+        "description": "",
+        "values": {
+          "is_genovesa": 55,
+          "is_darwin": 45,
+          "is_wolf": 35
+        },
+        "value": 135
+      },
+      {
+        "year": 2010,
+        "unit": "individuos por hectárea",
+        "description": "Censo decenal.",
+        "values": {
+          "is_genovesa": 58,
+          "is_darwin": 48,
+          "is_wolf": 38
+        },
+        "value": 144
+      },
+      {
+        "year": 2015,
+        "unit": "individuos por hectárea",
+        "description": "",
+        "values": {
+          "is_genovesa": 60,
+          "is_darwin": 50,
+          "is_wolf": 40
+        },
+        "value": 150
+      },
+      {
+        "year": 2020,
+        "unit": "individuos por hectárea",
+        "description": "Estimación reciente.",
+        "values": {
+          "is_genovesa": 62,
+          "is_darwin": 52,
+          "is_wolf": 42
+        },
+        "value": 156
+      }
     ],
     "is_santa_cruz": false,
-    "is_genovesa": false,
+    "is_genovesa": true,
     "createdAt": "2024-01-01T12:00:00.000Z",
     "showHistoricalDataToPublic": false,
-    "is_darwin": false,
+    "is_darwin": true,
     "is_espanola": false,
     "is_fernandina": false,
     "is_floreana": false,
@@ -411,7 +1013,7 @@
     "is_santa_fe": false,
     "is_santiago": false,
     "is_north_seymour": false,
-    "is_wolf": false
+    "is_wolf": true
   },
   {
     "id": "sinsonte-de-floreana",
@@ -430,15 +1032,71 @@
     "threats": [],
     "keyStats": [],
     "historicalData": [
-      { "year": 1990, "value": 250, "unit": "individuos", "description": "", "values": {} },
-      { "year": 1995, "value": 200, "unit": "individuos", "description": "", "values": {} },
-      { "year": 2000, "value": 150, "unit": "individuos", "description": "", "values": {} },
-      { "year": 2005, "value": 100, "unit": "individuos", "description": "", "values": {} },
-      { "year": 2010, "value": 80, "unit": "individuos", "description": "", "values": {} },
-      { "year": 2015, "value": 70, "unit": "individuos", "description": "", "values": {} },
-      { "year": 2020, "value": 60, "unit": "individuos", "description": "", "values": {} }
+      {
+        "year": 1990,
+        "unit": "individuos",
+        "description": "Censo inicial de la población.",
+        "values": {
+          "is_floreana": 150
+        },
+        "value": 150
+      },
+      {
+        "year": 1995,
+        "unit": "individuos",
+        "description": "",
+        "values": {
+          "is_floreana": 140
+        },
+        "value": 140
+      },
+      {
+        "year": 2000,
+        "unit": "individuos",
+        "description": "Monitoreo post-El Niño.",
+        "values": {
+          "is_floreana": 120
+        },
+        "value": 120
+      },
+      {
+        "year": 2005,
+        "unit": "individuos",
+        "description": "",
+        "values": {
+          "is_floreana": 110
+        },
+        "value": 110
+      },
+      {
+        "year": 2010,
+        "unit": "individuos",
+        "description": "Censo decenal.",
+        "values": {
+          "is_floreana": 100
+        },
+        "value": 100
+      },
+      {
+        "year": 2015,
+        "unit": "individuos",
+        "description": "",
+        "values": {
+          "is_floreana": 90
+        },
+        "value": 90
+      },
+      {
+        "year": 2020,
+        "unit": "individuos",
+        "description": "Estimación reciente.",
+        "values": {
+          "is_floreana": 80
+        },
+        "value": 80
+      }
     ],
-    "is_floreana": false,
+    "is_floreana": true,
     "createdAt": "2024-01-01T12:00:00.000Z",
     "showHistoricalDataToPublic": false,
     "is_darwin": false,
@@ -484,13 +1142,76 @@
       }
     ],
     "historicalData": [
-      { "year": 1990, "value": 10000, "unit": "avistamientos", "description": "", "values": {} },
-      { "year": 1995, "value": 9500, "unit": "avistamientos", "description": "", "values": {} },
-      { "year": 2000, "value": 8000, "unit": "avistamientos", "description": "", "values": {} },
-      { "year": 2005, "value": 7000, "unit": "avistamientos", "description": "", "values": {} },
-      { "year": 2010, "value": 6000, "unit": "avistamientos", "description": "", "values": {} },
-      { "year": 2015, "value": 5000, "unit": "avistamientos", "description": "", "values": {} },
-      { "year": 2020, "value": 4000, "unit": "avistamientos", "description": "", "values": {} }
+      {
+        "year": 1990,
+        "value": 10000,
+        "unit": "avistamientos",
+        "description": "Censo inicial de la población.",
+        "values": {
+          "is_darwin": 6000,
+          "is_wolf": 4000
+        }
+      },
+      {
+        "year": 1995,
+        "value": 9500,
+        "unit": "avistamientos",
+        "description": "",
+        "values": {
+          "is_darwin": 5700,
+          "is_wolf": 3800
+        }
+      },
+      {
+        "year": 2000,
+        "value": 8000,
+        "unit": "avistamientos",
+        "description": "Monitoreo post-El Niño.",
+        "values": {
+          "is_darwin": 4800,
+          "is_wolf": 3200
+        }
+      },
+      {
+        "year": 2005,
+        "value": 7000,
+        "unit": "avistamientos",
+        "description": "",
+        "values": {
+          "is_darwin": 4200,
+          "is_wolf": 2800
+        }
+      },
+      {
+        "year": 2010,
+        "value": 6000,
+        "unit": "avistamientos",
+        "description": "Censo decenal.",
+        "values": {
+          "is_darwin": 3600,
+          "is_wolf": 2400
+        }
+      },
+      {
+        "year": 2015,
+        "value": 5000,
+        "unit": "avistamientos",
+        "description": "",
+        "values": {
+          "is_darwin": 3000,
+          "is_wolf": 2000
+        }
+      },
+      {
+        "year": 2020,
+        "value": 4000,
+        "unit": "avistamientos",
+        "description": "Estimación reciente.",
+        "values": {
+          "is_darwin": 2400,
+          "is_wolf": 1600
+        }
+      }
     ],
     "is_darwin": true,
     "is_wolf": true,
