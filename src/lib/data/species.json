@@ -587,72 +587,45 @@
   {
     "id": "tiburon-martillo-festoneado",
     "spanishCommonName": "Tiburón Martillo Festoneado",
-    "englishCommonName": "Scalloped Hammerhead Shark",
+    "englishCommonName": "Scalloped Hammerhead",
     "genus": "Sphyrna",
     "specificEpithet": "lewini",
     "family": "Sphyrnidae",
-    "spanishDescription": "Conocido por su distintiva cabeza en forma de 'T' o martillo. A menudo se congregan en grandes grupos alrededor de las islas Darwin y Wolf, lo que los convierte en una atracción clave para los buceadores. Son depredadores ápice en el ecosistema marino.",
-    "englishDescription": "Known for its distinctive 'T' or hammer-shaped head. They often congregate in large schools around Darwin and Wolf islands, making them a key attraction for divers. They are apex predators in the marine ecosystem.",
-    "imageUrl": "https://i.ibb.co/3m9qv5G/09e992b1a91e.jpg",
-    "dataAiHint": "scalloped hammerhead",
+    "spanishDescription": "Conocido por su distintiva cabeza en forma de 'T' o martillo. Son depredadores sociales que a menudo se congregan en grandes cardúmenes durante el día. Son vitales para la salud de los ecosistemas marinos.",
+    "englishDescription": "Known for its distinctive 'T' or hammer-shaped head. They are social predators that often congregate in large schools during the day. They are vital to the health of marine ecosystems.",
+    "imageUrl": "https://i.ibb.co/Vvz6Dct/fde3a22c1f93.jpg",
+    "dataAiHint": "hammerhead shark",
     "icon": "Waves",
     "populationTrend": "decreasing",
     "iucnStatus": "En Peligro Crítico",
-    "habitat": "Aguas pelágicas y costeras, a menudo cerca de montes submarinos e islas.",
+    "habitat": "Zonas costeras y pelágicas, a menudo cerca de montes submarinos y taludes insulares.",
     "threats": [
       "Pesca incidental",
       "Pesca dirigida para aletas",
-      "Degradación del hábitat"
+      "Contaminación"
     ],
     "keyStats": [
       {
         "label": "Longitud Máxima",
         "value": "4.3",
         "unit": "m"
-      },
-      {
-        "label": "Profundidad de hábitat",
-        "value": "0-275",
-        "unit": "m"
       }
     ],
-    "historicalData": [
-      {
-        "year": 2005,
-        "unit": "avistamientos/hora",
-        "description": "Línea base de monitoreo en Darwin y Wolf.",
-        "values": {},
-        "value": 15
-      },
-      {
-        "year": 2015,
-        "unit": "avistamientos/hora",
-        "description": "Disminución observada en agregaciones.",
-        "values": {},
-        "value": 8
-      },
-      {
-        "year": 2023,
-        "unit": "avistamientos/hora",
-        "description": "Monitoreo post-protección marina.",
-        "values": {},
-        "value": 10
-      }
-    ],
+    "historicalData": [],
     "is_darwin": true,
     "is_wolf": true,
-    "is_isabela": true,
-    "is_santa_cruz": true,
-    "createdAt": "2024-08-08T12:00:00.000Z",
-    "showHistoricalDataToPublic": true,
+    "is_isabela": false,
+    "is_santa_cruz": false,
+    "is_san_cristobal": false,
     "is_espanola": false,
+    "is_pinzon": false,
+    "createdAt": "2024-01-01T12:00:00.000Z",
+    "showHistoricalDataToPublic": true,
     "is_fernandina": false,
     "is_floreana": false,
     "is_genovesa": false,
     "is_marchena": false,
     "is_pinta": false,
-    "is_pinzon": false,
-    "is_san_cristobal": false,
     "is_santa_fe": false,
     "is_santiago": false,
     "is_north_seymour": false
