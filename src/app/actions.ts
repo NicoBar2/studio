@@ -389,7 +389,7 @@ export async function saveSpeciesData(prevState: any, formData: FormData): Promi
         }
     }
 
-    const imageDataUri = formData.get('imageUrl') as string;
+    const imageDataUri = formData.get('imageDataUri') as string;
     const finalImageUrl = await handleImageUpload(imageDataUri, currentSpecies.imageUrl);
 
     const updatedData: Partial<Species> = {
@@ -498,7 +498,7 @@ export async function addSpeciesAction(prevState: any, formData: FormData): Prom
         }
     }
 
-    const imageDataUri = formData.get('imageUrl') as string;
+    const imageDataUri = formData.get('imageDataUri') as string;
     const finalImageUrl = await handleImageUpload(imageDataUri, 'https://placehold.co/600x400.png');
 
     const newSpeciesData: Partial<Species> = {
@@ -1041,7 +1041,7 @@ export async function updateMyProfileAction(prevState: any, formData: FormData):
     const researcherName = formData.get('researcherName') as string;
     const institution = formData.get('institution') as string;
     const specialization = formData.get('specialization') as string;
-    const imageDataUri = formData.get('profileImageUrl') as string;
+    const imageDataUri = formData.get('imageDataUri') as string;
 
     if (!userEmail) {
         return { success: false, message: 'No se pudo identificar al usuario.' };
@@ -1104,3 +1104,5 @@ export async function getDarwinServiceDataAction(): Promise<any> {
         return { success: false, error: `Could not fetch data: ${message}` };
     }
 }
+
+    

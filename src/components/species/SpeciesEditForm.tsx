@@ -166,7 +166,7 @@ export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
           <input type="hidden" name="userRole" value={role || ''} />
           <input type="hidden" name="userEmail" value={userEmail || ''} />
           <input type="hidden" name="historicalData" value={JSON.stringify(historicalData)} />
-          <input type="hidden" name="imageUrl" value={imageFileValue} />
+          <input type="hidden" name="imageDataUri" value={imageFileValue} />
 
 
           <Accordion type="multiple" defaultValue={['item-1', 'item-2']} className="w-full">
@@ -435,3 +435,5 @@ export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
     </Card>
   );
 }
+
+    

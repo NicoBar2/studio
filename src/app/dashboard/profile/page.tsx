@@ -36,7 +36,7 @@ function ProfileForm({ researcher }: { researcher: Researcher }) {
   const [state, formAction] = useActionState(updateMyProfileAction, initialUpdateState);
 
   const [imagePreview, setImagePreview] = useState<string | null>(researcher.profileImageUrl || null);
-  const [imageFileValue, setImageFileValue] = useState<string>(researcher.profileImageUrl || '');
+  const [imageFileValue, setImageFileValue] = useState<string>('');
   
   useEffect(() => {
     if (state.message) {
@@ -60,7 +60,7 @@ function ProfileForm({ researcher }: { researcher: Researcher }) {
       reader.readAsDataURL(file);
     } else {
       setImagePreview(researcher.profileImageUrl || null);
-      setImageFileValue(researcher.profileImageUrl || '');
+      setImageFileValue('');
     }
   };
 
@@ -68,7 +68,7 @@ function ProfileForm({ researcher }: { researcher: Researcher }) {
   return (
     <form action={formAction} className="space-y-6">
       <input type="hidden" name="userEmail" value={userEmail || ''} />
-      <input type="hidden" name="profileImageUrl" value={imageFileValue} />
+      <input type="hidden" name="imageDataUri" value={imageFileValue} />
 
       <div className="flex items-center gap-6">
           <Avatar className="h-24 w-24 border-2 border-primary">
@@ -195,3 +195,5 @@ export default function ProfilePage() {
         </Suspense>
     );
 }
+
+    

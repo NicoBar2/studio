@@ -206,7 +206,7 @@ export default function AddSpeciesPage() {
                             <input type="hidden" name="userRole" value={role || ''} />
                             <input type="hidden" name="userEmail" value={userEmail || ''} />
                             <input type="hidden" name="historicalData" value={JSON.stringify(historicalData)} />
-                            <input type="hidden" name="imageUrl" value={imageFileValue} />
+                            <input type="hidden" name="imageDataUri" value={imageFileValue} />
                             
                             <Accordion type="multiple" defaultValue={['item-0']} className="w-full">
                                 <AccordionItem value="item-0">
@@ -483,3 +483,5 @@ export default function AddSpeciesPage() {
 
     
 }
+
+    
