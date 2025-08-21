@@ -592,13 +592,18 @@
     "specificEpithet": "lewini",
     "family": "Sphyrnidae",
     "spanishDescription": "Conocido por su distintiva cabeza en forma de 'T' o martillo. A menudo se congregan en grandes grupos alrededor de las islas Darwin y Wolf, lo que los convierte en una atracción clave para los buceadores. Son depredadores ápice en el ecosistema marino.",
-    "imageUrl": "https://placehold.co/600x400.png",
-    "dataAiHint": "hammerhead shark",
+    "englishDescription": "Known for its distinctive 'T' or hammer-shaped head. They often congregate in large schools around Darwin and Wolf islands, making them a key attraction for divers. They are apex predators in the marine ecosystem.",
+    "imageUrl": "https://i.ibb.co/3m9qv5G/09e992b1a91e.jpg",
+    "dataAiHint": "scalloped hammerhead",
     "icon": "Waves",
     "populationTrend": "decreasing",
     "iucnStatus": "En Peligro Crítico",
     "habitat": "Aguas pelágicas y costeras, a menudo cerca de montes submarinos e islas.",
-    "threats": [],
+    "threats": [
+      "Pesca incidental",
+      "Pesca dirigida para aletas",
+      "Degradación del hábitat"
+    ],
     "keyStats": [
       {
         "label": "Longitud Máxima",
@@ -614,35 +619,44 @@
     "historicalData": [
       {
         "year": 2005,
-        "unit": "individuos/km²",
-        "description": "Línea base de monitoreo",
+        "unit": "avistamientos/hora",
+        "description": "Línea base de monitoreo en Darwin y Wolf.",
         "values": {},
-        "value": 0
+        "value": 15
       },
       {
         "year": 2015,
-        "unit": "individuos/km²",
-        "description": "Disminución observada",
+        "unit": "avistamientos/hora",
+        "description": "Disminución observada en agregaciones.",
         "values": {},
-        "value": 0
+        "value": 8
+      },
+      {
+        "year": 2023,
+        "unit": "avistamientos/hora",
+        "description": "Monitoreo post-protección marina.",
+        "values": {},
+        "value": 10
       }
     ],
-    "is_darwin": false,
-    "is_wolf": false,
-    "createdAt": "2024-01-01T12:00:00.000Z",
-    "showHistoricalDataToPublic": false,
+    "is_darwin": true,
+    "is_wolf": true,
+    "is_isabela": true,
+    "is_santa_cruz": true,
+    "createdAt": "2024-08-08T12:00:00.000Z",
+    "showHistoricalDataToPublic": true,
     "is_espanola": false,
     "is_fernandina": false,
     "is_floreana": false,
     "is_genovesa": false,
-    "is_isabela": false,
     "is_marchena": false,
     "is_pinta": false,
     "is_pinzon": false,
     "is_san_cristobal": false,
-    "is_santa_cruz": false,
     "is_santa_fe": false,
     "is_santiago": false,
     "is_north_seymour": false
   }
 ]
+
+    
