@@ -250,7 +250,7 @@ async function deleteResearcherById(id: string): Promise<boolean> {
 
 async function handleImageUpload(imageDataUri: string, currentImageUrl: string): Promise<string> {
     if (!imageDataUri || !imageDataUri.startsWith('data:image')) {
-        return currentImageUrl; // No new image was selected, return the existing URL
+        return currentImageUrl; // No new image was provided, keep the existing one.
     }
     if (!process.env.IMGBB_API_KEY) {
         console.warn('IMGBB_API_KEY not set. Returning placeholder.');

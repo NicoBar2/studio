@@ -592,7 +592,7 @@
     "specificEpithet": "lewini",
     "family": "Sphyrnidae",
     "spanishDescription": "Conocido por su distintiva cabeza en forma de 'T' o martillo. A menudo se congregan en grandes grupos alrededor de las islas Darwin y Wolf, lo que los convierte en una atracción clave para los buceadores. Son depredadores ápice en el ecosistema marino.",
-    "imageUrl": "https://images.unsplash.com/photo-1551989427-ac7384ac5450",
+    "imageUrl": "https://placehold.co/600x400.png",
     "dataAiHint": "hammerhead shark",
     "icon": "Waves",
     "populationTrend": "decreasing",
@@ -646,5 +646,3 @@
     "is_north_seymour": false
   }
 ]
-
-    

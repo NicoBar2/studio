@@ -67,7 +67,7 @@ export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
   const { role, userEmail } = useAuth();
 
   const [imagePreview, setImagePreview] = useState<string | null>(getSpeciesImageUrl(species));
-  const [imageFileValue, setImageFileValue] = useState<string>(getSpeciesImageUrl(species));
+  const [imageFileValue, setImageFileValue] = useState<string>('');
   const [showPublicDataChecked, setShowPublicDataChecked] = useState(!!species.showHistoricalDataToPublic);
   const [historicalData, setHistoricalData] = useState<HistoricalDataPoint[]>(species.historicalData || []);
   const [islandPresence, setIslandPresence] = useState<Record<string, boolean>>(() => {
@@ -97,7 +97,7 @@ export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
   const resetFormState = useCallback((s: Species) => {
     const currentImageUrl = getSpeciesImageUrl(s);
     setImagePreview(currentImageUrl);
-    setImageFileValue(currentImageUrl);
+    setImageFileValue(''); // Reset image file value on new species data
     setShowPublicDataChecked(!!s.showHistoricalDataToPublic);
     setHistoricalData(s.historicalData || []);
     const initialPresence: Record<string, boolean> = {};
@@ -124,7 +124,7 @@ export default function SpeciesEditForm({ species }: SpeciesEditFormProps) {
     } else {
       const originalImageUrl = getSpeciesImageUrl(species);
       setImagePreview(originalImageUrl);
-      setImageFileValue(originalImageUrl);
+      setImageFileValue('');
     }
   };
 
