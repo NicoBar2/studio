@@ -26,6 +26,9 @@ export default function DarwinServicePage() {
                             <DatabaseZap className="mr-3 h-7 w-7" />
                             Servicio Externo Darwin
                         </CardTitle>
+                        <CardDescription>
+                            Interactúa con la herramienta externa de búsqueda de especies directamente desde esta interfaz.
+                        </CardDescription>
                     </CardHeader>
                     <CardContent className="flex-grow p-0 overflow-hidden">
                         <iframe
