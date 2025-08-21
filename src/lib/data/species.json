@@ -1,3 +1,4 @@
+
 [
   {
     "id": "tortuga-gigante-de-galapagos",
@@ -28,30 +29,13 @@
       }
     ],
     "historicalData": [
-      {
-        "year": 1970,
-        "unit": "individuos",
-        "description": "",
-        "values": {
-          "is_darwin": 222,
-          "is_genovesa": 10
-        },
-        "value": 232
-      },
-      {
-        "year": 2000,
-        "unit": "individuos",
-        "description": "",
-        "values": {},
-        "value": 0
-      },
-      {
-        "year": 2020,
-        "unit": "individuos",
-        "description": "Censo post-erradicación de especies invasoras.",
-        "values": {},
-        "value": 0
-      }
+      { "year": 1990, "value": 15000, "unit": "individuos", "description": "", "values": {} },
+      { "year": 1995, "value": 15200, "unit": "individuos", "description": "", "values": {} },
+      { "year": 2000, "value": 15500, "unit": "individuos", "description": "", "values": {} },
+      { "year": 2005, "value": 15800, "unit": "individuos", "description": "", "values": {} },
+      { "year": 2010, "value": 16000, "unit": "individuos", "description": "", "values": {} },
+      { "year": 2015, "value": 16300, "unit": "individuos", "description": "", "values": {} },
+      { "year": 2020, "value": 16500, "unit": "individuos", "description": "", "values": {} }
     ],
     "is_isabela": false,
     "is_santa_cruz": false,
@@ -100,27 +84,13 @@
       }
     ],
     "historicalData": [
-      {
-        "year": 1990,
-        "unit": "individuos",
-        "description": "",
-        "values": {},
-        "value": 0
-      },
-      {
-        "year": 2010,
-        "unit": "individuos",
-        "description": "",
-        "values": {},
-        "value": 0
-      },
-      {
-        "year": 2022,
-        "unit": "individuos",
-        "description": "",
-        "values": {},
-        "value": 0
-      }
+      { "year": 1990, "value": 50000, "unit": "individuos", "description": "", "values": {} },
+      { "year": 1995, "value": 48000, "unit": "individuos", "description": "", "values": {} },
+      { "year": 2000, "value": 45000, "unit": "individuos", "description": "", "values": {} },
+      { "year": 2005, "value": 46000, "unit": "individuos", "description": "", "values": {} },
+      { "year": 2010, "value": 44000, "unit": "individuos", "description": "", "values": {} },
+      { "year": 2015, "value": 42000, "unit": "individuos", "description": "", "values": {} },
+      { "year": 2020, "value": 40000, "unit": "individuos", "description": "", "values": {} }
     ],
     "is_fernandina": false,
     "is_espanola": false,
@@ -167,27 +137,13 @@
       }
     ],
     "historicalData": [
-      {
-        "year": 1995,
-        "unit": "individuos",
-        "description": "",
-        "values": {},
-        "value": 0
-      },
-      {
-        "year": 2005,
-        "unit": "individuos",
-        "description": "",
-        "values": {},
-        "value": 0
-      },
-      {
-        "year": 2015,
-        "unit": "individuos",
-        "description": "",
-        "values": {},
-        "value": 0
-      }
+      { "year": 1990, "value": 200000, "unit": "individuos", "description": "", "values": {} },
+      { "year": 1995, "value": 210000, "unit": "individuos", "description": "", "values": {} },
+      { "year": 2000, "value": 205000, "unit": "individuos", "description": "", "values": {} },
+      { "year": 2005, "value": 190000, "unit": "individuos", "description": "", "values": {} },
+      { "year": 2010, "value": 195000, "unit": "individuos", "description": "", "values": {} },
+      { "year": 2015, "value": 185000, "unit": "individuos", "description": "", "values": {} },
+      { "year": 2020, "value": 180000, "unit": "individuos", "description": "", "values": {} }
     ],
     "is_isabela": false,
     "is_santa_cruz": false,
@@ -231,27 +187,13 @@
       }
     ],
     "historicalData": [
-      {
-        "year": 2000,
-        "unit": "individuos",
-        "description": "",
-        "values": {},
-        "value": 0
-      },
-      {
-        "year": 2010,
-        "unit": "individuos",
-        "description": "",
-        "values": {},
-        "value": 0
-      },
-      {
-        "year": 2020,
-        "unit": "individuos",
-        "description": "",
-        "values": {},
-        "value": 0
-      }
+      { "year": 1990, "value": 1000, "unit": "individuos", "description": "", "values": {} },
+      { "year": 1995, "value": 1100, "unit": "individuos", "description": "", "values": {} },
+      { "year": 2000, "value": 900, "unit": "individuos", "description": "", "values": {} },
+      { "year": 2005, "value": 1200, "unit": "individuos", "description": "", "values": {} },
+      { "year": 2010, "value": 1500, "unit": "individuos", "description": "", "values": {} },
+      { "year": 2015, "value": 1600, "unit": "individuos", "description": "", "values": {} },
+      { "year": 2020, "value": 1650, "unit": "individuos", "description": "", "values": {} }
     ],
     "is_isabela": false,
     "is_fernandina": false,
@@ -295,27 +237,13 @@
       }
     ],
     "historicalData": [
-      {
-        "year": 1994,
-        "unit": "parejas reproductoras",
-        "description": "",
-        "values": {},
-        "value": 0
-      },
-      {
-        "year": 2007,
-        "unit": "parejas reproductoras",
-        "description": "",
-        "values": {},
-        "value": 0
-      },
-      {
-        "year": 2020,
-        "unit": "parejas reproductoras",
-        "description": "",
-        "values": {},
-        "value": 0
-      }
+      { "year": 1990, "value": 35000, "unit": "parejas reproductoras", "description": "", "values": {} },
+      { "year": 1995, "value": 34000, "unit": "parejas reproductoras", "description": "", "values": {} },
+      { "year": 2000, "value": 32000, "unit": "parejas reproductoras", "description": "", "values": {} },
+      { "year": 2005, "value": 30000, "unit": "parejas reproductoras", "description": "", "values": {} },
+      { "year": 2010, "value": 28000, "unit": "parejas reproductoras", "description": "", "values": {} },
+      { "year": 2015, "value": 25000, "unit": "parejas reproductoras", "description": "", "values": {} },
+      { "year": 2020, "value": 22000, "unit": "parejas reproductoras", "description": "", "values": {} }
     ],
     "is_espanola": false,
     "createdAt": "2024-01-01T12:00:00.000Z",
@@ -359,27 +287,13 @@
       }
     ],
     "historicalData": [
-      {
-        "year": 1980,
-        "unit": "individuos",
-        "description": "",
-        "values": {},
-        "value": 0
-      },
-      {
-        "year": 2000,
-        "unit": "individuos",
-        "description": "",
-        "values": {},
-        "value": 0
-      },
-      {
-        "year": 2020,
-        "unit": "individuos",
-        "description": "",
-        "values": {},
-        "value": 0
-      }
+      { "year": 1990, "value": 40000, "unit": "individuos", "description": "", "values": {} },
+      { "year": 1995, "value": 38000, "unit": "individuos", "description": "", "values": {} },
+      { "year": 2000, "value": 25000, "unit": "individuos", "description": "", "values": {} },
+      { "year": 2005, "value": 20000, "unit": "individuos", "description": "", "values": {} },
+      { "year": 2010, "value": 18000, "unit": "individuos", "description": "", "values": {} },
+      { "year": 2015, "value": 16000, "unit": "individuos", "description": "", "values": {} },
+      { "year": 2020, "value": 15000, "unit": "individuos", "description": "", "values": {} }
     ],
     "is_isabela": false,
     "is_santa_cruz": false,
@@ -423,27 +337,13 @@
       }
     ],
     "historicalData": [
-      {
-        "year": 2004,
-        "unit": "individuos",
-        "description": "Censo post El Niño severo.",
-        "values": {},
-        "value": 0
-      },
-      {
-        "year": 2019,
-        "unit": "individuos",
-        "description": "",
-        "values": {},
-        "value": 0
-      },
-      {
-        "year": 2021,
-        "unit": "individuos",
-        "description": "Aumento significativo post-La Niña.",
-        "values": {},
-        "value": 0
-      }
+      { "year": 1990, "value": 2000, "unit": "individuos", "description": "", "values": {} },
+      { "year": 1995, "value": 1500, "unit": "individuos", "description": "", "values": {} },
+      { "year": 2000, "value": 1200, "unit": "individuos", "description": "", "values": {} },
+      { "year": 2005, "value": 1000, "unit": "individuos", "description": "", "values": {} },
+      { "year": 2010, "value": 1800, "unit": "individuos", "description": "", "values": {} },
+      { "year": 2015, "value": 1900, "unit": "individuos", "description": "", "values": {} },
+      { "year": 2020, "value": 2100, "unit": "individuos", "description": "", "values": {} }
     ],
     "is_isabela": false,
     "is_fernandina": false,
@@ -487,27 +387,13 @@
       }
     ],
     "historicalData": [
-      {
-        "year": 2000,
-        "unit": "individuos",
-        "description": "",
-        "values": {},
-        "value": 0
-      },
-      {
-        "year": 2010,
-        "unit": "individuos",
-        "description": "",
-        "values": {},
-        "value": 0
-      },
-      {
-        "year": 2020,
-        "unit": "individuos",
-        "description": "",
-        "values": {},
-        "value": 0
-      }
+      { "year": 1990, "value": 500000, "unit": "individuos", "description": "", "values": {} },
+      { "year": 1995, "value": 510000, "unit": "individuos", "description": "", "values": {} },
+      { "year": 2000, "value": 505000, "unit": "individuos", "description": "", "values": {} },
+      { "year": 2005, "value": 520000, "unit": "individuos", "description": "", "values": {} },
+      { "year": 2010, "value": 525000, "unit": "individuos", "description": "", "values": {} },
+      { "year": 2015, "value": 530000, "unit": "individuos", "description": "", "values": {} },
+      { "year": 2020, "value": 535000, "unit": "individuos", "description": "", "values": {} }
     ],
     "is_santa_cruz": false,
     "is_genovesa": false,
@@ -538,34 +424,20 @@
     "imageUrl": "https://i.ibb.co/8DynQgmC/e419d89fecfc.webp",
     "dataAiHint": "floreana mockingbird",
     "icon": "Bird",
-    "historicalData": [
-      {
-        "year": 1996,
-        "unit": "individuos",
-        "description": "Estimación de población",
-        "values": {},
-        "value": 0
-      },
-      {
-        "year": 2008,
-        "unit": "individuos",
-        "description": "Población post-evento climático",
-        "values": {},
-        "value": 0
-      },
-      {
-        "year": 2017,
-        "unit": "individuos",
-        "description": "Población en islas Champion y Gardner",
-        "values": {},
-        "value": 0
-      }
-    ],
     "iucnStatus": "En Peligro Crítico",
     "populationTrend": "decreasing",
     "habitat": "Matorrales áridos y bosques de cactus.",
     "threats": [],
     "keyStats": [],
+    "historicalData": [
+      { "year": 1990, "value": 250, "unit": "individuos", "description": "", "values": {} },
+      { "year": 1995, "value": 200, "unit": "individuos", "description": "", "values": {} },
+      { "year": 2000, "value": 150, "unit": "individuos", "description": "", "values": {} },
+      { "year": 2005, "value": 100, "unit": "individuos", "description": "", "values": {} },
+      { "year": 2010, "value": 80, "unit": "individuos", "description": "", "values": {} },
+      { "year": 2015, "value": 70, "unit": "individuos", "description": "", "values": {} },
+      { "year": 2020, "value": 60, "unit": "individuos", "description": "", "values": {} }
+    ],
     "is_floreana": false,
     "createdAt": "2024-01-01T12:00:00.000Z",
     "showHistoricalDataToPublic": false,
@@ -593,16 +465,16 @@
     "family": "Sphyrnidae",
     "spanishDescription": "Conocido por su distintiva cabeza en forma de 'T' o martillo. Son depredadores sociales que a menudo se congregan en grandes cardúmenes durante el día. Son vitales para la salud de los ecosistemas marinos.",
     "englishDescription": "Known for its distinctive 'T' or hammer-shaped head. They are social predators that often congregate in large schools during the day. They are vital to the health of marine ecosystems.",
-    "imageUrl": "https://i.ibb.co/Vvz6Dct/fde3a22c1f93.jpg",
-    "dataAiHint": "hammerhead shark",
+    "imageUrl": "https://i.ibb.co/yY1B1jM/a0a656644f77.jpg",
+    "dataAiHint": "scalloped hammerhead",
     "icon": "Waves",
     "populationTrend": "decreasing",
     "iucnStatus": "En Peligro Crítico",
     "habitat": "Zonas costeras y pelágicas, a menudo cerca de montes submarinos y taludes insulares.",
     "threats": [
       "Pesca incidental",
-      "Pesca dirigida para aletas",
-      "Contaminación"
+      "Pesca ilegal para aletas",
+      "Cambio climático"
     ],
     "keyStats": [
       {
@@ -611,7 +483,15 @@
         "unit": "m"
       }
     ],
-    "historicalData": [],
+    "historicalData": [
+      { "year": 1990, "value": 10000, "unit": "avistamientos", "description": "", "values": {} },
+      { "year": 1995, "value": 9500, "unit": "avistamientos", "description": "", "values": {} },
+      { "year": 2000, "value": 8000, "unit": "avistamientos", "description": "", "values": {} },
+      { "year": 2005, "value": 7000, "unit": "avistamientos", "description": "", "values": {} },
+      { "year": 2010, "value": 6000, "unit": "avistamientos", "description": "", "values": {} },
+      { "year": 2015, "value": 5000, "unit": "avistamientos", "description": "", "values": {} },
+      { "year": 2020, "value": 4000, "unit": "avistamientos", "description": "", "values": {} }
+    ],
     "is_darwin": true,
     "is_wolf": true,
     "is_isabela": false,
@@ -620,7 +500,7 @@
     "is_espanola": false,
     "is_pinzon": false,
     "createdAt": "2024-01-01T12:00:00.000Z",
-    "showHistoricalDataToPublic": true,
+    "showHistoricalDataToPublic": false,
     "is_fernandina": false,
     "is_floreana": false,
     "is_genovesa": false,
