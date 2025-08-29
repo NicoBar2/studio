@@ -182,19 +182,19 @@ function RegisterForm() {
       <form ref={formRef} action={formAction} className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="researcherName">Nombre Completo</Label>
-          <Input id="researcherName" name="researcherName" placeholder="Ej: Dra. María Pérez" required />
+          <Input id="researcherName" name="researcherName" placeholder="Ej: Dra. María Pérez" required defaultValue="Carlos Darwin" />
           <p className="text-xs text-muted-foreground">Debe contener solo letras (incluidas tildes) y al menos un nombre y un apellido.</p>
         </div>
         <div className="space-y-2">
           <Label htmlFor="register-email">Correo Electrónico</Label>
-          <Input id="register-email" name="email" type="email" placeholder="tu@email.com" required />
+          <Input id="register-email" name="email" type="email" placeholder="tu@email.com" required defaultValue="investigador.nuevo@galapagos.com" />
           <p className="text-xs text-muted-foreground">Utiliza un correo electrónico institucional si es posible.</p>
         </div>
          <div className="space-y-2">
           <Label htmlFor="orcid">ORCID iD</Label>
           <div className="relative">
              <Fingerprint className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-             <Input id="orcid" name="orcid" placeholder="0000-0000-0000-0000" required className="pl-10" />
+             <Input id="orcid" name="orcid" placeholder="0000-0000-0000-0000" required className="pl-10" defaultValue="0000-0002-1825-0097" />
           </div>
           <p className="text-xs text-muted-foreground">Identificador único de investigador. Se aceptan URLs de ORCID.</p>
         </div>
@@ -202,17 +202,17 @@ function RegisterForm() {
           <Label htmlFor="idNumber">Cédula o Pasaporte</Label>
           <div className="relative">
              <Library className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-             <Input id="idNumber" name="idNumber" placeholder="Número de identificación" required className="pl-10" />
+             <Input id="idNumber" name="idNumber" placeholder="Número de identificación" required className="pl-10" defaultValue="1712345678" />
           </div>
           <p className="text-xs text-muted-foreground">Cédula (10 dígitos) o Pasaporte (9 caracteres alfanuméricos).</p>
         </div>
         <div className="space-y-2">
           <Label htmlFor="institution">Institución (Opcional)</Label>
-          <Input id="institution" name="institution" placeholder="Ej: Universidad de Galápagos" />
+          <Input id="institution" name="institution" placeholder="Ej: Universidad de Galápagos" defaultValue="Fundación Charles Darwin" />
         </div>
         <div className="space-y-2">
           <Label htmlFor="specialization">Especialización (Opcional)</Label>
-          <Input id="specialization" name="specialization" placeholder="Ej: Biología Marina" />
+          <Input id="specialization" name="specialization" placeholder="Ej: Biología Marina" defaultValue="Evolución y Biología" />
         </div>
         <Button type="submit" className="w-full bg-primary hover:bg-primary/90" disabled={isPending}>
           {isPending ? 'Registrando...' : 'Crear Cuenta'}
