@@ -1,3 +1,4 @@
+
 [
   {
     "id": "mcnkn7cj31xy8junp",
@@ -5,5 +6,16 @@
     "email": "nicoleyro13@gmail.com",
     "isVerified": true,
     "password": "$2a$10$pvP0KKgYgb98CiMzAHAYKeuLVSThO8TdXlTdaup7jlgswjWPicf.S"
+  },
+  {
+    "id": "testid_12345",
+    "name": "Investigador de Prueba",
+    "email": "investigador@galapagos.com",
+    "orcid": "0000-0001-2345-6789",
+    "idNumber": "1723456789",
+    "institution": "Instituto de Pruebas de Galápagos",
+    "specialization": "Biología de Prueba",
+    "isVerified": true,
+    "profileImageUrl": "https://ui-avatars.com/api/?name=Investigador+de+Prueba&background=random"
   }
 ]
