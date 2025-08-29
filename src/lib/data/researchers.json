@@ -1,4 +1,3 @@
-
 [
   {
     "id": "mcnkn7cj31xy8junp",
@@ -17,5 +16,16 @@
     "specialization": "Biología de Prueba",
     "isVerified": true,
     "profileImageUrl": "https://ui-avatars.com/api/?name=Investigador+de+Prueba&background=random"
+  },
+  {
+    "id": "mewvpjf3frlcu17ku",
+    "name": "Carlos Darwin",
+    "email": "investigador.nuevo@galapagos.com",
+    "orcid": "0000-0002-1825-0097",
+    "idNumber": "1106053323",
+    "institution": "Fundación Charles Darwin",
+    "specialization": "Evolución y Biología",
+    "isVerified": false,
+    "profileImageUrl": "https://ui-avatars.com/api/?name=Carlos%20Darwin&background=random"
   }
 ]
