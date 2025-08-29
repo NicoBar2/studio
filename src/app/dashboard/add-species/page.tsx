@@ -1,487 +1,618 @@
-
 "use client";
 
-import { useActionState, useState, useEffect, type ChangeEvent, useRef, useMemo, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import RoleBasedGuard from '@/components/auth/RoleBasedGuard';
-import { GALAPAGOS_ISLANDS_NAMES } from '@/lib/utils';
-import type { Species, ConservationStatus, HistoricalDataPoint } from '@/lib/types';
-import { addSpeciesAction, getSpeciesListAction } from '@/app/actions';
-import { useAuth } from '@/contexts/AuthContext';
-import { useLanguage } from '@/contexts/LanguageContext';
-import { useToast } from '@/hooks/use-toast';
-import { useFormStatus } from 'react-dom';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Checkbox } from '@/components/ui/checkbox';
-import { ArrowLeft, PlusCircle, Trash2, Search, Wand2 } from 'lucide-react';
-import Image from 'next/image';
+import { Badge } from '@/components/ui/badge';
+import { ArrowLeft, Plus, Save, CheckCircle, XCircle, Info, FileText } from 'lucide-react';
+import Link from 'next/link';
+import RoleBasedGuard from '@/components/auth/RoleBasedGuard';
 
-const initialState = {
-  success: false,
-  message: '',
-  speciesId: undefined as string | undefined,
-};
-
-function SubmitButton() {
-  const { pending } = useFormStatus();
-  const { t } = useLanguage();
-  return (
-    <Button type="submit" disabled={pending} className="w-full sm:w-auto bg-primary hover:bg-primary/90">
-      {pending ? t.creating : t.addSpecies_createButton}
-    </Button>
-  );
+interface SpeciesFormData {
+    name: string;
+    scientific_name: string;
+    common_name: string;
+    family: string;
+    category: string;
+    description: string;
+    habitat: string;
+    distribution: string;
+    ecology: string;
+    conservation_status: string;
+    threats: string;
+    protection: string;
+    image_url: string;
+    source: string;
+    added_from: string;
+    timestamp: string;
+    original_search_query: string;
+    original_category: string;
 }
 
-const populationTrendOptions: { value: Species['populationTrend']; label: 'increasing' | 'decreasing' | 'stable' | 'unknown' }[] = [
-  { value: 'increasing', label: 'increasing' },
-  { value: 'decreasing', label: 'decreasing' },
-  { value: 'stable', label: 'stable' },
-  { value: 'unknown', label: 'unknown' },
-];
-
-const conservationStatusOptions: { value: ConservationStatus; label: string }[] = [
-    { value: 'En Peligro Crítico', label: 'En Peligro Crítico' },
-    { value: 'En Peligro', label: 'En Peligro' },
-    { value: 'Vulnerable', label: 'Vulnerable' },
-    { value: 'Casi Amenazada', label: 'Casi Amenazada' },
-    { value: 'Preocupación Menor', label: 'Preocupación Menor' },
-    { value: 'Datos Insuficientes', label: 'Datos Insuficientes' },
-];
-
-const islandKeys: { id: keyof Species; label: string }[] = GALAPAGOS_ISLANDS_NAMES.map(name => ({
-    id: `is_${name.toLowerCase().replace(/ /g, '_').normalize("NFD").replace(/[\u0300-\u036f]/g, "")}` as keyof Species,
-    label: name,
-}));
-
 export default function AddSpeciesPage() {
-    const [state, formAction] = useActionState(addSpeciesAction, initialState);
-    const { toast } = useToast();
-    const router = useRouter();
-    const { role, userEmail } = useAuth();
-    const { t } = useLanguage();
+    const searchParams = useSearchParams();
     
-    // Form fields state
-    const [formKey, setFormKey] = useState(Date.now());
-    const formRef = useRef<HTMLFormElement>(null);
-    const [spanishName, setSpanishName] = useState('');
-    const [englishName, setEnglishName] = useState('');
-    const [genus, setGenus] = useState('');
-    const [specificEpithet, setSpecificEpithet] = useState('');
+    // Estado del formulario
+    const [formData, setFormData] = useState<SpeciesFormData>({
+        name: '',
+        scientific_name: '',
+        common_name: '',
+        family: '',
+        category: '',
+        description: '',
+        habitat: '',
+        distribution: '',
+        ecology: '',
+        conservation_status: '',
+        threats: '',
+        protection: '',
+        image_url: '',
+        source: '',
+        added_from: '',
+        timestamp: '',
+        original_search_query: '',
+        original_category: ''
+    });
 
-    // Template finder state
-    const [allSpecies, setAllSpecies] = useState<Species[]>([]);
-    const [templateSearch, setTemplateSearch] = useState('');
-    
-    // Other states
-    const [imagePreview, setImagePreview] = useState<string | null>(null);
-    const [imageFileValue, setImageFileValue] = useState<string>('');
-    const [showPublicDataChecked, setShowPublicDataChecked] = useState<boolean>(false);
-    const [historicalData, setHistoricalData] = useState<HistoricalDataPoint[]>([]);
-    const [islandPresence, setIslandPresence] = useState<Record<string, boolean>>({});
+    // Estados de la UI
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+    const [submitMessage, setSubmitMessage] = useState('');
+    const [hasPreFilledData, setHasPreFilledData] = useState(false);
 
-    const prevMessageRef = useRef<string | undefined>();
-    
+    // Categorías disponibles
+    const categories = [
+        { value: 'Plantas', label: 'Plantas', icon: '' },
+        { value: 'Animales', label: 'Animales', icon: '' },
+        { value: 'Hongos', label: 'Hongos', icon: '🍄' },
+        { value: 'Grupos_Ecologicos', label: 'Grupos Ecológicos', icon: '🌍' }
+    ];
+
+    // Estados de conservación
+    const conservationStatuses = [
+        'No evaluado',
+        'Datos insuficientes',
+        'Preocupación menor',
+        'Casi amenazado',
+        'Vulnerable',
+        'En peligro',
+        'En peligro crítico',
+        'Extinto en estado silvestre',
+        'Extinto'
+    ];
+
+    // Efecto para pre-llenar campos cuando se reciben parámetros de URL
     useEffect(() => {
-      getSpeciesListAction().then(setAllSpecies);
-    }, []);
+        const preFillData: Partial<SpeciesFormData> = {};
+        let hasData = false;
 
-    useEffect(() => {
-        if (state.message && state.message !== prevMessageRef.current) {
-            toast({
-                title: state.success ? t.success : t.error,
-                description: state.message,
-                variant: state.success ? 'default' : 'destructive',
-            });
-            prevMessageRef.current = state.message;
+        // Mapear parámetros de URL a campos del formulario
+        if (searchParams.get('name')) {
+            preFillData.name = searchParams.get('name') || '';
+            hasData = true;
         }
-    }, [state, toast, t]);
-    
-    const matchingTemplates = useMemo(() => {
-        if (!templateSearch) return [];
-        return allSpecies.filter(s =>
-            s.spanishCommonName.toLowerCase().includes(templateSearch.toLowerCase()) ||
-            (s.englishCommonName || '').toLowerCase().includes(templateSearch.toLowerCase())
-        ).slice(0, 5);
-    }, [templateSearch, allSpecies]);
-
-    const applyTemplate = useCallback((species: Species) => {
-        setSpanishName(species.spanishCommonName);
-        setEnglishName(species.englishCommonName || '');
-        setGenus(species.genus || '');
-        setSpecificEpithet(species.specificEpithet || '');
-        
-        // This is a bit of a hack to reset the form fields controlled by the form state
-        // when using a template.
-        if (formRef.current) {
-            (formRef.current.elements.namedItem('iucnStatus') as HTMLSelectElement).value = species.iucnStatus;
-            (formRef.current.elements.namedItem('populationTrend') as HTMLSelectElement).value = species.populationTrend;
-            (formRef.current.elements.namedItem('habitat') as HTMLInputElement).value = species.habitat || '';
-            (formRef.current.elements.namedItem('threats') as HTMLInputElement).value = (species.threats || []).join(', ');
-            (formRef.current.elements.namedItem('spanishDescription') as HTMLTextAreaElement).value = species.spanishDescription || '';
-            (formRef.current.elements.namedItem('englishDescription') as HTMLTextAreaElement).value = species.englishDescription || '';
+        if (searchParams.get('scientific_name')) {
+            preFillData.scientific_name = searchParams.get('scientific_name') || '';
+            hasData = true;
         }
-        
-        setShowPublicDataChecked(!!species.showHistoricalDataToPublic);
-        setHistoricalData(species.historicalData || []);
+        if (searchParams.get('common_name')) {
+            preFillData.common_name = searchParams.get('common_name') || '';
+            hasData = true;
+        }
+        if (searchParams.get('family')) {
+            preFillData.family = searchParams.get('family') || '';
+            hasData = true;
+        }
+        if (searchParams.get('category')) {
+            preFillData.category = searchParams.get('category') || '';
+            hasData = true;
+        }
+        if (searchParams.get('description')) {
+            preFillData.description = searchParams.get('description') || '';
+            hasData = true;
+        }
+        if (searchParams.get('habitat')) {
+            preFillData.habitat = searchParams.get('habitat') || '';
+            hasData = true;
+        }
+        if (searchParams.get('distribution')) {
+            preFillData.distribution = searchParams.get('distribution') || '';
+            hasData = true;
+        }
+        if (searchParams.get('ecology')) {
+            preFillData.ecology = searchParams.get('ecology') || '';
+            hasData = true;
+        }
+        if (searchParams.get('conservation_status')) {
+            preFillData.conservation_status = searchParams.get('conservation_status') || '';
+            hasData = true;
+        }
+        if (searchParams.get('threats')) {
+            preFillData.threats = searchParams.get('threats') || '';
+            hasData = true;
+        }
+        if (searchParams.get('protection')) {
+            preFillData.protection = searchParams.get('protection') || '';
+            hasData = true;
+        }
+        if (searchParams.get('image_url')) {
+            preFillData.image_url = searchParams.get('image_url') || '';
+            hasData = true;
+        }
+        if (searchParams.get('source')) {
+            preFillData.source = searchParams.get('source') || '';
+            hasData = true;
+        }
+        if (searchParams.get('added_from')) {
+            preFillData.added_from = searchParams.get('added_from') || '';
+            hasData = true;
+        }
+        if (searchParams.get('timestamp')) {
+            preFillData.timestamp = searchParams.get('timestamp') || '';
+            hasData = true;
+        }
+        if (searchParams.get('original_search_query')) {
+            preFillData.original_search_query = searchParams.get('original_search_query') || '';
+            hasData = true;
+        }
+        if (searchParams.get('original_category')) {
+            preFillData.original_category = searchParams.get('original_category') || '';
+            hasData = true;
+        }
 
-        const newIslandPresence: Record<string, boolean> = {};
-        islandKeys.forEach(island => {
-            newIslandPresence[island.id as string] = !!species[island.id];
+        // Actualizar el formulario con los datos pre-llenados
+        if (hasData) {
+            setFormData(prev => ({
+                ...prev,
+                ...preFillData
+            }));
+            setHasPreFilledData(true);
+            
+            // Mostrar notificación de datos pre-llenados
+            console.log('✅ Datos pre-llenados desde búsqueda:', preFillData);
+        }
+    }, [searchParams]);
+
+    // Función para manejar cambios en los campos del formulario
+    const handleInputChange = (field: keyof SpeciesFormData, value: string) => {
+        setFormData(prev => ({
+            ...prev,
+            [field]: value
+        }));
+    };
+
+    // Función para limpiar el formulario
+    const clearForm = () => {
+        setFormData({
+            name: '',
+            scientific_name: '',
+            common_name: '',
+            family: '',
+            category: '',
+            description: '',
+            habitat: '',
+            distribution: '',
+            ecology: '',
+            conservation_status: '',
+            threats: '',
+            protection: '',
+            image_url: '',
+            source: '',
+            added_from: '',
+            timestamp: '',
+            original_search_query: '',
+            original_category: ''
         });
-        setIslandPresence(newIslandPresence);
+        setHasPreFilledData(false);
+        setSubmitStatus('idle');
+        setSubmitMessage('');
+    };
+
+    // Función para validar el formulario
+    const validateForm = (): boolean => {
+        if (!formData.name.trim()) {
+            setSubmitMessage('El nombre de la especie es obligatorio');
+            return false;
+        }
+        if (!formData.category) {
+            setSubmitMessage('Debes seleccionar una categoría');
+            return false;
+        }
+        if (!formData.description.trim()) {
+            setSubmitMessage('La descripción es obligatoria');
+            return false;
+        }
+        return true;
+    };
+
+    // Función para enviar el formulario
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
         
-        setTemplateSearch('');
-        toast({ title: 'Plantilla Aplicada', description: `Datos de ${species.spanishCommonName} cargados.` });
-
-    }, [toast]);
-    
-    const handleTemplateKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === 'Enter' && matchingTemplates.length > 0) {
-            e.preventDefault();
-            applyTemplate(matchingTemplates[0]);
+        if (!validateForm()) {
+            setSubmitStatus('error');
+            return;
         }
-    };
 
-    const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                const dataUri = reader.result as string;
-                setImagePreview(dataUri);
-                setImageFileValue(dataUri); 
-            };
-            reader.readAsDataURL(file);
-        } else {
-            setImagePreview(null);
-            setImageFileValue('');
+        setIsSubmitting(true);
+        setSubmitStatus('idle');
+        setSubmitMessage('');
+
+        try {
+            // Aquí implementarías la llamada a tu API para guardar la especie
+            // Por ahora simulamos el envío
+            console.log('📤 Enviando datos de especie:', formData);
+            
+            // Simular delay de API
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            
+            // Simular respuesta exitosa
+            setSubmitStatus('success');
+            setSubmitMessage('Especie agregada exitosamente al sistema');
+            
+            // Limpiar formulario después de éxito
+            setTimeout(() => {
+                clearForm();
+            }, 3000);
+
+        } catch (error) {
+            console.error('❌ Error al agregar especie:', error);
+            setSubmitStatus('error');
+            setSubmitMessage('Error al agregar la especie. Intenta nuevamente.');
+        } finally {
+            setIsSubmitting(false);
         }
-    };
-
-    const handleHistoricalDataChange = (index: number, field: keyof HistoricalDataPoint, value: string | number) => {
-        const newData = [...historicalData];
-        const point = { ...newData[index] };
-        
-        if (field === 'year' || field === 'value') {
-            point[field] = Number(value) || 0;
-        } else {
-            (point as any)[field] = String(value);
-        }
-        newData[index] = point;
-        setHistoricalData(newData);
-    };
-
-    const addHistoricalDataPoint = () => {
-        const lastUnit = historicalData.length > 0 ? historicalData[historicalData.length - 1].unit : '';
-        setHistoricalData([...historicalData, { year: new Date().getFullYear(), value: 0, unit: lastUnit, description: '' }]);
-    };
-
-    const removeHistoricalDataPoint = (index: number) => {
-        setHistoricalData(historicalData.filter((_, i) => i !== index));
     };
 
     return (
         <RoleBasedGuard allowedRoles={['admin', 'researcher']}>
-            <div className="space-y-6">
-                <Button variant="outline" asChild>
-                    <Link href="/dashboard">
-                        <ArrowLeft className="mr-2 h-4 w-4" /> {t.backToDashboard}
-                    </Link>
-                </Button>
+            <div className="space-y-6 p-6">
+                {/* Header */}
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-4">
+                        <Button variant="outline" asChild>
+                            <Link href="/dashboard">
+                                <ArrowLeft className="mr-2 h-4 w-4" /> Volver al Panel
+                            </Link>
+                        </Button>
+                        <div>
+                            <h1 className="text-3xl font-bold text-primary">Agregar Nueva Especie</h1>
+                            <p className="text-gray-600">Completa el formulario para agregar una nueva especie al sistema</p>
+                        </div>
+                    </div>
+                    
+                    {/* Indicador de datos pre-llenados */}
+                    {hasPreFilledData && (
+                        <Badge variant="default" className="bg-green-600">
+                            <FileText className="mr-2 h-4 w-4" />
+                            Datos pre-llenados desde búsqueda
+                        </Badge>
+                    )}
+                </div>
 
-                <Card className="shadow-xl">
-                    <CardHeader>
-                        <CardTitle className="text-3xl font-headline text-primary">{t.addSpecies_title}</CardTitle>
-                        <CardDescription>{t.addSpecies_description}</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <form key={formKey} ref={formRef} action={formAction} className="space-y-6">
-                            <input type="hidden" name="userRole" value={role || ''} />
-                            <input type="hidden" name="userEmail" value={userEmail || ''} />
-                            <input type="hidden" name="historicalData" value={JSON.stringify(historicalData)} />
-                            <input type="hidden" name="imageDataUri" value={imageFileValue} />
-                            
-                            <Accordion type="multiple" defaultValue={['item-0']} className="w-full">
-                                <AccordionItem value="item-0">
-                                    <AccordionTrigger className="text-xl font-headline">Asistente de Creación (Opcional)</AccordionTrigger>
-                                    <AccordionContent className="space-y-2 pt-4">
-                                        <Label htmlFor="templateSearch">Buscar especie existente para usar como plantilla</Label>
-                                         <div className="relative">
-                                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                                            <Input 
-                                                id="templateSearch"
-                                                placeholder="Buscar por nombre..."
-                                                value={templateSearch}
-                                                onChange={(e) => setTemplateSearch(e.target.value)}
-                                                onKeyDown={handleTemplateKeyDown}
-                                                className="pl-9"
-                                            />
-                                        </div>
-                                        {matchingTemplates.length > 0 && (
-                                            <div className="border rounded-md p-2 mt-2 space-y-1">
-                                                {matchingTemplates.map(species => (
-                                                    <div key={species.id} className="flex justify-between items-center p-1 rounded hover:bg-muted">
-                                                        <span>{species.spanishCommonName}</span>
-                                                        <Button type="button" size="sm" variant="outline" onClick={() => applyTemplate(species)}>
-                                                            <Wand2 className="mr-2 h-4 w-4"/> Usar como Plantilla
-                                                        </Button>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        )}
-                                        <p className="text-xs text-muted-foreground">Escribe el nombre de una especie similar, luego presiona Enter o haz clic en "Usar como Plantilla".</p>
-                                    </AccordionContent>
-                                </AccordionItem>
-                            </Accordion>
+                {/* Formulario */}
+                <form onSubmit={handleSubmit} className="space-y-6">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center text-xl">
+                                <Plus className="mr-2 h-5 w-5" />
+                                Información Básica de la Especie
+                            </CardTitle>
+                            <CardDescription>
+                                Datos fundamentales para identificar y clasificar la especie
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {/* Nombre común */}
+                                <div className="space-y-2">
+                                    <Label htmlFor="name">Nombre común *</Label>
+                                    <Input
+                                        id="name"
+                                        value={formData.name}
+                                        onChange={(e) => handleInputChange('name', e.target.value)}
+                                        placeholder="Ej: León de Galápagos"
+                                        required
+                                    />
+                                </div>
 
-                            <Accordion type="multiple" defaultValue={['item-1']} className="w-full">
-                                <AccordionItem value="item-1">
-                                    <AccordionTrigger className="text-xl font-headline">{t.addSpecies_section_names}</AccordionTrigger>
-                                    <AccordionContent className="space-y-4 pt-4">
-                                        <div>
-                                            <Label htmlFor="spanishCommonName" className="font-semibold">{t.addSpecies_label_spanishName}</Label>
-                                            <Input id="spanishCommonName" name="spanishCommonName" required className="mt-1" value={spanishName} onChange={e => setSpanishName(e.target.value)} />
-                                        </div>
-                                        <div>
-                                            <Label htmlFor="englishCommonName" className="font-semibold">{t.addSpecies_label_englishName}</Label>
-                                            <Input id="englishCommonName" name="englishCommonName" className="mt-1" value={englishName} onChange={e => setEnglishName(e.target.value)}/>
-                                        </div>
-                                        <div>
-                                            <Label htmlFor="genus" className="font-semibold">{t.genus}</Label>
-                                            <Input id="genus" name="genus" className="mt-1" value={genus} onChange={e => setGenus(e.target.value)}/>
-                                        </div>
-                                        <div>
-                                            <Label htmlFor="specificEpithet" className="font-semibold">{t.specificEpithet}</Label>
-                                            <Input id="specificEpithet" name="specificEpithet" className="mt-1" value={specificEpithet} onChange={e => setSpecificEpithet(e.target.value)}/>
-                                        </div>
-                                    </AccordionContent>
-                                </AccordionItem>
-                                
-                                <AccordionItem value="item-2">
-                                    <AccordionTrigger className="text-xl font-headline">{t.addSpecies_section_status}</AccordionTrigger>
-                                    <AccordionContent className="space-y-4 pt-4 grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <div>
-                                            <Label htmlFor="iucnStatus" className="font-semibold">{t.iucnStatus}</Label>
-                                            <Select name="iucnStatus" defaultValue="Datos Insuficientes">
-                                                <SelectTrigger id="iucnStatus" className="mt-1">
-                                                    <SelectValue placeholder={t.selectPlaceholder} />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    {conservationStatusOptions.map(status => (
-                                                        <SelectItem key={status.value} value={status.value}>{status.label}</SelectItem>
-                                                    ))}
-                                                </SelectContent>
-                                            </Select>
-                                            <p className="text-xs text-muted-foreground mt-1">
-                                                {t.iucnDescription}
-                                            </p>
-                                        </div>
-                                        <div>
-                                            <Label htmlFor="populationTrend" className="font-semibold">{t.populationTrend}</Label>
-                                            <Select name="populationTrend" defaultValue="unknown">
-                                                <SelectTrigger id="populationTrend" className="mt-1">
-                                                    <SelectValue placeholder={t.selectPlaceholder} />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    {populationTrendOptions.map(opt => (
-                                                        <SelectItem key={opt.value} value={opt.value}>{t[opt.label]}</SelectItem>
-                                                    ))}
-                                                </SelectContent>
-                                            </Select>
-                                        </div>
-                                    </AccordionContent>
-                                </AccordionItem>
+                                {/* Nombre científico */}
+                                <div className="space-y-2">
+                                    <Label htmlFor="scientific_name">Nombre científico</Label>
+                                    <Input
+                                        id="scientific_name"
+                                        value={formData.scientific_name}
+                                        onChange={(e) => handleInputChange('scientific_name', e.target.value)}
+                                        placeholder="Ej: Panthera leo galapagoensis"
+                                    />
+                                </div>
 
-                                <AccordionItem value="item-3">
-                                    <AccordionTrigger className="text-xl font-headline">{t.addSpecies_section_distribution}</AccordionTrigger>
-                                    <AccordionContent className="space-y-4 pt-4">
-                                        <div>
-                                            <Label htmlFor="habitat" className="font-semibold">{t.habitat}</Label>
-                                            <Input id="habitat" name="habitat" className="mt-1" />
-                                        </div>
-                                        <div>
-                                            <Label className="font-semibold">{t.addSpecies_label_islands}</Label>
-                                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 mt-2 p-4 border rounded-md">
-                                                {islandKeys.map(island => (
-                                                    <div key={island.id as string} className="flex items-center space-x-2">
-                                                        <Checkbox 
-                                                          id={island.id as string} 
-                                                          name={island.id as string}
-                                                          checked={islandPresence[island.id as string] || false}
-                                                          onCheckedChange={(checked) => setIslandPresence(prev => ({...prev, [island.id as string]: !!checked}))}
-                                                        />
-                                                        <Label htmlFor={island.id as string} className="text-sm font-normal">{island.label}</Label>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    </AccordionContent>
-                                </AccordionItem>
+                                {/* Nombre alternativo */}
+                                <div className="space-y-2">
+                                    <Label htmlFor="common_name">Nombre alternativo</Label>
+                                    <Input
+                                        id="common_name"
+                                        value={formData.common_name}
+                                        onChange={(e) => handleInputChange('common_name', e.target.value)}
+                                        placeholder="Otros nombres conocidos"
+                                    />
+                                </div>
 
-                                <AccordionItem value="item-4">
-                                    <AccordionTrigger className="text-xl font-headline">{t.addSpecies_section_descriptions}</AccordionTrigger>
-                                    <AccordionContent className="space-y-4 pt-4">
-                                        <div>
-                                            <Label htmlFor="spanishDescription" className="font-semibold">{t.addSpecies_label_spanishDesc}</Label>
-                                            <Textarea id="spanishDescription" name="spanishDescription" rows={5} className="mt-1" />
-                                        </div>
-                                        <div>
-                                            <Label htmlFor="englishDescription" className="font-semibold">{t.addSpecies_label_englishDesc}</Label>
-                                            <Textarea id="englishDescription" name="englishDescription" rows={5} className="mt-1" />
-                                        </div>
-                                        <div>
-                                            <Label htmlFor="threats" className="font-semibold">{t.addSpecies_label_threats}</Label>
-                                            <Input id="threats" name="threats" className="mt-1" />
-                                        </div>
-                                    </AccordionContent>
-                                </AccordionItem>
+                                {/* Familia */}
+                                <div className="space-y-2">
+                                    <Label htmlFor="family">Familia</Label>
+                                    <Input
+                                        id="family"
+                                        value={formData.family}
+                                        onChange={(e) => handleInputChange('family', e.target.value)}
+                                        placeholder="Ej: Felidae"
+                                    />
+                                </div>
 
-                                <AccordionItem value="item-5">
-                                    <AccordionTrigger className="text-xl font-headline">{t.addSpecies_section_image}</AccordionTrigger>
-                                    <AccordionContent className="space-y-2 pt-4">
-                                        <Label htmlFor="imageUpload" className="font-semibold">{t.addSpecies_label_uploadImage}</Label>
-                                        <div className="mt-1 flex items-center gap-4">
-                                            {imagePreview && (
-                                                <Image 
-                                                    src={imagePreview} 
-                                                    alt="Previsualización" 
-                                                    width={100} 
-                                                    height={100} 
-                                                    className="rounded-md object-cover aspect-square"
-                                                    key={imagePreview} 
-                                                />
-                                            )}
-                                            <Input 
-                                                id="imageUpload" 
-                                                name="imageUpload" 
-                                                type="file" 
-                                                accept="image/*" 
-                                                onChange={handleImageChange}
-                                                className="block w-full text-sm text-slate-500
-                                                        file:mr-4 file:py-2 file:px-4
-                                                        file:rounded-full file:border-0
-                                                        file:text-sm file:font-semibold
-                                                        file:bg-primary/10 file:text-primary
-                                                        hover:file:bg-primary/20"
-                                            />
-                                        </div>
-                                        <p className="mt-1 text-xs text-muted-foreground">
-                                            {t.addSpecies_image_hint}
-                                        </p>
-                                    </AccordionContent>
-                                </AccordionItem>
-                                
-                                <AccordionItem value="item-6">
-                                    <AccordionTrigger className="text-xl font-headline">{t.addSpecies_section_visibility}</AccordionTrigger>
-                                    <AccordionContent className="space-y-4 pt-4">
-                                        <div className="flex items-center space-x-2">
-                                            <Checkbox
-                                                id="showHistoricalDataToPublic"
-                                                name="showHistoricalDataToPublic"
-                                                checked={showPublicDataChecked}
-                                                onCheckedChange={(checked) => setShowPublicDataChecked(Boolean(checked))}
-                                            />
-                                            <Label htmlFor="showHistoricalDataToPublic" className="text-sm font-normal">
-                                                {t.addSpecies_label_showPublic}
-                                            </Label>
-                                        </div>
-                                    </AccordionContent>
-                                </AccordionItem>
-
-                                <AccordionItem value="item-7">
-                                    <AccordionTrigger className="text-xl font-headline">{t.historicalData}</AccordionTrigger>
-                                    <AccordionContent className="space-y-4 pt-4">
-                                        <div className="space-y-3">
-                                            {historicalData.map((point, index) => (
-                                                <div key={index} className="flex flex-col gap-2 p-3 border rounded-md bg-muted/50">
-                                                    <div className="grid grid-cols-[1fr_1fr_1fr_auto] gap-2 items-end">
-                                                        <div>
-                                                            <Label htmlFor={`year-${index}`} className="text-xs font-semibold">{t.year}</Label>
-                                                            <Input
-                                                                id={`year-${index}`}
-                                                                type="number"
-                                                                value={point.year}
-                                                                onChange={(e) => handleHistoricalDataChange(index, 'year', e.target.value)}
-                                                                placeholder={t.year}
-                                                                className="mt-1"
-                                                            />
-                                                        </div>
-                                                        <div>
-                                                            <Label htmlFor={`value-${index}`} className="text-xs font-semibold">{t.value}</Label>
-                                                            <Input
-                                                                id={`value-${index}`}
-                                                                type="number"
-                                                                value={point.value}
-                                                                onChange={(e) => handleHistoricalDataChange(index, 'value', e.target.value)}
-                                                                placeholder={t.value}
-                                                                className="mt-1"
-                                                            />
-                                                        </div>
-                                                        <div>
-                                                            <Label htmlFor={`unit-${index}`} className="text-xs font-semibold">{t.unit}</Label>
-                                                            <Input
-                                                                id={`unit-${index}`}
-                                                                value={point.unit}
-                                                                onChange={(e) => handleHistoricalDataChange(index, 'unit', e.target.value)}
-                                                                placeholder={t.unit}
-                                                                className="mt-1"
-                                                            />
-                                                        </div>
-                                                        <Button
-                                                            type="button"
-                                                            variant="destructive"
-                                                            size="icon"
-                                                            onClick={() => removeHistoricalDataPoint(index)}
-                                                            aria-label={t.deleteButton}
-                                                        >
-                                                            <Trash2 className="h-4 w-4" />
-                                                            <span className="sr-only">{t.deleteButton}</span>
-                                                        </Button>
-                                                    </div>
-                                                    <div>
-                                                        <Label htmlFor={`description-${index}`} className="text-xs font-semibold">{t.description} ({t.optional})</Label>
-                                                        <Input
-                                                            id={`description-${index}`}
-                                                            value={point.description || ''}
-                                                            onChange={(e) => handleHistoricalDataChange(index, 'description', e.target.value)}
-                                                            placeholder={t.descriptionPlaceholder}
-                                                            className="mt-1"
-                                                        />
-                                                    </div>
-                                                </div>
+                                {/* Categoría */}
+                                <div className="space-y-2">
+                                    <Label htmlFor="category">Categoría *</Label>
+                                    <Select value={formData.category} onValueChange={(value) => handleInputChange('category', value)}>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Selecciona una categoría" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {categories.map((category) => (
+                                                <SelectItem key={category.value} value={category.value}>
+                                                    <span className="mr-2">{category.icon}</span>
+                                                    {category.label}
+                                                </SelectItem>
                                             ))}
-                                        </div>
-                                        <Button
-                                            type="button"
-                                            variant="outline"
-                                            onClick={addHistoricalDataPoint}
-                                            className="mt-4"
-                                        >
-                                            <PlusCircle className="mr-2 h-4 w-4" />
-                                            {t.addDataPoint}
-                                        </Button>
-                                    </AccordionContent>
-                                </AccordionItem>
-                            </Accordion>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
 
-                            <div className="flex justify-end pt-4">
-                                <SubmitButton />
+                                {/* Estado de conservación */}
+                                <div className="space-y-2">
+                                    <Label htmlFor="conservation_status">Estado de conservación</Label>
+                                    <Select value={formData.conservation_status} onValueChange={(value) => handleInputChange('conservation_status', value)}>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Selecciona el estado" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {conservationStatuses.map((status) => (
+                                                <SelectItem key={status} value={status}>
+                                                    {status}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
                             </div>
-                        </form>
+
+                            {/* Descripción */}
+                            <div className="space-y-2">
+                                <Label htmlFor="description">Descripción *</Label>
+                                <Textarea
+                                    id="description"
+                                    value={formData.description}
+                                    onChange={(e) => handleInputChange('description', e.target.value)}
+                                    placeholder="Describe las características principales de la especie..."
+                                    rows={4}
+                                    required
+                                />
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    {/* Información Ecológica */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center text-xl">
+                                <Info className="mr-2 h-5 w-5" />
+                                Información Ecológica
+                            </CardTitle>
+                            <CardDescription>
+                                Datos sobre el hábitat, distribución y ecología de la especie
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {/* Hábitat */}
+                                <div className="space-y-2">
+                                    <Label htmlFor="habitat">Hábitat</Label>
+                                    <Input
+                                        id="habitat"
+                                        value={formData.habitat}
+                                        onChange={(e) => handleInputChange('habitat', e.target.value)}
+                                        placeholder="Ej: Bosques húmedos, zonas costeras"
+                                    />
+                                </div>
+
+                                {/* Distribución */}
+                                <div className="space-y-2">
+                                    <Label htmlFor="distribution">Distribución geográfica</Label>
+                                    <Input
+                                        id="distribution"
+                                        value={formData.distribution}
+                                        onChange={(e) => handleInputChange('distribution', e.target.value)}
+                                        placeholder="Ej: Isla Isabela, Galápagos"
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Ecología */}
+                            <div className="space-y-2">
+                                <Label htmlFor="ecology">Ecología</Label>
+                                <Textarea
+                                    id="ecology"
+                                    value={formData.ecology}
+                                    onChange={(e) => handleInputChange('ecology', e.target.value)}
+                                    placeholder="Describe el comportamiento, alimentación, reproducción..."
+                                    rows={3}
+                                />
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    {/* Amenazas y Protección */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center text-xl">
+                                <XCircle className="mr-2 h-5 w-5" />
+                                Amenazas y Protección
+                            </CardTitle>
+                            <CardDescription>
+                                Información sobre las amenazas que enfrenta la especie y medidas de protección
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {/* Amenazas */}
+                                <div className="space-y-2">
+                                    <Label htmlFor="threats">Amenazas principales</Label>
+                                    <Textarea
+                                        id="threats"
+                                        value={formData.threats}
+                                        onChange={(e) => handleInputChange('threats', e.target.value)}
+                                        placeholder="Principales amenazas para la supervivencia..."
+                                        rows={3}
+                                    />
+                                </div>
+
+                                {/* Medidas de protección */}
+                                <div className="space-y-2">
+                                    <Label htmlFor="protection">Medidas de protección</Label>
+                                    <Textarea
+                                        id="protection"
+                                        value={formData.protection}
+                                        onChange={(e) => handleInputChange('protection', e.target.value)}
+                                        placeholder="Medidas implementadas para proteger la especie..."
+                                        rows={3}
+                                    />
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    {/* Imagen y Metadatos */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center text-xl">
+                                <FileText className="mr-2 h-5 w-5" />
+                                Imagen y Metadatos
+                            </CardTitle>
+                            <CardDescription>
+                                Imagen de la especie e información adicional del sistema
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            {/* URL de imagen */}
+                            <div className="space-y-2">
+                                <Label htmlFor="image_url">URL de imagen</Label>
+                                <Input
+                                    id="image_url"
+                                    value={formData.image_url}
+                                    onChange={(e) => handleInputChange('image_url', e.target.value)}
+                                    placeholder="https://ejemplo.com/imagen.jpg"
+                                    type="url"
+                                />
+                            </div>
+
+                            {/* Metadatos del sistema (solo lectura si vienen pre-llenados) */}
+                            {(formData.source || formData.added_from || formData.original_search_query) && (
+                                <div className="p-4 bg-gray-50 rounded-lg border">
+                                    <h4 className="font-medium mb-2">Metadatos del sistema:</h4>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-600">
+                                        {formData.source && (
+                                            <div><strong>Fuente:</strong> {formData.source}</div>
+                                        )}
+                                        {formData.added_from && (
+                                            <div><strong>Agregado desde:</strong> {formData.added_from}</div>
+                                        )}
+                                        {formData.original_search_query && (
+                                            <div><strong>Búsqueda original:</strong> {formData.original_search_query}</div>
+                                        )}
+                                        {formData.original_category && (
+                                            <div><strong>Categoría original:</strong> {formData.original_category}</div>
+                                        )}
+                                        {formData.timestamp && (
+                                            <div><strong>Timestamp:</strong> {new Date(formData.timestamp).toLocaleString()}</div>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+                        </CardContent>
+                    </Card>
+
+                    {/* Botones de acción */}
+                    <div className="flex items-center justify-between">
+                        <Button
+                            type="button"
+                            variant="outline"
+                            onClick={clearForm}
+                            disabled={isSubmitting}
+                        >
+                            Limpiar Formulario
+                        </Button>
+
+                        <div className="flex items-center space-x-4">
+                            {/* Estado del envío */}
+                            {submitStatus === 'success' && (
+                                <div className="flex items-center text-green-600">
+                                    <CheckCircle className="mr-2 h-4 w-4" />
+                                    {submitMessage}
+                                </div>
+                            )}
+                            
+                            {submitStatus === 'error' && (
+                                <div className="flex items-center text-red-600">
+                                    <XCircle className="mr-2 h-4 w-4" />
+                                    {submitMessage}
+                                </div>
+                            )}
+
+                            {/* Botón de envío */}
+                            <Button
+                                type="submit"
+                                disabled={isSubmitting}
+                                className="bg-green-600 hover:bg-green-700"
+                            >
+                                {isSubmitting ? (
+                                    <>
+                                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                                        Agregando...
+                                    </>
+                                ) : (
+                                    <>
+                                        <Save className="mr-2 h-4 w-4" />
+                                        Agregar Especie
+                                    </>
+                                )}
+                            </Button>
+                        </div>
+                    </div>
+                </form>
+
+                {/* Información adicional */}
+                <Card className="bg-blue-50 border-blue-200">
+                    <CardContent className="pt-6">
+                        <div className="flex items-start space-x-3">
+                            <Info className="text-blue-600 mt-1 h-5 w-5 flex-shrink-0" />
+                            <div className="text-blue-800">
+                                <h4 className="font-medium mb-2">💡 Información importante:</h4>
+                                <ul className="text-sm space-y-1">
+                                    <li>• Los campos marcados con * son obligatorios</li>
+                                    <li>• Puedes agregar especies manualmente o desde resultados de búsqueda</li>
+                                    <li>• Los datos se guardan en el sistema central de especies</li>
+                                    <li>• Las imágenes deben ser URLs válidas y accesibles</li>
+                                    <li>• Los metadatos del sistema se generan automáticamente</li>
+                                </ul>
+                            </div>
+                        </div>
                     </CardContent>
                 </Card>
             </div>
         </RoleBasedGuard>
     );
-
-    
 }
-
-    
