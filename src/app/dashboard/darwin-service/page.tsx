@@ -10,7 +10,7 @@ import { ArrowLeft } from 'lucide-react';
 
 export default function DarwinServicePage() {
     return (
-        <RoleBasedGuard allowedRoles={['admin']}>
+        <RoleBasedGuard allowedRoles={['admin', 'researcher']}>
             <div className="space-y-6 flex flex-col h-full">
                 <div className="flex-shrink-0">
                     <Button variant="outline" asChild>

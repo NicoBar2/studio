@@ -65,6 +65,15 @@ export default function DashboardLayout({
                   </SidebarMenuButton>
                 </SidebarMenuItem>
 
+                <SidebarMenuItem>
+                    <SidebarMenuButton asChild variant="ghost" className="justify-start w-full" tooltip="Servicio Darwin">
+                        <Link href="/dashboard/darwin-service">
+                            <DatabaseZap />
+                            <span className="group-data-[state=collapsed]:hidden">Servicio Darwin</span>
+                        </Link>
+                    </SidebarMenuButton>
+                </SidebarMenuItem>
+
                 {role === 'admin' && (
                   <>
                     <SidebarMenuItem>
@@ -74,14 +83,6 @@ export default function DashboardLayout({
                           <span className="group-data-[state=collapsed]:hidden">{t.sidebar_manage_researchers}</span>
                         </Link>
                       </SidebarMenuButton>
-                    </SidebarMenuItem>
-                    <SidebarMenuItem>
-                        <SidebarMenuButton asChild variant="ghost" className="justify-start w-full" tooltip="Servicio Darwin">
-                            <Link href="/dashboard/admin/darwin-service">
-                                <DatabaseZap />
-                                <span className="group-data-[state=collapsed]:hidden">Servicio Darwin</span>
-                            </Link>
-                        </SidebarMenuButton>
                     </SidebarMenuItem>
                   </>
                 )}
