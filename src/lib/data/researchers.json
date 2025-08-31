@@ -1,4 +1,3 @@
-
 [
   {
     "id": "mcnkn7cj31xy8junp",
@@ -29,5 +28,18 @@
     "specialization": "Evolución y Biología",
     "isVerified": false,
     "profileImageUrl": "https://ui-avatars.com/api/?name=Carlos%20Darwin&background=random"
+  },
+  {
+    "id": "mf08dg0y90j0wqqrw",
+    "name": "Carlos Darwin",
+    "email": "dacordova1234@gmail.com",
+    "orcid": "0000-0002-9079-593X",
+    "idNumber": "1106053323",
+    "institution": "Fundación Charles Darwin",
+    "specialization": "Evolución y Biología",
+    "isVerified": false,
+    "profileImageUrl": "https://ui-avatars.com/api/?name=Carlos%20Darwin&background=random",
+    "verificationToken": "b0f5298759d47ed87b25cae78ceb403966822bf987651c338704018a60dd6883",
+    "verificationTokenExpires": "2025-09-01T21:56:49.378Z"
   }
 ]
