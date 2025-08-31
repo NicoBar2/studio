@@ -66,7 +66,7 @@ function LoginContent() {
               Registro de Investigador
             </CardTitle>
             <CardDescription>
-              Crea una cuenta. Un administrador deberá verificarla antes de que puedas iniciar sesión.
+              Crea una cuenta y recibirás un correo para verificar tu identidad.
             </CardDescription>
           </CardHeader>
           <CardContent>

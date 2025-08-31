@@ -117,4 +117,6 @@ export type Researcher = {
     isVerified: boolean;
     password?: string; // Can be a hashed password
     profileImageUrl?: string;
+    verificationToken?: string | null;
+    verificationTokenExpires?: Date | null;
 };

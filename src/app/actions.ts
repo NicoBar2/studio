@@ -1,5 +1,6 @@
 
 
+
 "use server";
 
 import { revalidatePath } from 'next/cache';
@@ -18,6 +19,7 @@ import admin from 'firebase-admin';
 import axios from 'axios';
 import FormData from 'form-data';
 import { validateEcuadorianId, validatePassportNumber, validateOrcid } from '@/lib/utils';
+import crypto from 'crypto';
 
 
 // --- Data Access Functions (moved from /lib) ---
@@ -164,7 +166,19 @@ function generateId(): string {
   return Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
 }
 
-async function addResearcher(name: string, email: string, orcid: string, idNumber: string, institution?: string, specialization?: string): Promise<Researcher> {
+async function addResearcher(
+  name: string, 
+  email: string, 
+  orcid: string, 
+  idNumber: string, 
+  institution?: string, 
+  specialization?: string
+): Promise<Researcher> {
+  const researchers = await readJsonFile<Researcher>(researchersDbPath);
+  
+  const verificationToken = crypto.randomBytes(32).toString('hex');
+  const verificationTokenExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours from now
+
   const newResearcher: Researcher = {
     id: generateId(),
     name: name.trim(),
@@ -175,13 +189,15 @@ async function addResearcher(name: string, email: string, orcid: string, idNumbe
     specialization: specialization?.trim() || undefined,
     isVerified: false,
     profileImageUrl: `https://ui-avatars.com/api/?name=${encodeURIComponent(name.trim())}&background=random`,
+    verificationToken: verificationToken,
+    verificationTokenExpires: verificationTokenExpires,
   };
   
-  const researchers = await readJsonFile<Researcher>(researchersDbPath);
   researchers.push(newResearcher);
   await writeJsonFile(researchersDbPath, researchers);
   return newResearcher;
 }
+
 
 async function getAllResearchers(): Promise<Researcher[]> {
   const researchers = await readJsonFile<Researcher>(researchersDbPath);
@@ -196,6 +212,11 @@ async function getResearcherById(id: string): Promise<Researcher | undefined> {
 async function getResearcherByEmail(email: string): Promise<Researcher | undefined> {
   const researchers = await readJsonFile<Researcher>(researchersDbPath);
   return researchers.find(researcher => researcher.email === email.toLowerCase());
+}
+
+async function getResearcherByToken(token: string): Promise<Researcher | undefined> {
+  const researchers = await readJsonFile<Researcher>(researchersDbPath);
+  return researchers.find(r => r.verificationToken === token);
 }
 
 async function updateResearcher(id: string, updates: Partial<Omit<Researcher, 'id' | 'password'>>): Promise<Researcher | null> {
@@ -590,10 +611,92 @@ export async function deleteSpeciesAction(prevState: any, formData: FormData): P
   }
 }
 
+const registrationEmailTemplate = (
+    name: string, 
+    email: string, 
+    institution: string | undefined, 
+    specialization: string | undefined,
+    verificationLink: string
+) => {
+    const currentDate = new Date().toLocaleDateString('es-ES', {
+        year: 'numeric', month: 'long', day: 'numeric'
+    });
+    const currentYear = new Date().getFullYear();
+
+    return `
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bienvenida - Portal Galápagos DataLens</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 0; background-color: #f8f9fa; }
+        .container { background-color: #ffffff; margin: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); overflow: hidden; }
+        .header { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 30px 20px; text-align: center; }
+        .header h1 { margin: 0; font-size: 28px; font-weight: 600; }
+        .header p { margin: 10px 0 0 0; font-size: 16px; opacity: 0.9; }
+        .content { padding: 30px 20px; }
+        .welcome-message { background-color: #f0fdf4; border-left: 4px solid #10b981; padding: 20px; margin: 20px 0; border-radius: 0 8px 8px 0; }
+        .user-info { background-color: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0; }
+        .user-info h3 { color: #059669; margin-top: 0; }
+        .cta-button { display: inline-block; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: 600; margin: 20px 0; text-align: center; }
+        .footer { background-color: #f1f5f9; padding: 20px; text-align: center; font-size: 14px; color: #64748b; }
+        .social-links { margin: 15px 0; }
+        .social-links a { display: inline-block; margin: 0 10px; color: #10b981; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌿 Portal de Galápagos DataLens</h1>
+            <p>Conservando la vida única de las Islas Encantadas</p>
+        </div>
+        <div class="content">
+            <div class="welcome-message">
+                <h2>¡Bienvenido/a, ${name}! 🎉</h2>
+                <p>Gracias por unirte a nuestra comunidad. Para completar tu registro y activar tu cuenta, por favor haz clic en el siguiente botón:</p>
+            </div>
+
+            <div style="text-align: center; margin: 30px 0;">
+                <a href="${verificationLink}" class="cta-button">🚀 Verificar mi Cuenta Ahora</a>
+            </div>
+
+            <p>Este enlace es válido por 24 horas. Si tienes problemas, copia y pega la siguiente URL en tu navegador:</p>
+            <p style="font-size: 12px; word-break: break-all; color: #888;">${verificationLink}</p>
+            
+            <div class="user-info">
+                <h3>📋 Información de tu registro:</h3>
+                <p><strong>Nombre:</strong> ${name}</p>
+                <p><strong>Email:</strong> ${email}</p>
+                <p><strong>Institución:</strong> ${institution || 'No especificada'}</p>
+                <p><strong>Especialización:</strong> ${specialization || 'No especificada'}</p>
+                <p><strong>Fecha de registro:</strong> ${currentDate}</p>
+            </div>
+        </div>
+        <div class="footer">
+            <p><strong>Portal de Biodiversidad Galápagos </strong></p>
+            <p>Comprometidos con la conservación de las especies únicas de las Islas Encantadas</p>
+            <div class="social-links">
+                <a href="#">🌐 Sitio Web</a> |
+                <a href="#">📧 Contacto</a> |
+                <a href="#">📚 Recursos</a>
+            </div>
+            <p style="font-size: 12px; margin-top: 20px;">
+                © ${currentYear} Portal de Biodiversidad Galápagos. Todos los derechos reservados.<br>
+                Este correo fue enviado a ${email} porque te registraste en nuestro portal.
+            </p>
+        </div>
+    </div>
+</body>
+</html>`;
+};
+
+
 export async function createResearcherAction(
   prevState: { success: boolean; message: string; researcher?: Researcher },
   formData: FormData
-): Promise<{ success: boolean; message: string; researcher?: Researcher }> {
+): Promise<{ success: boolean; message:string; researcher?: Researcher }> {
   const researcherName = formData.get('researcherName') as string;
   const email = formData.get('email') as string;
   let orcid = formData.get('orcid') as string;
@@ -601,7 +704,8 @@ export async function createResearcherAction(
   const institution = formData.get('institution') as string | undefined;
   const specialization = formData.get('specialization') as string | undefined;
 
-  if (!researcherName || researcherName.trim().length < 3) {
+  // ... (validations remain the same)
+   if (!researcherName || researcherName.trim().length < 3) {
     return { success: false, message: "El nombre del investigador debe tener al menos 3 caracteres." };
   }
   if (!/^[a-zA-Z\u00C0-\u017F\s]+$/.test(researcherName)) {
@@ -613,26 +717,17 @@ export async function createResearcherAction(
   if (!email || !email.trim().match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g)) {
     return { success: false, message: "Por favor, introduce un correo electrónico válido." };
   }
-
-  // Extract ORCID from URL if provided
   const orcidRegex = /(\d{4}-\d{4}-\d{4}-\d{3}[0-9X])$/;
   const orcidMatch = orcid.match(orcidRegex);
   if (orcidMatch) {
       orcid = orcidMatch[0];
   }
-
-  if (!orcid) {
-    return { success: false, message: "El ORCID iD es obligatorio." };
+  if (!orcid || !validateOrcid(orcid)) {
+    return { success: false, message: "El ORCID iD proporcionado no es válido." };
   }
-  if (!validateOrcid(orcid)) {
-    return { success: false, message: "El ORCID iD proporcionado no es válido (dígito de verificación incorrecto)." };
-  }
-  
   if (!idNumber) {
     return { success: false, message: "El número de Cédula/Pasaporte es obligatorio." };
   }
-
-  // Validate Ecuadorian ID or Passport
   if (/^\d{10}$/.test(idNumber)) {
     if (!validateEcuadorianId(idNumber)) {
         return { success: false, message: "El número de Cédula Ecuatoriana ingresado no es válido." };
@@ -640,14 +735,13 @@ export async function createResearcherAction(
   } else if (!/^[A-Z0-9]{9}$/.test(idNumber.toUpperCase())) {
     return { success: false, message: "Formato de Pasaporte no reconocido. Use 9 caracteres alfanuméricos." };
   }
-
+  
   const researchers = await readJsonFile<Researcher>(researchersDbPath);
   const lowerCaseEmail = email.trim().toLowerCase();
 
   if (researchers.some(r => r.email === lowerCaseEmail)) {
     return { success: false, message: "Ya existe un investigador con este correo electrónico." };
   }
-  
   if (researchers.some(r => r.orcid === orcid)) {
       return { success: false, message: "Este ORCID ID ya ha sido registrado." };
   }
@@ -658,31 +752,82 @@ export async function createResearcherAction(
   try {
     const orcidApiUrl = `https://pub.orcid.org/v3.0/${orcid}`;
     const response = await fetch(orcidApiUrl, { headers: { 'Accept': 'application/json' } });
-    
     if (!response.ok) {
-        if(response.status === 404) {
-             return { success: false, message: "El ORCID ID proporcionado no existe." };
-        }
-        return { success: false, message: "No se pudo verificar el ORCID ID en este momento. Inténtelo más tarde." };
+        if(response.status === 404) return { success: false, message: "El ORCID ID proporcionado no existe." };
+        return { success: false, message: "No se pudo verificar el ORCID ID. Inténtelo más tarde." };
     }
   } catch (error) {
     console.error("ORCID API validation error:", error);
-    return { success: false, message: "Error de red al validar el ORCID ID. Verifique su conexión." };
+    return { success: false, message: "Error de red al validar el ORCID ID." };
   }
-
 
   try {
     const newResearcher = await addResearcher(researcherName, lowerCaseEmail, orcid, idNumber, institution, specialization);
-    revalidatePath('/dashboard/admin/researchers');
-    return { 
-        success: true, 
-        message: `¡Registro exitoso! Un administrador verificará tu cuenta pronto.`, 
-        researcher: newResearcher 
-    };
+
+    if (process.env.RESEND_API_KEY && process.env.NEXT_PUBLIC_BASE_URL) {
+      const resend = new Resend(process.env.RESEND_API_KEY);
+      const verificationLink = `${process.env.NEXT_PUBLIC_BASE_URL}/verify?token=${newResearcher.verificationToken}`;
+      
+      await resend.emails.send({
+        from: 'onboarding@resend.dev',
+        to: newResearcher.email,
+        subject: '¡Bienvenido a Galápagos DataLens! Verifica tu cuenta',
+        html: registrationEmailTemplate(newResearcher.name, newResearcher.email, newResearcher.institution, newResearcher.specialization, verificationLink),
+      });
+
+      revalidatePath('/dashboard/admin/researchers');
+      return { 
+          success: true, 
+          message: `¡Registro exitoso! Se ha enviado un correo de verificación a ${newResearcher.email}.`, 
+          researcher: newResearcher 
+      };
+    } else {
+        console.warn("Email sending is not configured. Skipping verification email.");
+        return {
+            success: false,
+            message: "El registro fue exitoso, pero el envío de correos no está configurado. Por favor, contacta a un administrador para verificar tu cuenta manualmente."
+        }
+    }
+
   } catch (error) {
-    console.error("Error creando investigador:", error);
+    console.error("Error creando investigador o enviando correo:", error);
     const errorMessage = error instanceof Error ? error.message : "Error desconocido al crear investigador.";
     return { success: false, message: errorMessage };
+  }
+}
+
+export async function verifyResearcherAction(token: string): Promise<{ success: boolean; message: string }> {
+  if (!token) {
+    return { success: false, message: 'Token de verificación no válido.' };
+  }
+  
+  const researcher = await getResearcherByToken(token);
+  
+  if (!researcher) {
+    return { success: false, message: 'Token no encontrado o inválido.' };
+  }
+
+  if (researcher.isVerified) {
+    return { success: true, message: 'Esta cuenta ya ha sido verificada. Puedes iniciar sesión.' };
+  }
+  
+  const now = new Date();
+  const tokenExpires = researcher.verificationTokenExpires ? new Date(researcher.verificationTokenExpires) : null;
+  
+  if (!tokenExpires || now > tokenExpires) {
+    return { success: false, message: 'El token de verificación ha expirado. Por favor, solicita uno nuevo.' };
+  }
+
+  try {
+    await updateResearcher(researcher.id, {
+      isVerified: true,
+      verificationToken: null,
+      verificationTokenExpires: null,
+    });
+    return { success: true, message: '¡Tu cuenta ha sido verificada exitosamente! Ahora serás redirigido para iniciar sesión.' };
+  } catch (error) {
+    console.error("Error al verificar investigador:", error);
+    return { success: false, message: 'Ocurrió un error inesperado al verificar tu cuenta.' };
   }
 }
 
@@ -771,36 +916,32 @@ export async function toggleResearcherVerificationAction(
       return { success: false, message: "Investigador no encontrado." };
     }
 
-    const updatedResearcher = await updateResearcher(researcherId, { isVerified: !researcher.isVerified });
+    const newVerificationStatus = !researcher.isVerified;
+    const updatedResearcher = await updateResearcher(researcherId, { isVerified: newVerificationStatus });
+    
     if (!updatedResearcher) {
       return { success: false, message: "Error al actualizar el estado de verificación." };
     }
+    
+    let message = newVerificationStatus 
+      ? `Verificación de ${updatedResearcher.name} completada.`
+      : `Verificación de ${updatedResearcher.name} revocada.`;
 
-    let message;
-    if (updatedResearcher.isVerified) {
-      message = `Verificación de ${updatedResearcher.name} completada.`;
-      
-      if (process.env.RESEND_API_KEY && process.env.RESEND_FROM_EMAIL && process.env.NEXT_PUBLIC_BASE_URL) {
+    if (newVerificationStatus && process.env.RESEND_API_KEY) {
+        const loginUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/login`;
         const resend = new Resend(process.env.RESEND_API_KEY);
         try {
-          const loginUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/login`;
           await resend.emails.send({
             from: 'onboarding@resend.dev',
             to: updatedResearcher.email,
             subject: '¡Tu cuenta en Galápagos DataLens ha sido verificada!',
             html: verificationEmailTemplate(updatedResearcher.name, loginUrl),
           });
-          message += ` Se ha enviado un correo de confirmación.`;
+           message += ` Se ha enviado un correo de notificación.`;
         } catch (emailError) {
           console.error("Resend email error:", emailError);
-          message += ` No se pudo enviar el correo de confirmación.`;
+          message += ` No se pudo enviar el correo de notificación.`;
         }
-      } else {
-        message += ` El envío de correo no está configurado.`;
-      }
-
-    } else {
-      message = `Verificación de ${updatedResearcher.name} revocada.`;
     }
 
     revalidatePath('/dashboard/admin/researchers');

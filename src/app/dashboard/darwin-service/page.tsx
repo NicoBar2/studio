@@ -74,18 +74,18 @@ export default function DarwinServicePage() {
 
     // URLs de tus APIs de FastAPI
     const apiEndpoints = {
-        Plantas: 'http://localhost:8001/api/v1/download/Plantas/latest',
-        Animales: 'http://localhost:8001/api/v1/download/Animales/latest',
-        Hongos: 'http://localhost:8001/api/v1/download/Hongos/latest',
-        Grupos_Ecologicos: 'http://localhost:8001/api/v1/download/Grupos_Ecologicos/latest'
+        Plantas: 'https://galapagodatalends.online/api/v1/download/Plantas/latest',
+        Animales: 'https://galapagodatalends.online/api/v1/download/Animales/latest',
+        Hongos: 'https://galapagodatalends.online/api/v1/download/Hongos/latest',
+        Grupos_Ecologicos: 'https://galapagodatalends.online/api/v1/download/Grupos_Ecologicos/latest'
     };
 
     // URLs de las APIs de scraping
     const scrapingEndpoints = {
-        Plantas: 'http://localhost:8001/api/v1/scrape/plantas',
-        Animales: 'http://localhost:8001/api/v1/scrape/animales',
-        Hongos: 'http://localhost:8001/api/v1/scrape/hongos',
-        Grupos_Ecologicos: 'http://localhost:8001/api/v1/scrape/grupos'
+        Plantas: 'https://galapagodatalends.online/api/v1/scrape/plantas',
+        Animales: 'https://galapagodatalends.online/api/v1/scrape/animales',
+        Hongos: 'https://galapagodatalends.online/api/v1/scrape/hongos',
+        Grupos_Ecologicos: 'https://galapagodatalends.online/api/v1/scrape/grupos'
     };
 
     // Función para filtrar y ordenar resultados
@@ -237,7 +237,7 @@ export default function DarwinServicePage() {
         setInternalSearchQuery('');
 
         try {
-            const searchUrl = `http://localhost:8001/api/v1/search/${selectedCategory}?query=${encodeURIComponent(searchQuery.trim())}`;
+            const searchUrl = `https://galapagodatalends.online/api/v1/search/${selectedCategory}?query=${encodeURIComponent(searchQuery.trim())}`;
             
             console.log(` Iniciando búsqueda en: ${searchUrl}`);
             console.log(`📋 Categoría: ${selectedCategory}, Query: ${searchQuery}`);
@@ -364,56 +364,88 @@ export default function DarwinServicePage() {
             }
 
             console.log(`Haciendo fetch a: ${apiUrl}`);
+            console.log(`🔍 Verificando conectividad con la API...`);
             
-            const response = await fetch(apiUrl, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                signal: AbortSignal.timeout(30000),
-            });
+            // Primero verificar si la API está disponible
+            try {
+                const healthCheck = await fetch('https://galapagodatalends.online/health', {
+                    method: 'GET',
+                    signal: AbortSignal.timeout(5000),
+                });
+                console.log(`✅ Health check exitoso: ${healthCheck.status}`);
+            } catch (healthError) {
+                console.warn(`⚠️ Health check falló: ${healthError}`);
+            }
+            
+            let blob: Blob;
 
-            console.log(`Respuesta recibida:`, response.status, response.statusText);
+            try {
+                // Intentar primero con fetch
+                console.log(`🔄 Intentando descarga con fetch...`);
+                const response = await fetch(apiUrl, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'text/csv,application/csv,*/*',
+                        'Cache-Control': 'no-cache',
+                    },
+                    signal: AbortSignal.timeout(30000),
+                    mode: 'cors',
+                    credentials: 'omit',
+                });
 
-            if (response.status === 404) {
-                throw new Error('No se encontraron archivos CSV para esta categoría. La base de datos puede estar vacía o en proceso de actualización.');
-            }
-            
-            if (response.status === 500) {
-                throw new Error('Error interno del servidor. El sistema de archivos puede estar temporalmente no disponible.');
-            }
-            
-            if (response.status === 503) {
-                throw new Error('Servicio temporalmente no disponible. El sistema puede estar en mantenimiento.');
-            }
-            
-            if (response.status === 403) {
-                throw new Error('Acceso denegado. No tienes permisos para descargar archivos de esta categoría.');
-            }
-            
-            if (!response.ok) {
-                throw new Error(`Error del servidor: ${response.status} - ${response.statusText}`);
+                console.log(`Respuesta recibida:`, response.status, response.statusText);
+
+                if (response.status === 404) {
+                    throw new Error('No se encontraron archivos CSV para esta categoría. La base de datos puede estar vacía o en proceso de actualización.');
+                }
+                
+                if (response.status === 500) {
+                    throw new Error('Error interno del servidor. El sistema de archivos puede estar temporalmente no disponible.');
+                }
+                
+                if (response.status === 503) {
+                    throw new Error('Servicio temporalmente no disponible. El sistema puede estar en mantenimiento.');
+                }
+                
+                if (response.status === 403) {
+                    throw new Error('Acceso denegado. No tienes permisos para descargar archivos de esta categoría.');
+                }
+                
+                if (!response.ok) {
+                    throw new Error(`Error del servidor: ${response.status} - ${response.statusText}`);
+                }
+
+                const contentLength = response.headers.get('content-length');
+                console.log(`Content-Length:`, contentLength);
+                
+                if (contentLength === '0' || !contentLength) {
+                    throw new Error('El archivo CSV está vacío o no contiene datos válidos.');
+                }
+
+                console.log(`Descargando blob...`);
+                blob = await response.blob();
+                console.log(`Blob descargado:`, blob.size, 'bytes');
+                
+                if (blob.size === 0) {
+                    throw new Error('El archivo descargado está vacío. Puede que no haya datos disponibles.');
+                }
+
+            } catch (fetchError) {
+                console.warn(`⚠️ Fetch falló, intentando con XMLHttpRequest:`, fetchError);
+                
+                try {
+                    // Fallback a XMLHttpRequest
+                    blob = await downloadWithXMLHttpRequest(apiUrl, category);
+                    console.log(`✅ XMLHttpRequest exitoso, blob descargado:`, blob.size, 'bytes');
+                } catch (xhrError) {
+                    console.error(`❌ XMLHttpRequest también falló:`, xhrError);
+                    throw new Error(`Error de descarga: ${fetchError instanceof Error ? fetchError.message : 'Fetch falló'} y ${xhrError instanceof Error ? xhrError.message : 'XMLHttpRequest falló'}`);
+                }
             }
 
-            const contentLength = response.headers.get('content-length');
-            console.log(`Content-Length:`, contentLength);
-            
-            if (contentLength === '0' || !contentLength) {
-                throw new Error('El archivo CSV está vacío o no contiene datos válidos.');
-            }
-
-            console.log(`Descargando blob...`);
-            const blob = await response.blob();
-            console.log(`Blob descargado:`, blob.size, 'bytes');
-            
-            if (blob.size === 0) {
-                throw new Error('El archivo descargado está vacío. Puede que no haya datos disponibles.');
-            }
-
-            const contentDisposition = response.headers.get('content-disposition');
-            const fileName = contentDisposition 
-                ? contentDisposition.split('filename=')[1]?.replace(/"/g, '') 
-                : `darwin_${category}_${new Date().toISOString().split('T')[0]}.csv`;
+            // Generar nombre de archivo basado en la categoría y fecha
+            const fileName = `darwin_${category}_${new Date().toISOString().split('T')[0]}.csv`;
 
             console.log(`Nombre del archivo:`, fileName);
 
@@ -470,7 +502,7 @@ export default function DarwinServicePage() {
                 if (error.name === 'TypeError' && error.message.includes('fetch')) {
                     errorMessage = 'No se pudo conectar con el servidor. Verifica tu conexión a internet o que el servidor esté funcionando.';
                 } else if (error.message.includes('Failed to fetch')) {
-                    errorMessage = 'Error de conexión. El servidor puede estar caído, no accesible, o hay un problema de CORS.';
+                    errorMessage = 'Error de conexión. El servidor puede estar caído, no accesible, o hay un problema de CORS. Verifica que http://galapagodatalends.online esté funcionando.';
                 } else if (error.message.includes('timeout')) {
                     errorMessage = 'La descarga tardó demasiado tiempo. El archivo puede ser muy grande o el servidor está lento.';
                 } else if (error.message.includes('AbortError')) {
@@ -613,6 +645,64 @@ export default function DarwinServicePage() {
         const sizes = ['Bytes', 'KB', 'MB', 'GB'];
         const i = Math.floor(Math.log(bytes) / Math.log(k));
         return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    };
+
+    // Función para probar conectividad con la API
+    const testAPIConnectivity = async () => {
+        try {
+            console.log('🔍 Probando conectividad con la API...');
+            
+            // Probar endpoint de salud
+            const healthResponse = await fetch('https://galapagodatalends.online/health', {
+                method: 'GET',
+                signal: AbortSignal.timeout(10000),
+            });
+            
+            if (healthResponse.ok) {
+                console.log('✅ API está respondiendo correctamente');
+                return true;
+            } else {
+                console.warn(`⚠️ API responde pero con estado: ${healthResponse.status}`);
+                return false;
+            }
+        } catch (error) {
+            console.error('❌ Error de conectividad con la API:', error);
+            return false;
+        }
+    };
+
+    // Función de fallback usando XMLHttpRequest para evitar problemas de CORS
+    const downloadWithXMLHttpRequest = (url: string, category: string): Promise<Blob> => {
+        return new Promise((resolve, reject) => {
+            console.log(`🔄 Intentando descarga con XMLHttpRequest: ${url}`);
+            
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', url, true);
+            xhr.responseType = 'blob';
+            xhr.timeout = 30000;
+            
+            xhr.setRequestHeader('Accept', 'text/csv,application/csv,*/*');
+            xhr.setRequestHeader('Cache-Control', 'no-cache');
+            
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    console.log('✅ XMLHttpRequest exitoso');
+                    resolve(xhr.response);
+                } else {
+                    reject(new Error(`HTTP ${xhr.status}: ${xhr.statusText}`));
+                }
+            };
+            
+            xhr.onerror = function() {
+                reject(new Error('Error de red en XMLHttpRequest'));
+            };
+            
+            xhr.ontimeout = function() {
+                reject(new Error('Timeout en XMLHttpRequest'));
+            };
+            
+            xhr.send();
+        });
     };
 
     return (
@@ -984,6 +1074,34 @@ export default function DarwinServicePage() {
                                 🔄 <strong>Actualización Automática:</strong> Los archivos CSV se actualizan automáticamente en background después de cada descarga para mantener los datos siempre frescos.
                             </span>
                         </CardDescription>
+                        
+                        {/* Botones de prueba */}
+                        <div className="mt-4 flex gap-2">
+                            <Button 
+                                variant="outline" 
+                                size="sm"
+                                onClick={testAPIConnectivity}
+                                className="text-blue-600 border-blue-200 hover:bg-blue-50"
+                            >
+                                🔍 Probar Conectividad
+                            </Button>
+                            
+                            <Button 
+                                variant="outline" 
+                                size="sm"
+                                                                 onClick={() => {
+                                     console.log('🔍 URLs de la API:');
+                                     console.log('Health:', 'https://galapagodatalends.online/health');
+                                     console.log('Plantas:', apiEndpoints.Plantas);
+                                     console.log('Animales:', apiEndpoints.Animales);
+                                     console.log('Hongos:', apiEndpoints.Hongos);
+                                     console.log('Grupos:', apiEndpoints.Grupos_Ecologicos);
+                                 }}
+                                className="text-green-600 border-green-200 hover:bg-green-50"
+                            >
+                                📋 Ver URLs de la API
+                            </Button>
+                        </div>
                     </CardHeader>
                     <CardContent>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
