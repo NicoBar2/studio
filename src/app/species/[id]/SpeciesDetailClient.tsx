@@ -9,9 +9,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { useState, useTransition } from 'react';
 import { getAISummary } from '@/app/actions';
+import jsPDF from 'jspdf';
 import { 
-  AlertCircle, Brain, Edit, BarChart2, Tag, ShieldAlert, Home, ListChecks,
-  Turtle, Bird, Footprints, ShieldQuestion, Waves, Bug, type LucideIcon, HelpCircle, Sigma, MapPin, CalendarClock
+  AlertCircle, Brain, Edit, BarChart2, Tag, ShieldAlert, Home, ListChecks, Download,
+  Turtle, Bird, Footprints, ShieldQuestion, Waves, Bug, type LucideIcon, HelpCircle, Sigma, MapPin, LoaderCircle, CalendarClock
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -66,6 +67,7 @@ export default function SpeciesDetailClient({ species }: SpeciesDetailClientProp
   const [summary, setSummary] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isSummaryPending, startSummaryTransition] = useTransition();
+  const [isPdfPending, startPdfTransition] = useTransition();
   
   const IconComponent = iconMap[species.icon] || iconMap.Default;
   const speciesName = t.getSpeciesName(species, language);
@@ -85,6 +87,71 @@ export default function SpeciesDetailClient({ species }: SpeciesDetailClientProp
       }
     });
   };
+
+  const handleDownloadPdf = () => {
+    startPdfTransition(() => {
+        const doc = new jsPDF();
+        const pageHeight = doc.internal.pageSize.height;
+        let y = 15; // Vertical position tracker
+
+        const addSection = (title: string, content: string | string[]) => {
+            if (y > pageHeight - 30) { doc.addPage(); y = 15; }
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(14);
+            doc.text(title, 15, y);
+            y += 8;
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(11);
+            if (Array.isArray(content)) {
+                content.forEach(item => {
+                    const splitItem = doc.splitTextToSize(`• ${item}`, 180);
+                    doc.text(splitItem, 20, y);
+                    y += (splitItem.length * 5);
+                });
+            } else {
+                const splitContent = doc.splitTextToSize(content, 180);
+                doc.text(splitContent, 15, y);
+                y += (splitContent.length * 5) + 5;
+            }
+        };
+
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(22);
+        doc.text(speciesName, 15, y);
+        y += 8;
+        
+        doc.setFont('helvetica', 'italic');
+        doc.setFontSize(14);
+        doc.text(scientificName, 15, y);
+        y += 12;
+
+        addSection(t.speciesDescription, speciesDescription);
+        
+        const conservationContent = [
+            `${t.iucnStatus}: ${species.iucnStatus}`,
+            `${t.populationTrend}: ${populationTrendTranslations[language][species.populationTrend]}`
+        ];
+        addSection(t.conservationAndPopulation, conservationContent);
+
+        addSection(t.habitat, species.habitat);
+        
+        if (species.threats && species.threats.length > 0) {
+            addSection(t.mainThreats, species.threats);
+        }
+
+        const presentOnIslands = GALAPAGOS_ISLANDS_NAMES
+            .map(islandName => ({ name: islandName, present: species[`is_${islandName.toLowerCase().replace(/ /g, '_').normalize("NFD").replace(/[\u0300-\u036f]/g, "")}` as keyof Species] }))
+            .filter(island => island.present)
+            .map(i => i.name);
+        
+        if (presentOnIslands.length > 0) {
+            addSection(t.geographicDistribution, presentOnIslands.join(', '));
+        }
+
+        doc.save(`${species.id}_report.pdf`);
+    });
+};
+
 
   const { resolvedTheme } = useTheme();
 
@@ -252,6 +319,29 @@ export default function SpeciesDetailClient({ species }: SpeciesDetailClientProp
                 {summary && !isSummaryPending && <p className="mt-4 p-4 bg-secondary rounded-md text-secondary-foreground">{summary}</p>}
                 {error && !isSummaryPending && <p className="mt-4 text-destructive">{error}</p>}
               </CardContent>
+            </Card>
+
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center text-xl text-primary">
+                        <Download className="mr-2 h-5 w-5" /> {t.downloadPdfReport}
+                    </CardTitle>
+                    <CardDescription>
+                       Genera un informe en PDF con la información clave de esta especie.
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <Button onClick={handleDownloadPdf} disabled={isPdfPending} className="bg-primary hover:bg-primary/90">
+                        {isPdfPending ? (
+                            <>
+                                <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
+                                {t.generatingPdf}
+                            </>
+                        ) : (
+                            t.downloadPdfReport
+                        )}
+                    </Button>
+                </CardContent>
             </Card>
 
             {(role === 'researcher' || role === 'admin' || species.showHistoricalDataToPublic) && (
