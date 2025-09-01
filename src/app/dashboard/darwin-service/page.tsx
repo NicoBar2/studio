@@ -725,6 +725,9 @@ export default function DarwinServicePage() {
                         </CardTitle>
                         <CardDescription>
                             Busca especies específicas seleccionando una categoría y utilizando términos de búsqueda.
+                            <p className="text-sm text-amber-600 bg-amber-50 p-2 rounded border border-amber-200 mt-2">
+                                <strong>Nota:</strong> El tiempo de espera máximo es de 3 a 5 minutos. Por favor, mantente en la pantalla hasta que el procedimiento de búsqueda finalice.
+                            </p>
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
