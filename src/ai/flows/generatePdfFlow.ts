@@ -173,7 +173,7 @@ const generatePdfFlowFn = ai.defineFlow(
         console.log("Launching Puppeteer...");
         browser = await puppeteer.launch({
             headless: true,
-            args: ['--no-sandbox', '--disable-setuid-sandbox']
+            args: ['--no-sandbox', '--disable-setuid-sandbox'],
         });
         
         console.log("Puppeteer launched. Opening new page.");
