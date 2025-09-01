@@ -138,9 +138,9 @@ export default function HeatmapPage() {
                                     className="pl-9"
                                 />
                             </div>
-                            <div className="flex justify-between items-center text-sm">
+                            <div className="flex flex-col items-start gap-1 text-sm">
                                 <Button variant="link" onClick={handleSelectAll} className="p-0 h-auto">{t.heatmap_select_all}</Button>
-                                <Button variant="link" onClick={handleClearSelection} className="p-0 h-auto">{t.heatmap_clear_selection}</Button>
+                                <Button variant="link" onClick={handleClearSelection} className="p-0 h-auto text-destructive">{t.heatmap_clear_selection}</Button>
                             </div>
                             <ScrollArea className="h-[450px] border rounded-md p-2">
                                 {isLoading ? (
