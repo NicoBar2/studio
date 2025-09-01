@@ -19,27 +19,16 @@
     "password": "$2a$10$2lG.aX7GvJcflHCo3cAUQ.XkYfLz3wA7/eG8iGf6aJ8e2g9e3wX6W"
   },
   {
-    "id": "mewvpjf3frlcu17ku",
+    "id": "mf09e73085fg1vth9",
     "name": "Carlos Darwin",
-    "email": "investigador.nuevo@galapagos.com",
+    "email": "galapagosdatalens@gmail.com",
     "orcid": "0000-0002-1825-0097",
-    "idNumber": "1712345678",
-    "institution": "Fundación Charles Darwin",
-    "specialization": "Evolución y Biología",
-    "isVerified": false,
-    "profileImageUrl": "https://ui-avatars.com/api/?name=Carlos%20Darwin&background=random"
-  },
-  {
-    "id": "mf08dg0y90j0wqqrw",
-    "name": "Carlos Darwin",
-    "email": "dacordova1234@gmail.com",
-    "orcid": "0000-0002-9079-593X",
     "idNumber": "1106053323",
     "institution": "Fundación Charles Darwin",
     "specialization": "Evolución y Biología",
     "isVerified": false,
     "profileImageUrl": "https://ui-avatars.com/api/?name=Carlos%20Darwin&background=random",
-    "verificationToken": "b0f5298759d47ed87b25cae78ceb403966822bf987651c338704018a60dd6883",
-    "verificationTokenExpires": "2025-09-01T21:56:49.378Z"
+    "verificationToken": "d79f4adab549ac686b71c54c4f64a35443eff535676691e211bec689123e5d0a",
+    "verificationTokenExpires": "2025-09-01T22:25:24.060Z"
   }
 ]

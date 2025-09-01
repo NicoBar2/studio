@@ -255,7 +255,7 @@ const esTranslations: Translations = {
     role_tourist: "Turista",
 
     sidebar_summary: "Resumen",
-    sidebar_generate_query: "Generar Consulta",
+    sidebar_generate_query: "Búsqueda interactiva de especies",
     sidebar_add_species: "Añadir Especie",
     sidebar_manage_researchers: "Gestionar Investigadores",
     sidebar_import_species: "Importar Especies",
@@ -364,7 +364,7 @@ const esTranslations: Translations = {
 
     mapAriaLabel: "Mapa interactivo de las Islas Galápagos",
 
-    compare_title: "Genera tu Consulta",
+    compare_title: "Búsqueda interactiva de especies",
     compare_description: "Utiliza los criterios de búsqueda para filtrar y seleccionar especies, y visualiza las comparaciones.",
     compare_filters_title: "Criterios de búsqueda",
     compare_filter_family: "Filtrar por Familia",
@@ -464,7 +464,7 @@ const enTranslations: Translations = {
     role_tourist: "Tourist",
 
     sidebar_summary: "Summary",
-    sidebar_generate_query: "Generate Query",
+    sidebar_generate_query: "Interactive Species Search",
     sidebar_add_species: "Add Species",
     sidebar_manage_researchers: "Manage Researchers",
     sidebar_import_species: "Import Species",
@@ -573,7 +573,7 @@ const enTranslations: Translations = {
 
     mapAriaLabel: "Interactive map of the Galápagos Islands",
 
-    compare_title: "Build Your Query",
+    compare_title: "Interactive Species Search",
     compare_description: "Use the search criteria to filter and select species, and visualize the comparisons.",
     compare_filters_title: "Search Criteria",
     compare_filter_family: "Filter by Family",
