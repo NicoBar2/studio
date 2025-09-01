@@ -2,7 +2,7 @@
 
 "use client";
 import Link from 'next/link';
-import { MountainIcon, LogIn, LogOut, UserCircle, Languages, LayoutGrid, Users } from 'lucide-react';
+import { Turtle, LogIn, LogOut, UserCircle, Languages, LayoutGrid, Users } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
@@ -37,7 +37,7 @@ export default function Header() {
     <header className="bg-card text-card-foreground shadow-md sticky top-0 z-50">
       <div className="container mx-auto px-4 md:px-6 h-16 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2" prefetch={false}>
-          <MountainIcon className="h-6 w-6 text-primary" />
+          <Turtle className="h-6 w-6 text-primary" />
           <span className="text-xl font-headline font-semibold text-primary">Galápagos DataLens</span>
         </Link>
         <nav className="flex items-center gap-2 md:gap-4">
