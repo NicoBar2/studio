@@ -2,4 +2,5 @@
 import './flows/compareSpeciesFlow';
 import './flows/generatePdfFlow';
 import './flows/extractSpeciesInfoFlow';
+import './flows/generateSummaryFlow';
 // import './flows/processCsvWithAIFlow';

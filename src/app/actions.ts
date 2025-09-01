@@ -8,6 +8,7 @@ import { promises as fs } from 'fs';
 import path from 'path';
 import type { Species, HistoricalDataPoint, SpeciesStat, ConservationStatus, UserRole, Researcher } from '@/lib/types';
 import { getComparisonAnalysis, type CompareSpeciesInput } from '@/ai/flows/compareSpeciesFlow';
+import { getSummary, type GetSummaryInput } from '@/ai/flows/generateSummaryFlow';
 import { z } from 'zod';
 import { redirect } from 'next/navigation';
 import bcrypt from 'bcryptjs';
@@ -299,15 +300,6 @@ async function handleImageUpload(imageDataUri: string, currentImageUrl: string):
     }
 }
 
-// Placeholder for AI insight generation
-async function generateSpeciesInsight(speciesName: string, speciesData: string): Promise<string> {
-  await new Promise(resolve => setTimeout(resolve, 1500));
-  if (!speciesName || !speciesData) {
-    return "No se pudo generar el resumen debido a datos faltantes.";
-  }
-  return `Resumen generado para ${speciesName}: Esta especie juega un papel vital en su ecosistema. Datos recientes indican una tendencia notable que requiere mayor observación. Los esfuerzos de conservación son cruciales para su supervivencia a largo plazo. Sus características clave incluyen adaptaciones únicas al entorno de Galápagos. (Resumen de IA simulado)`;
-}
-
 export async function getSpeciesListAction(): Promise<Species[]> {
   return getSpeciesList();
 }
@@ -337,16 +329,16 @@ export async function getAISummary(speciesId: string): Promise<{ summary?: strin
   }
 
   try {
-    const dataForAI = `
-      Nombre: ${species.spanishCommonName}
-      Nombre Científico: ${species.genus} ${species.specificEpithet}
-      Estado de Conservación: ${species.iucnStatus}
-      Tendencia Poblacional: ${species.populationTrend}
-      Hábitat: ${species.habitat}
-      Amenazas Clave: ${species.threats.join(', ')}
-      Descripción: ${species.spanishDescription}
-    `;
-    const summary = await generateSpeciesInsight(species.spanishCommonName, dataForAI);
+    const dataForAI: GetSummaryInput = {
+      spanishCommonName: species.spanishCommonName,
+      scientificName: `${species.genus} ${species.specificEpithet}`.trim(),
+      iucnStatus: species.iucnStatus,
+      populationTrend: species.populationTrend,
+      habitat: species.habitat,
+      threats: species.threats,
+      spanishDescription: species.spanishDescription,
+    };
+    const summary = await getSummary(dataForAI);
     return { summary };
   } catch (error) {
     console.error("Error generando resumen con IA:", error);
