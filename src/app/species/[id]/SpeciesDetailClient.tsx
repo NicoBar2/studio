@@ -8,32 +8,17 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useState, useTransition } from 'react';
-import { getAISummary, generatePdfAction } from '@/app/actions';
+import { getAISummary } from '@/app/actions';
 import { 
-  AlertCircle, Brain, Edit, BarChart2, Tag, ShieldAlert, Home, ListChecks, Download,
-  Turtle, Bird, Footprints, ShieldQuestion, Waves, Bug, type LucideIcon, HelpCircle, Sigma, MapPin, LoaderCircle, CalendarClock, FileCog
+  AlertCircle, Brain, Edit, BarChart2, Tag, ShieldAlert, Home, ListChecks,
+  Turtle, Bird, Footprints, ShieldQuestion, Waves, Bug, type LucideIcon, HelpCircle, Sigma, MapPin, CalendarClock
 } from 'lucide-react';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
 import dynamic from 'next/dynamic';
 import { useTheme } from 'next-themes';
-import { Label } from '@/components/ui/label';
-import { Checkbox } from '@/components/ui/checkbox';
-import type { PdfOptions } from '@/ai/flows/generatePdfFlow';
-
 
 const SpeciesDataChart = dynamic(() => import('@/components/charts/SpeciesDataChart'), {
   loading: () => (
@@ -81,16 +66,6 @@ export default function SpeciesDetailClient({ species }: SpeciesDetailClientProp
   const [summary, setSummary] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isSummaryPending, startSummaryTransition] = useTransition();
-  const [isPdfPending, startPdfTransition] = useTransition();
-
-  const [pdfOptions, setPdfOptions] = useState<PdfOptions>({
-    includeDescription: true,
-    includeConservation: true,
-    includeHabitat: true,
-    includeThreats: true,
-    includeChart: true,
-    includeDistribution: true,
-  });
   
   const IconComponent = iconMap[species.icon] || iconMap.Default;
   const speciesName = t.getSpeciesName(species, language);
@@ -110,41 +85,6 @@ export default function SpeciesDetailClient({ species }: SpeciesDetailClientProp
       }
     });
   };
-
-  const handleDownloadPdf = () => {
-    startPdfTransition(async () => {
-        const { pdfBase64, error } = await generatePdfAction({ speciesId: species.id, options: pdfOptions });
-
-        if (error) {
-            console.error('PDF Generation Error:', error);
-            // You might want to show a toast notification here
-            return;
-        }
-
-        if (pdfBase64) {
-            const byteCharacters = atob(pdfBase64);
-            const byteNumbers = new Array(byteCharacters.length);
-            for (let i = 0; i < byteCharacters.length; i++) {
-                byteNumbers[i] = byteCharacters.charCodeAt(i);
-            }
-            const byteArray = new Uint8Array(byteNumbers);
-            const blob = new Blob([byteArray], { type: 'application/pdf' });
-
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            const fileName = `${species.spanishCommonName.toLowerCase().replace(/\s+/g, '_')}_informe.pdf`;
-            link.download = fileName;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-    });
-  };
-
-  const handlePdfOptionChange = (option: keyof PdfOptions, checked: boolean) => {
-    setPdfOptions(prev => ({ ...prev, [option]: checked }));
-  }
-
 
   const { resolvedTheme } = useTheme();
 
@@ -340,64 +280,6 @@ export default function SpeciesDetailClient({ species }: SpeciesDetailClientProp
             )}
           </CardContent>
         </Card>
-      </div>
-
-      <div className="mt-6 flex justify-center">
-        <AlertDialog>
-          <AlertDialogTrigger asChild>
-            <Button variant="outline" size="lg">
-              <Download className="mr-2 h-5 w-5" />
-              {t.downloadPdfReport}
-            </Button>
-          </AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle className="flex items-center">
-                <FileCog className="mr-2 h-5 w-5" /> Opciones del Informe PDF
-              </AlertDialogTitle>
-              <AlertDialogDescription>
-                Selecciona las secciones que quieres incluir en tu informe.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <div className="grid grid-cols-2 gap-4 py-4">
-                <div className="flex items-center space-x-2">
-                    <Checkbox id="includeDescription" checked={pdfOptions.includeDescription} onCheckedChange={(checked) => handlePdfOptionChange('includeDescription', !!checked)} />
-                    <Label htmlFor="includeDescription">Descripción</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                    <Checkbox id="includeConservation" checked={pdfOptions.includeConservation} onCheckedChange={(checked) => handlePdfOptionChange('includeConservation', !!checked)} />
-                    <Label htmlFor="includeConservation">Conservación</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                    <Checkbox id="includeHabitat" checked={pdfOptions.includeHabitat} onCheckedChange={(checked) => handlePdfOptionChange('includeHabitat', !!checked)} />
-                    <Label htmlFor="includeHabitat">Hábitat</Label>
-                </div>
-                 <div className="flex items-center space-x-2">
-                    <Checkbox id="includeThreats" checked={pdfOptions.includeThreats} onCheckedChange={(checked) => handlePdfOptionChange('includeThreats', !!checked)} />
-                    <Label htmlFor="includeThreats">Amenazas</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                    <Checkbox id="includeChart" checked={pdfOptions.includeChart} onCheckedChange={(checked) => handlePdfOptionChange('includeChart', !!checked)} />
-                    <Label htmlFor="includeChart">Gráfico Histórico</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                    <Checkbox id="includeDistribution" checked={pdfOptions.includeDistribution} onCheckedChange={(checked) => handlePdfOptionChange('includeDistribution', !!checked)} />
-                    <Label htmlFor="includeDistribution">Distribución</Label>
-                </div>
-            </div>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancelar</AlertDialogCancel>
-              <AlertDialogAction onClick={handleDownloadPdf} disabled={isPdfPending}>
-                {isPdfPending ? (
-                  <>
-                    <LoaderCircle className="mr-2 h-5 w-5 animate-spin" />
-                    {t.generatingPdf}
-                  </>
-                ) : "Confirmar y Descargar"}
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
       </div>
     </>
   );
