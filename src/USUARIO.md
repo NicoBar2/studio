@@ -6,25 +6,25 @@
 1.  [Introducción](#2-introducción)
 2.	[Control de Versiones](#3-control-de-versiones)
 3.	[Avisos Legales y Licencias](#4-avisos-legales-y-licencias)
-4.	[Propósito del Manual](#6-propósito-del-manual)
-5.	[Alcance del Sistema](#7-alcance-del-sistema)
-6.	[Convenciones Tipográficas y Simbología](#8-convenciones-tipográficas-y-simbología)
-7.	[Descripción General del Sistema](#9-descripción-general-del-sistema)
-8.	[Requisitos y Entorno](#10-requisitos-y-entorno)
-    *   [Hardware](#11-requisitos-de-hardware-mínimos-y-recomendados)
-    *   [Software](#12-requisitos-de-software)
-    *   [Configuraciones Previas](#13-configuraciones-previas-necesarias)
-9.	[Instalación y Despliegue](#14-instalación-y-despliegue)
-10.	[Primeros Pasos](#15-primeros-pasos)
+4.	[Propósito del Manual](#5-propósito-del-manual)
+5.	[Alcance del Sistema](#6-alcance-del-sistema)
+6.	[Convenciones Tipográficas y Simbología](#7-convenciones-tipográficas-y-simbología)
+7.	[Descripción General del Sistema](#8-descripción-general-del-sistema)
+8.	[Requisitos y Entorno](#9-requisitos-y-entorno)
+    *   [Hardware](#10-requisitos-de-hardware-mínimos-y-recomendados)
+    *   [Software](#11-requisitos-de-software)
+    *   [Configuraciones Previas](#12-configuraciones-previas-necesarias)
+9.	[Instalación y Despliegue](#13-instalación-y-despliegue)
+10.	[Primeros Pasos](#14-primeros-pasos)
     *   [Inicio de Sesión y Registro](#a-inicio-de-sesión-o-registro-de-usuarios)
     *   [Recorrido Inicial](#b-recorrido-inicial-por-la-interfaz)
-11.	[Guía de Usuario por Módulos](#16-guía-de-usuario-por-módulos)
-12.	[Resolución de Problemas](#17-resolución-de-problemas)
-13.	[Preguntas Frecuentes (FAQ)](#18-preguntas-frecuentes-faq)
-14.	[Soporte y Contacto](#19-soporte-y-contacto)
-15.	[Glosario de Términos](#20-glosario-de-términos-y-acrónimos)
-16.	[Referencias](#21-referencias-y-bibliografía)
-17.	[Anexos](#22-anexos)
+11.	[Guía de Usuario por Módulos](#15-guía-de-usuario-por-módulos)
+12.	[Resolución de Problemas](#16-resolución-de-problemas)
+13.	[Preguntas Frecuentes (FAQ)](#17-preguntas-frecuentes-faq)
+14.	[Soporte y Contacto](#18-soporte-y-contacto)
+15.	[Glosario de Términos](#19-glosario-de-términos-y-acrónimos)
+16.	[Referencias](#20-referencias-y-bibliografía)
+17.	[Anexos](#21-anexos)
 
 ---
 
@@ -45,7 +45,7 @@ Este documento sirve como guía completa para los usuarios de la plataforma **Ga
 
 ## 4. Avisos Legales y Licencias
 
-### 5. Derechos de autor, licencia de uso del software, descargos de responsabilidad
+#### 4.1. Derechos de autor, licencia de uso del software, descargos de responsabilidad
 
 - **Derechos de Autor**: © 2024 [Nombre de la Organización o Propietario]. Todos los derechos reservados.
 - **Licencia de Uso**: Este software se distribuye bajo la licencia [Nombre de la Licencia, ej. MIT, Apache 2.0]. Para más detalles, consulta el archivo `LICENSE` en el repositorio del proyecto.
@@ -53,13 +53,13 @@ Este documento sirve como guía completa para los usuarios de la plataforma **Ga
 
 ---
 
-## 6. Propósito del Manual
+## 5. Propósito del Manual
 
 El propósito de este manual es capacitar a los usuarios de todos los niveles (Turistas, Investigadores y Administradores) para que utilicen de manera efectiva la plataforma Galapagos DataLens, comprendan su alcance y resuelvan problemas comunes.
 
 ---
 
-## 7. Alcance del Sistema
+## 6. Alcance del Sistema
 
 Este manual cubre todas las funcionalidades de la versión actual de Galapagos DataLens, incluyendo:
 - Navegación pública del sitio.
@@ -71,7 +71,7 @@ Este manual cubre todas las funcionalidades de la versión actual de Galapagos D
 
 ---
 
-## 8. Convenciones Tipográficas y Simbología
+## 7. Convenciones Tipográficas y Simbología
 
 Para facilitar la comprensión de este manual, se utilizan las siguientes convenciones:
 
@@ -102,15 +102,15 @@ Los siguientes iconos se utilizan a lo largo de la aplicación para representar 
 
 ---
 
-## 9. Descripción General del Sistema
+## 8. Descripción General del Sistema
 
 Galapagos DataLens es una plataforma web diseñada para la gestión, visualización y análisis de datos de biodiversidad de las Islas Galápagos. Permite a la comunidad científica y al público general interactuar con un conjunto de datos curado y centralizado.
 
 ---
 
-## 10. Requisitos y Entorno
+## 9. Requisitos y Entorno
 
-### 11. Requisitos de Hardware Mínimos y Recomendados
+### 9.1. Requisitos de Hardware Mínimos y Recomendados
 
 - **Mínimos**:
   - Procesador: Dual Core 1.6 GHz
@@ -121,13 +121,13 @@ Galapagos DataLens es una plataforma web diseñada para la gestión, visualizaci
   - RAM: 8 GB o más
   - Conexión a internet estable para un rendimiento óptimo.
 
-### 12. Requisitos de Software
+### 9.2. Requisitos de Software
 
 - **Sistema Operativo**: Windows, macOS, o Linux (no hay dependencia específica).
 - **Navegador Web**: Última versión de Google Chrome, Mozilla Firefox, Safari o Microsoft Edge.
 - No se requieren librerías o dependencias adicionales por parte del usuario final.
 
-### 13. Configuraciones Previas Necesarias
+### 9.3. Configuraciones Previas Necesarias
 
 No se requieren configuraciones previas para el uso general de la plataforma. Para el despliegue o desarrollo local, se necesitan API keys para:
 - **Resend**: Para el envío de correos electrónicos.
@@ -136,21 +136,21 @@ No se requieren configuraciones previas para el uso general de la plataforma. Pa
 
 ---
 
-## 14. Instalación y Despliegue
+## 10. Instalación y Despliegue
 
 La plataforma está diseñada para ser accedida a través de un navegador web y no requiere instalación por parte del usuario final. Para desarrolladores, la instalación se realiza clonando el repositorio y ejecutando `npm install`.
 
 ---
 
-## 15. Primeros Pasos
+## 11. Primeros Pasos
 
-### a. Inicio de sesión o registro de usuarios
+### 11.1. Inicio de sesión o registro de usuarios
 
 - **Turistas**: Pueden acceder al sitio público sin necesidad de iniciar sesión.
 - **Investigadores**: Deben registrarse en la página de **Login > Registrarse**. Una vez registrados, un administrador debe verificar su cuenta para otorgarles acceso al panel de control.
 - **Administradores**: Tienen credenciales pre-configuradas.
 
-### b. Recorrido inicial por la interfaz
+### 11.2. Recorrido inicial por la interfaz
 
 - **Página Principal**: Muestra un mapa interactivo y una lista de todas las especies.
 - **Panel de Control (`/dashboard`)**: Accesible solo para investigadores y administradores. Contiene herramientas para la gestión de datos, visualización y análisis.
@@ -158,7 +158,7 @@ La plataforma está diseñada para ser accedida a través de un navegador web y 
 
 ---
 
-## 16. Guía de Usuario por Módulos
+## 12. Guía de Usuario por Módulos
 
 ### Módulo Público (Para Turistas y otros roles)
 
@@ -217,7 +217,7 @@ La plataforma está diseñada para ser accedida a través de un navegador web y 
 
 ---
 
-## 17. Resolución de Problemas
+## 13. Resolución de Problemas
 
 | Problema Común                                | Posible Causa                                    | Solución                                                                    |
 | :-------------------------------------------- | :----------------------------------------------- | :-------------------------------------------------------------------------- |
@@ -229,7 +229,7 @@ La plataforma está diseñada para ser accedida a través de un navegador web y 
 
 ---
 
-## 18. Preguntas Frecuentes (FAQ)
+## 14. Preguntas Frecuentes (FAQ)
 
 - **¿Quién puede añadir o editar datos de especies?**
   - Solo los usuarios con rol de **Investigador** o **Administrador** que hayan iniciado sesión pueden añadir o modificar los datos.
@@ -245,7 +245,7 @@ La plataforma está diseñada para ser accedida a través de un navegador web y 
 
 ---
 
-## 19. Soporte y Contacto
+## 15. Soporte y Contacto
 
 Para soporte técnico, dudas o sugerencias, por favor contacta a:
 - **Email**: `soporte@galapagos-datalens.org` (ejemplo)
@@ -253,7 +253,7 @@ Para soporte técnico, dudas o sugerencias, por favor contacta a:
 
 ---
 
-## 20. Glosario de Términos y Acrónimos
+## 16. Glosario de Términos y Acrónimos
 
 - **CRUD**: Acrónimo de Create, Read, Update, Delete (Crear, Leer, Actualizar, Eliminar), que representa las operaciones básicas de gestión de datos.
 - **IA**: Inteligencia Artificial. Se utiliza en la plataforma para generar resúmenes y análisis de texto.
@@ -266,7 +266,7 @@ Para soporte técnico, dudas o sugerencias, por favor contacta a:
 
 ---
 
-## 21. Referencias y Bibliografía
+## 17. Referencias y Bibliografía
 
 - **Fuentes de Datos**: [Enlace a la fuente de datos si aplica, ej. Fundación Charles Darwin, etc.]
 - **Documentación de Next.js**: `https://nextjs.org/docs`
@@ -274,6 +274,6 @@ Para soporte técnico, dudas o sugerencias, por favor contacta a:
 
 ---
 
-## 22. Anexos
+## 18. Anexos
 
 *(Esta sección puede incluir diagramas de flujo de datos más complejos, ejemplos de estructuras de datos JSON utilizadas en la aplicación o cualquier otra información técnica de apoyo que sea relevante para usuarios avanzados o desarrolladores.)*

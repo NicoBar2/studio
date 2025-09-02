@@ -6,25 +6,25 @@
 1.  [Introducción](#2-introducción)
 2.	[Control de Versiones](#3-control-de-versiones)
 3.	[Avisos Legales y Licencias](#4-avisos-legales-y-licencias)
-4.	[Propósito del Manual](#6-propósito-del-manual)
-5.	[Alcance del Sistema](#7-alcance-del-sistema)
-6.	[Convenciones Tipográficas y Simbología](#8-convenciones-tipográficas-y-simbología)
-7.	[Descripción General del Sistema](#9-descripción-general-del-sistema)
-8.	[Requisitos y Entorno](#10-requisitos-y-entorno)
-    *   [Hardware](#11-requisitos-de-hardware-mínimos-y-recomendados)
-    *   [Software](#12-requisitos-de-software)
-    *   [Configuraciones Previas](#13-configuraciones-previas-necesarias)
-9.	[Instalación y Despliegue](#14-instalación-y-despliegue)
-10.	[Primeros Pasos](#15-primeros-pasos)
+4.	[Propósito del Manual](#5-propósito-del-manual)
+5.	[Alcance del Sistema](#6-alcance-del-sistema)
+6.	[Convenciones Tipográficas y Simbología](#7-convenciones-tipográficas-y-simbología)
+7.	[Descripción General del Sistema](#8-descripción-general-del-sistema)
+8.	[Requisitos y Entorno](#9-requisitos-y-entorno)
+    *   [Hardware](#10-requisitos-de-hardware-mínimos-y-recomendados)
+    *   [Software](#11-requisitos-de-software)
+    *   [Configuraciones Previas](#12-configuraciones-previas-necesarias)
+9.	[Instalación y Despliegue](#13-instalación-y-despliegue)
+10.	[Primeros Pasos](#14-primeros-pasos)
     *   [Inicio de Sesión y Registro](#a-inicio-de-sesión-o-registro-de-usuarios)
     *   [Recorrido Inicial](#b-recorrido-inicial-por-la-interfaz)
-11.	[Guía de Usuario por Módulos](#16-guía-de-usuario-por-módulos)
-12.	[Resolución de Problemas](#17-resolución-de-problemas)
-13.	[Preguntas Frecuentes (FAQ)](#18-preguntas-frecuentes-faq)
-14.	[Soporte y Contacto](#19-soporte-y-contacto)
-15.	[Glosario de Términos](#20-glosario-de-términos-y-acrónimos)
-16.	[Referencias](#21-referencias-y-bibliografía)
-17.	[Anexos](#22-anexos)
+11.	[Guía de Usuario por Módulos](#15-guía-de-usuario-por-módulos)
+12.	[Resolución de Problemas](#16-resolución-de-problemas)
+13.	[Preguntas Frecuentes (FAQ)](#17-preguntas-frecuentes-faq)
+14.	[Soporte y Contacto](#18-soporte-y-contacto)
+15.	[Glosario de Términos](#19-glosario-de-términos-y-acrónimos)
+16.	[Referencias](#20-referencias-y-bibliografía)
+17.	[Anexos](#21-anexos)
 
 ---
 
@@ -45,7 +45,7 @@ Este documento sirve como guía completa para los usuarios de la plataforma **Ga
 
 ## 4. Avisos Legales y Licencias
 
-### 5. Derechos de autor, licencia de uso del software, descargos de responsabilidad
+#### 4.1. Derechos de autor, licencia de uso del software, descargos de responsabilidad
 
 - **Derechos de Autor**: © 2024 [Nombre de la Organización o Propietario]. Todos los derechos reservados.
 - **Licencia de Uso**: Este software se distribuye bajo la licencia [Nombre de la Licencia, ej. MIT, Apache 2.0]. Para más detalles, consulta el archivo `LICENSE` en el repositorio del proyecto.
@@ -53,13 +53,13 @@ Este documento sirve como guía completa para los usuarios de la plataforma **Ga
 
 ---
 
-## 6. Propósito del Manual
+## 5. Propósito del Manual
 
 El propósito de este manual es capacitar a los usuarios de todos los niveles (Turistas, Investigadores y Administradores) para que utilicen de manera efectiva la plataforma Galapagos DataLens, comprendan su alcance y resuelvan problemas comunes.
 
 ---
 
-## 7. Alcance del Sistema
+## 6. Alcance del Sistema
 
 Este manual cubre todas las funcionalidades de la versión actual de Galapagos DataLens, incluyendo:
 - Navegación pública del sitio.
@@ -71,7 +71,7 @@ Este manual cubre todas las funcionalidades de la versión actual de Galapagos D
 
 ---
 
-## 8. Convenciones Tipográficas y Simbología
+## 7. Convenciones Tipográficas y Simbología
 
 Para facilitar la comprensión de este manual, se utilizan las siguientes convenciones:
 
@@ -102,15 +102,15 @@ Los siguientes iconos se utilizan a lo largo de la aplicación para representar 
 
 ---
 
-## 9. Descripción General del Sistema
+## 8. Descripción General del Sistema
 
 Galapagos DataLens es una plataforma web diseñada para la gestión, visualización y análisis de datos de biodiversidad de las Islas Galápagos. Permite a la comunidad científica y al público general interactuar con un conjunto de datos curado y centralizado.
 
 ---
 
-## 10. Requisitos y Entorno
+## 9. Requisitos y Entorno
 
-### 11. Requisitos de Hardware Mínimos y Recomendados
+### 9.1. Requisitos de Hardware Mínimos y Recomendados
 
 - **Mínimos**:
   - Procesador: Dual Core 1.6 GHz
@@ -121,13 +121,13 @@ Galapagos DataLens es una plataforma web diseñada para la gestión, visualizaci
   - RAM: 8 GB o más
   - Conexión a internet estable para un rendimiento óptimo.
 
-### 12. Requisitos de Software
+### 9.2. Requisitos de Software
 
 - **Sistema Operativo**: Windows, macOS, o Linux (no hay dependencia específica).
 - **Navegador Web**: Última versión de Google Chrome, Mozilla Firefox, Safari o Microsoft Edge.
 - No se requieren librerías o dependencias adicionales por parte del usuario final.
 
-### 13. Configuraciones Previas Necesarias
+### 9.3. Configuraciones Previas Necesarias
 
 No se requieren configuraciones previas para el uso general de la plataforma. Para el despliegue o desarrollo local, se necesitan API keys para:
 - **Resend**: Para el envío de correos electrónicos.
@@ -136,21 +136,21 @@ No se requieren configuraciones previas para el uso general de la plataforma. Pa
 
 ---
 
-## 14. Instalación y Despliegue
+## 10. Instalación y Despliegue
 
 La plataforma está diseñada para ser accedida a través de un navegador web y no requiere instalación por parte del usuario final. Para desarrolladores, la instalación se realiza clonando el repositorio y ejecutando `npm install`.
 
 ---
 
-## 15. Primeros Pasos
+## 11. Primeros Pasos
 
-### a. Inicio de sesión o registro de usuarios
+### 11.1. Inicio de sesión o registro de usuarios
 
 - **Turistas**: Pueden acceder al sitio público sin necesidad de iniciar sesión.
 - **Investigadores**: Deben registrarse en la página de **Login > Registrarse**. Una vez registrados, un administrador debe verificar su cuenta para otorgarles acceso al panel de control.
 - **Administradores**: Tienen credenciales pre-configuradas.
 
-### b. Recorrido inicial por la interfaz
+### 11.2. Recorrido inicial por la interfaz
 
 - **Página Principal**: Muestra un mapa interactivo y una lista de todas las especies.
 - **Panel de Control (`/dashboard`)**: Accesible solo para investigadores y administradores. Contiene herramientas para la gestión de datos, visualización y análisis.
@@ -158,70 +158,122 @@ La plataforma está diseñada para ser accedida a través de un navegador web y 
 
 ---
 
-## 16. Guía de Usuario por Módulos
+## 12. Guía de Usuario por Módulos
 
-*(Esta sección debe ser desarrollada con capturas de pantalla y descripciones detalladas de cada funcionalidad.)*
+### Módulo Público (Para Turistas y otros roles)
 
-- **Módulo de Especies (Público)**:
-  - Cómo buscar y filtrar especies.
-  - Cómo interpretar la página de detalle de una especie.
-- **Módulo de Gestión de Especies (Dashboard)**:
-  - Cómo añadir una nueva especie.
-  - Cómo editar la información existente.
-  - Cómo gestionar los datos históricos.
-  - Cómo eliminar una especie (solo Admins).
-- **Módulo de Visualización de Datos**:
-  - Cómo usar la página de **Generar Consulta** para comparar especies.
-  - Cómo interpretar el **Mapa de Calor**.
-- **Módulo de Administración (Dashboard)**:
-  - Cómo gestionar (verificar, eliminar) las cuentas de los investigadores.
+- **Explorar Especies**: En la página principal, puedes buscar especies usando la barra de **búsqueda** o hacer clic en una isla en el mapa para ver las especies que la habitan.
+- **Ver Detalles de Especie**: Al hacer clic en una tarjeta de especie, navegarás a su página de detalle. Aquí encontrarás:
+  - Descripción, estado de conservación, hábitat y amenazas.
+  - Galería de imágenes.
+  - Si los permisos lo permiten, un gráfico de datos históricos.
+- **Generar Resumen con IA**: En la página de detalle, puedes hacer clic en **Generar Resumen con IA** para obtener un análisis de texto sobre la especie.
+
+### Módulo de Panel de Control (Para Investigadores y Admins)
+
+#### Resumen de Especies
+1.  **Navegación**: Accede desde el menú lateral en **Resumen**.
+2.  **Funcionalidad**: Similar a la página principal, pero con acciones administrativas.
+3.  **Acciones**:
+    - **Editar**: Te lleva a la página de edición de la especie.
+    - **Ver Visualizaciones**: Accede a gráficos detallados de los datos históricos.
+    - **Eliminar** (Solo Admins): Permite borrar una especie de la base de datos.
+
+#### Añadir y Editar Especies
+1.  **Añadir**:
+    - Ve a **Añadir Especie** en el menú lateral.
+    - Rellena todos los campos requeridos y opcionales en los acordeones desplegables.
+    - > **Nota:** Puedes usar una especie existente como plantilla para rellenar los campos más rápido.
+    - Haz clic en **Crear Especie**.
+2.  **Editar**:
+    - Desde el **Resumen**, haz clic en **Editar** en la especie deseada.
+    - Modifica los campos necesarios, incluyendo la gestión de puntos de datos históricos (añadir, editar, eliminar años).
+    - Sube una nueva imagen si es necesario.
+    - Haz clic en **Guardar Cambios**.
+
+#### Generar Consulta (Comparación)
+1.  **Navegación**: Ve a **Generar Consulta** en el menú lateral.
+2.  **Funcionamiento**:
+    - Usa los filtros en el panel izquierdo para acotar la lista de especies (ej. por familia, por isla).
+    - Selecciona dos o más especies de la lista. Deben compartir la misma `unidad` en sus datos históricos para poder compararse en el mismo gráfico.
+    - El gráfico y la tabla de datos se actualizarán automáticamente a la derecha.
+
+#### Mapa de Calor
+1.  **Navegación**: Ve a **Mapa de Calor** en el menú lateral.
+2.  **Funcionamiento**:
+    - Selecciona las especies que te interesan de la lista de la izquierda.
+    - El mapa de la derecha se actualizará mostrando "manchas de calor" en las islas donde se concentra el mayor número de especies seleccionadas.
+    - La tabla de datos debajo del mapa te dará el recuento exacto por isla.
+
+### Módulo de Administración (Solo para Admins)
+
+#### Gestionar Investigadores
+1.  **Navegación**: Ve a **Gestionar Investigadores** en el menú.
+2.  **Funcionalidad**:
+    - Verás una lista de todos los investigadores registrados.
+    - **Verificar**: Haz clic en **Marcar Verificado** para otorgar acceso a un nuevo investigador. Se le enviará un correo de notificación.
+    - **Revocar Acceso**: Haz clic en **Marcar No Verificado** para quitarle el acceso.
+    - **Eliminar**: Borra la cuenta del investigador del sistema. >> **Advertencia:** Esta acción es irreversible.
 
 ---
 
-## 17. Resolución de Problemas
+## 13. Resolución de Problemas
 
 | Problema Común                                | Posible Causa                                    | Solución                                                                    |
 | :-------------------------------------------- | :----------------------------------------------- | :-------------------------------------------------------------------------- |
-| No puedo iniciar sesión.                      | Contraseña incorrecta o cuenta no verificada.    | Usa el enlace **¿Olvidaste tu contraseña?** o contacta a un administrador. |
-| La imagen que subí no se muestra.             | Error de conexión o formato de archivo no válido. | Intenta subir la imagen de nuevo. Asegúrate de que sea JPG o PNG.          |
-| El PDF no se descarga.                        | El proceso en el servidor puede tardar.          | Espera unos segundos y vuelve a intentarlo.                                |
+| No puedo iniciar sesión.                      | Contraseña incorrecta, o cuenta no verificada.    | Usa el enlace **¿Olvidaste tu contraseña?** en la página de login. Si tu cuenta es nueva, espera a que un administrador la verifique. |
+| La imagen que subí no se muestra correctamente. | Error de conexión durante la subida o formato de archivo no válido (ej. TIFF, WEBP). | Intenta subir la imagen de nuevo. Asegúrate de que sea un formato estándar como JPG, PNG o GIF. |
+| El PDF del informe no se descarga.            | El proceso en el servidor puede tardar, especialmente si el informe incluye gráficos. | Espera unos 15-20 segundos y vuelve a intentarlo. Si el problema persiste, contacta a soporte. |
+| No veo el gráfico de datos históricos.        | La especie no tiene datos históricos o no tienes los permisos necesarios. | Si eres *Turista*, el investigador debe habilitar la opción "Permitir que el público vea...". Si eres *Investigador*, la especie podría no tener datos; puedes añadirlos en la sección **Editar**. |
+| Al comparar especies, no aparece el gráfico. | Las especies seleccionadas no tienen datos históricos con la misma `unidad`. | Asegúrate de seleccionar especies que midan lo mismo (ej. "individuos" vs "parejas reproductoras"). El panel de selección agrupa las especies por unidad. |
 
 ---
 
-## 18. Preguntas Frecuentes (FAQ)
+## 14. Preguntas Frecuentes (FAQ)
 
 - **¿Quién puede añadir o editar datos de especies?**
-  - Solo los usuarios con rol de **Investigador** o **Administrador** pueden modificar los datos.
+  - Solo los usuarios con rol de **Investigador** o **Administrador** que hayan iniciado sesión pueden añadir o modificar los datos.
 
 - **¿Son los datos de la plataforma de acceso público?**
-  - La información general de las especies es pública. Los datos históricos detallados solo son visibles para los investigadores, a menos que se marque explícitamente como públicos.
+  - La información general de las especies (descripción, hábitat, estado de conservación) es pública. Los datos históricos detallados y sus visualizaciones solo son visibles para investigadores y administradores, a menos que se marque explícitamente como públicos en la página de edición de la especie.
+
+- **¿Qué es un ORCID iD y por qué es necesario para el registro?**
+  - Un ORCID iD es un identificador único y persistente para investigadores. Lo requerimos para asegurar que los registros de investigadores sean legítimos y para facilitar la interoperabilidad con otras plataformas científicas.
+
+- **¿Cómo puedo cambiar mi contraseña?**
+  - Si has olvidado tu contraseña, puedes usar el enlace **¿Olvidaste tu contraseña?** en la página de inicio de sesión. Si ya has iniciado sesión y deseas cambiarla, esta opción estará disponible en tu página de perfil en el futuro.
 
 ---
 
-## 19. Soporte y Contacto
+## 15. Soporte y Contacto
 
 Para soporte técnico, dudas o sugerencias, por favor contacta a:
-- **Email**: `soporte@galapagos-datalens.org`
+- **Email**: `soporte@galapagos-datalens.org` (ejemplo)
 - **Sitio Web**: `https://galapagos-datalens.org/contact` (página de ejemplo)
 
 ---
 
-## 20. Glosario de Términos y Acrónimos
+## 16. Glosario de Términos y Acrónimos
 
-- **CRUD**: Create, Read, Update, Delete (Crear, Leer, Actualizar, Eliminar).
-- **IA**: Inteligencia Artificial.
-- **UICN**: Unión Internacional para la Conservación de la Naturaleza.
+- **CRUD**: Acrónimo de Create, Read, Update, Delete (Crear, Leer, Actualizar, Eliminar), que representa las operaciones básicas de gestión de datos.
+- **IA**: Inteligencia Artificial. Se utiliza en la plataforma para generar resúmenes y análisis de texto.
+- **UICN**: Unión Internacional para la Conservación de la Naturaleza. Organización que clasifica las especies en categorías de riesgo.
 - **API**: Application Programming Interface (Interfaz de Programación de Aplicaciones).
+- **Endpoint**: Una URL específica de un microservicio o API a la que se puede llamar para obtener o enviar datos.
+- **Genkit**: El framework de Google AI utilizado en este proyecto para conectar con los modelos de lenguaje.
+- **Server Action**: Una función de Next.js que se ejecuta de forma segura en el servidor, utilizada para manejar la lógica de negocio.
+- **ORCID iD**: Open Researcher and Contributor ID. Un código alfanumérico no propietario para identificar de forma única a los autores científicos y otros académicos.
 
 ---
 
-## 21. Referencias y Bibliografía
+## 17. Referencias y Bibliografía
 
-*(Espacio para citar fuentes de datos, trabajos de investigación o documentación técnica relevante.)*
+- **Fuentes de Datos**: [Enlace a la fuente de datos si aplica, ej. Fundación Charles Darwin, etc.]
+- **Documentación de Next.js**: `https://nextjs.org/docs`
+- **Documentación de Genkit**: `https://firebase.google.com/docs/genkit`
 
 ---
 
-## 22. Anexos
+## 18. Anexos
 
-*(Sección para incluir información adicional, como diagramas de flujo detallados, ejemplos de datos de entrada/salida, etc.)*
-
+*(Esta sección puede incluir diagramas de flujo de datos más complejos, ejemplos de estructuras de datos JSON utilizadas en la aplicación o cualquier otra información técnica de apoyo que sea relevante para usuarios avanzados o desarrolladores.)*
